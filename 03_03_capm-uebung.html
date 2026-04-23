@@ -1,0 +1,1080 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CAPM Übungsaufgaben — Security Market Line · TH Köln</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script><style>
+      :root {
+        /* TH Köln Farben */
+        --th-rot: #C90C0F;
+        --th-orange: #EA5B0C;
+        --th-violett: #B82585;
+        --th-rot-soft: #FBE7E7;
+        --th-orange-soft: #FFF3E9;
+        --th-violett-soft:#F7ECF3;
+
+        /* Neutrale Skala */
+        --bg: #FAFAFA;
+        --card: #FFFFFF;
+        --ink: #1A1A1A;
+        --ink-soft: #404040;
+        --ink-muted: #737373;
+        --ink-faint: #A3A3A3;
+        --rule: #E5E5E5;
+        --rule-soft: #F0F0F0;
+
+        --pos: #2D6A3F;
+        --pos-soft: #E8F3EC;
+
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+      }
+
+      /* ───── HEADER ───── */
+      header.masthead {
+        border-bottom: 2px solid var(--th-rot);
+        padding-bottom: 28px;
+        margin-bottom: 40px;
+      }
+      .eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--th-rot);
+        margin-bottom: 12px;
+      }
+      h1.masthead-title {
+        font-weight: 700;
+        font-size: clamp(28px, 3.5vw, 40px);
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .masthead-sub {
+        font-size: 15px;
+        color: var(--ink-muted);
+        max-width: 760px;
+      }
+
+      /* ───── SECTIONS ───── */
+      section {
+        margin-bottom: 48px;
+        scroll-margin-top: 24px;
+      }
+      .section-head {
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+      }
+      .section-num {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--th-rot);
+        letter-spacing: 0.1em;
+      }
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* ───── CARDS ───── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ───── TABS ───── */
+      .tabs {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 28px;
+      }
+      .tab {
+        padding: 10px 18px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-muted);
+        transition: all 0.15s;
+        margin-bottom: -1px;
+      }
+      .tab:hover { color: var(--ink); }
+      .tab.active {
+        color: var(--th-rot);
+        border-bottom-color: var(--th-rot);
+      }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; }
+
+      /* ───── MARKET DATA CARDS ───── */
+      .market-data {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+      .market-card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-violett);
+        border-radius: 6px;
+        padding: 14px 16px;
+      }
+      .market-card .label {
+        font-size: 11px;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 500;
+        margin-bottom: 6px;
+      }
+      .market-card .value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--th-violett);
+        line-height: 1.2;
+      }
+      .market-card .symbol {
+        font-size: 11px;
+        color: var(--ink-faint);
+        font-family: 'JetBrains Mono', monospace;
+        margin-top: 4px;
+      }
+
+      /* ───── ASSET TABLE ───── */
+      .asset-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .asset-table th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--rule);
+        background: var(--bg);
+      }
+      .asset-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--rule-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .asset-table tr:last-child td { border-bottom: none; }
+      .asset-table .asset-name {
+        font-weight: 600;
+        color: var(--th-rot);
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* ───── FORMULA BOX ───── */
+      .formula-box {
+        background: var(--th-violett-soft);
+        border-left: 3px solid var(--th-violett);
+        padding: 14px 18px;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        margin: 16px 0;
+        color: var(--ink);
+        text-align: center;
+      }
+
+      /* ───── EXERCISE GRID & CARDS ───── */
+      .exercise-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 18px;
+      }
+      @media (max-width: 1000px) {
+        .exercise-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 650px) {
+        .exercise-grid { grid-template-columns: 1fr; }
+      }
+      .exercise-card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .exercise-card h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--th-violett);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 10px;
+      }
+      .exercise-card p {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* ───── INPUT GROUPS ───── */
+      .input-group {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .input-group label {
+        font-weight: 600;
+        font-size: 13px;
+        min-width: 60px;
+        color: var(--ink-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .answer-input {
+        width: 84px;
+        padding: 7px 10px;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: 'JetBrains Mono', monospace;
+        text-align: center;
+        background: var(--th-orange-soft);
+        color: var(--ink);
+        transition: all 0.2s;
+      }
+      .answer-input:focus {
+        outline: 2px solid var(--th-orange);
+        outline-offset: -1px;
+      }
+      .answer-input.correct {
+        border-color: var(--pos);
+        background: var(--pos-soft);
+        color: var(--pos);
+      }
+      .answer-input.incorrect {
+        border-color: var(--th-rot);
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+      }
+      .unit {
+        font-size: 12px;
+        color: var(--ink-muted);
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* ───── FEEDBACK ───── */
+      .feedback {
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 12px;
+        display: none;
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+      }
+      .feedback.correct {
+        display: inline-block;
+        background: var(--pos-soft);
+        color: var(--pos);
+      }
+      .feedback.incorrect {
+        display: inline-block;
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+      }
+
+      /* ───── RADIO BUTTONS ───── */
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .radio-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.15s;
+        font-family: 'Inter', sans-serif;
+      }
+      .radio-option:hover {
+        border-color: var(--th-violett);
+        background: var(--th-violett-soft);
+      }
+      .radio-option input[type="radio"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: var(--th-violett);
+      }
+      .radio-option.correct {
+        border-color: var(--pos);
+        background: var(--pos-soft);
+        color: var(--pos);
+      }
+      .radio-option.incorrect {
+        border-left: 3px solid var(--th-rot);
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+      }
+      .radio-feedback {
+        margin-top: 8px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 12px;
+        display: none;
+      }
+      .radio-feedback.correct {
+        display: block;
+        background: var(--pos-soft);
+        color: var(--pos);
+      }
+      .radio-feedback.incorrect {
+        display: block;
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+      }
+
+      /* ───── BUTTONS ───── */
+      .btn {
+        padding: 9px 16px;
+        background: transparent;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition: all 0.15s;
+        margin: 4px;
+      }
+      .btn:hover {
+        border-color: var(--th-rot);
+        color: var(--th-rot);
+        background: var(--th-rot-soft);
+      }
+      .btn-secondary:hover {
+        border-color: var(--ink);
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .btn-success:hover {
+        border-color: var(--pos);
+        color: var(--pos);
+        background: var(--pos-soft);
+      }
+      .btn-warning:hover {
+        border-color: var(--th-orange);
+        color: var(--th-orange);
+        background: var(--th-orange-soft);
+      }
+
+      /* ───── HINT BOX ───── */
+      .hint-box {
+        background: var(--th-orange-soft);
+        border-left: 3px solid var(--th-orange);
+        padding: 14px 18px;
+        border-radius: 4px;
+        margin: 16px 0;
+        display: none;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .hint-box.visible {
+        display: block;
+      }
+      .hint-box h4 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--th-orange);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .hint-box p { margin-bottom: 6px; line-height: 1.5; }
+      .hint-box ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 6px;
+      }
+      .hint-box li {
+        padding: 3px 0;
+        font-size: 13px;
+      }
+
+      /* ───── SOLUTION BOX ───── */
+      .solution-box {
+        background: var(--th-violett-soft);
+        border-left: 3px solid var(--th-violett);
+        padding: 14px 18px;
+        border-radius: 4px;
+        margin: 16px 0;
+        display: none;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .solution-box.visible { display: block; }
+      .solution-box h4 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--th-violett);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      /* ───── PROGRESS BAR ───── */
+      .progress-bar {
+        background: var(--rule);
+        border-radius: 4px;
+        height: 8px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      .progress-bar .fill {
+        background: var(--pos);
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+      }
+
+      /* ───── SCORE DISPLAY ───── */
+      .score-display {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-violett);
+        border-radius: 6px;
+        padding: 22px;
+        text-align: center;
+        margin: 18px 0;
+      }
+      .score-display .label {
+        font-size: 11px;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .score-display .score {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 36px;
+        font-weight: 600;
+        color: var(--th-violett);
+      }
+
+      /* ───── CHART CONTAINER ───── */
+      .chart-container {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow-sm);
+        margin: 16px 0;
+      }
+
+      /* ───── INFO BOX ───── */
+      .info-box {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        padding: 18px 20px;
+        margin-top: 16px;
+      }
+      .info-box h3 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--th-violett);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+      }
+      .info-box ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      .info-box li {
+        font-size: 13px;
+        color: var(--ink-soft);
+        padding: 4px 0;
+        line-height: 1.5;
+      }
+
+      /* ───── LEGEND ───── */
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 18px;
+        font-size: 12px;
+        color: var(--ink-soft);
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+
+      /* ───── INTERPRETATION ───── */
+      .interpretation {
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-top: 8px;
+        font-style: italic;
+        font-size: 12px;
+      }
+      .interpretation.positive {
+        background: var(--pos-soft);
+        color: var(--pos);
+        border-left: 3px solid var(--pos);
+      }
+      .interpretation.negative {
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+        border-left: 3px solid var(--th-rot);
+      }
+      .interpretation.neutral {
+        background: var(--bg);
+        color: var(--ink-muted);
+        border-left: 3px solid var(--ink-faint);
+      }
+
+      /* ───── CONTROL BAR ───── */
+      .control-bar {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      /* ───── FOOTER ───── */
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--rule);
+        font-size: 12px;
+        color: var(--ink-muted);
+      }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Capital Asset Pricing Model · Übungsaufgaben</div><h1 class="masthead-title">CAPM Übungsaufgaben</h1><p class="masthead-sub">Security Market Line, Beta, Jensen's Alpha & Treynor Ratio. Trainieren Sie die Kernberechnungen des CAPM an zufällig generierten Aufgaben und überprüfen Sie Ihre Ergebnisse grafisch an der SML.</p></header><div class="tabs"><button class="tab active" onclick="showTab('aufgabe')">Aufgabe</button><button class="tab" onclick="showTab('grafik')">SML-Grafik</button></div><!-- Tab: Aufgabe --><div id="tab-aufgabe" class="tab-content active"><!-- Marktdaten --><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Marktdaten (gegeben)</div></div><div class="market-data"><div class="market-card"><div class="label">Risikofreier Zinssatz</div><div class="value" id="display-rf">3,0%</div><div class="symbol">R<sub>f</sub></div></div><div class="market-card"><div class="label">Erwartete Marktrendite</div><div class="value" id="display-rm">10,0%</div><div class="symbol">μ<sub>M</sub></div></div><div class="market-card"><div class="label">Marktrisikoprämie</div><div class="value" id="display-mrp">7,0%</div><div class="symbol">μ<sub>M</sub> - R<sub>f</sub></div></div><div class="market-card"><div class="label">Markt-Varianz</div><div class="value" id="display-var">0,0400</div><div class="symbol">σ<sub>M</sub>²</div></div></div></section><!-- Wertpapierdaten --><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Wertpapierdaten (gegeben)</div></div><table class="asset-table"><thead><tr><th>Wertpapier</th><th>Realisierte Rendite (μ<sub>i</sub>)</th><th>Kovarianz mit Markt (σ<sub>iM</sub>)</th></tr></thead><tbody id="asset-table-body"><!-- Wird dynamisch gefüllt --></tbody></table></section><!-- Aufgabe 1: Beta berechnen --><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Aufgabe 1: Beta-Faktor berechnen</div></div><div class="formula-box">
+                    β<sub>i</sub> = σ<sub>iM</sub> / σ<sub>M</sub>² = Kovarianz / Markt-Varianz</div><p style="font-size: 14px; color: var(--ink-soft);">Berechnen Sie den Beta-Faktor für jedes Wertpapier:</p><div class="exercise-grid" id="beta-exercises"><!-- Wird dynamisch gefüllt --></div><div class="hint-box" id="hint-beta"><h4>Tipp</h4><p>Der Beta-Faktor zeigt, wie stark ein Wertpapier auf Marktbewegungen reagiert.</p><ul><li><strong>β = 1:</strong>Bewegt sich wie der Markt</li><li><strong>β &gt; 1:</strong>Aggressiv (verstärkt Marktbewegungen)</li><li><strong>0 &lt; β &lt; 1:</strong>Defensiv (dämpft Marktbewegungen)</li><li><strong>β &lt; 0:</strong>Gegenläufig zum Markt</li></ul></div></section><!-- Aufgabe 2: Erwartete Rendite (CAPM) --><section><div class="section-head"><div class="section-num">IV</div><div class="section-title">Aufgabe 2: Erwartete Rendite laut CAPM</div></div><div class="formula-box">
+                    μ<sub>CAPM</sub> = R<sub>f</sub> + β<sub>i</sub> × (μ<sub>M</sub> - R<sub>f</sub>)</div><p style="font-size: 14px; color: var(--ink-soft);">Berechnen Sie die risikoadäquate Rendite (Soll-Rendite) für jedes Wertpapier:</p><div class="exercise-grid" id="capm-exercises"><!-- Wird dynamisch gefüllt --></div><div class="hint-box" id="hint-capm"><h4>Tipp</h4><p>Die CAPM-Formel sagt: "Für dieses Risiko (Beta) sollte der Markt diese Rendite zahlen."</p><p>Beispiel: Bei β = 0,5 und Marktrisikoprämie von 7%:</p><p>μ<sub>CAPM</sub> = 3% + 0,5 × 7% = 3% + 3,5% =<strong>6,5%</strong></p></div></section><!-- Aufgabe 3: Jensen's Alpha --><section><div class="section-head"><div class="section-num">V</div><div class="section-title">Aufgabe 3: Jensen's Alpha berechnen</div></div><div class="formula-box">
+                    α<sub>i</sub> = μ<sub>i,realisiert</sub> - μ<sub>CAPM</sub> = Ist-Rendite - Soll-Rendite</div><p style="font-size: 14px; color: var(--ink-soft);">Berechnen Sie Jensen's Alpha und interpretieren Sie das Ergebnis:</p><div class="exercise-grid" id="alpha-exercises"><!-- Wird dynamisch gefüllt --></div><div class="hint-box" id="hint-alpha"><h4>Tipp</h4><p>Jensen's Alpha misst die Über- oder Unterrendite relativ zur SML:</p><ul><li><strong>α &gt; 0:</strong>Outperformance Wertpapier<span style="color: var(--pos)">unterbewertet</span></li><li><strong>α &lt; 0:</strong>Underperformance Wertpapier<span style="color: var(--th-rot)">überbewertet</span></li><li><strong>α = 0:</strong>Fair bewertet (liegt auf der SML)</li></ul></div></section><!-- Aufgabe 4: Treynor Ratio --><section><div class="section-head"><div class="section-num">VI</div><div class="section-title">Aufgabe 4: Treynor Ratio berechnen</div></div><div class="formula-box">T<sub>i</sub> = (μ<sub>i</sub> - R<sub>f</sub>) / β<sub>i</sub></div><p style="font-size: 14px; color: var(--ink-soft);">Berechnen Sie die Treynor Ratio und vergleichen Sie mit dem Markt (T<sub>M</sub> =<span id="treynor-market">7,0</span>):</p><div class="exercise-grid" id="treynor-exercises"><!-- Wird dynamisch gefüllt --></div><div class="hint-box" id="hint-treynor"><h4>Tipp</h4><p>Die Treynor Ratio zeigt die Überrendite pro Einheit systematisches Risiko.</p><p>Der Markt hat per Definition: T<sub>M</sub> = (μ<sub>M</sub> - R<sub>f</sub>) / 1 = Marktrisikoprämie</p><ul><li><strong>T &gt; T<sub>M</sub>:</strong>Besser als der Markt</li><li><strong>T &lt; T<sub>M</sub>:</strong>Schlechter als der Markt</li></ul></div></section><!-- Aufgabe 5: Interpretation --><section><div class="section-head"><div class="section-num">VII</div><div class="section-title">Aufgabe 5: Bewertung der Wertpapiere</div></div><p style="font-size: 14px; color: var(--ink-soft);">Basierend auf Ihren Berechnungen: Wie ist jedes Wertpapier im Vergleich zur Security Market Line zu bewerten?</p><div class="exercise-grid" id="interpretation-exercises"><!-- Wird dynamisch gefüllt --></div></section><!-- Auswertung --><section><div class="section-head"><div class="section-num">VIII</div><div class="section-title">Auswertung</div></div><div class="progress-bar"><div class="fill" id="progress-fill" style="width: 0%"></div></div><div class="score-display"><div class="label">Korrekte Antworten</div><div class="score"><span id="correct-count">0</span> /<span id="total-count">0</span></div></div><div class="control-bar"><button class="btn" onclick="checkAllAnswers()">Alle Antworten prüfen</button><button class="btn btn-warning" onclick="toggleAllHints()">Tipps anzeigen</button><button class="btn btn-secondary" onclick="showAllSolutions()">Lösungen anzeigen</button><button class="btn btn-success" onclick="generateNewExercise()">Neue Aufgabe</button></div></section></div><!-- Tab: Grafik --><div id="tab-grafik" class="tab-content"><section><div class="section-head"><div class="section-num">IX</div><div class="section-title">Security Market Line</div></div><div class="chart-container"><canvas id="smlChart" height="400"></canvas></div><div style="text-align: center; margin: 14px 0;"><span class="legend-item"><span class="legend-dot" style="background: var(--th-rot)"></span>Security Market Line (SML)</span><span class="legend-item"><span class="legend-dot" style="background: var(--pos)"></span>Unterbewertet (α &gt; 0)</span><span class="legend-item"><span class="legend-dot" style="background: var(--ink-faint)"></span>Fair bewertet (α = 0)</span><span class="legend-item"><span class="legend-dot" style="background: var(--th-orange)"></span>Überbewertet (α &lt; 0)</span></div><div class="info-box"><h3>Lesehinweis</h3><ul><li>Die<strong>rote Linie</strong>ist die Security Market Line – sie zeigt die "faire" Rendite für jedes Beta.</li><li>Punkte<strong>oberhalb</strong>der Linie haben ein positives Alpha unterbewertet.</li><li>Punkte<strong>unterhalb</strong>der Linie haben ein negatives Alpha überbewertet.</li><li>Der<strong>vertikale Abstand</strong>zur Linie entspricht Jensen's Alpha.</li></ul></div></section></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn</footer></div><script>
+        // Globale Variablen
+        let marketData = {};
+        let assets = [];
+        let smlChart = null;
+        let hintsVisible = false;
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNewExercise();
+        });
+
+        // Tab-Wechsel
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t =>t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c =>c.classList.remove('active'));
+
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'grafik') {
+                setTimeout(updateChart, 100);
+            }
+        }
+
+        // Neue Aufgabe generieren
+        function generateNewExercise() {
+            // Marktdaten generieren
+            const rfOptions = [2.0, 2.5, 3.0, 3.5, 4.0];
+            const rmOptions = [8.0, 9.0, 10.0, 11.0, 12.0];
+            const volOptions = [18, 20, 22, 25];
+
+            marketData.rf = rfOptions[Math.floor(Math.random() * rfOptions.length)];
+            marketData.rm = rmOptions[Math.floor(Math.random() * rmOptions.length)];
+
+            // Sicherstellen, dass rm >rf
+            while (marketData.rm<= marketData.rf + 3) {
+                marketData.rm = rmOptions[Math.floor(Math.random() * rmOptions.length)];
+            }
+
+            const vol = volOptions[Math.floor(Math.random() * volOptions.length)];
+            marketData.variance = (vol / 100) * (vol / 100);
+            marketData.mrp = marketData.rm - marketData.rf;
+
+            // 3 Bewertungstypen zufällig auf die Wertpapiere verteilen
+            const types = ['unter', 'ueber', 'fair'];
+            // Mischen (Fisher-Yates Shuffle)
+            for (let i = types.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [types[i], types[j]] = [types[j], types[i]];
+            }
+
+            const names = ['Aktie A', 'Aktie B', 'Aktie C'];
+            assets = [];
+
+            types.forEach((type, i) => {
+                const beta = parseFloat((Math.random() * 0.8 + 0.4).toFixed(2)); // 0.4 - 1.2
+                const capmReturn = marketData.rf + beta * marketData.mrp;
+
+                let actualReturn, alpha;
+
+                if (type === 'unter') {
+                    // Unterbewertet: deutlich positives Alpha (+2 bis +6)
+                    alpha = parseFloat((Math.random() * 4 + 2).toFixed(1));
+                    actualReturn = parseFloat((capmReturn + alpha).toFixed(1));
+                } else if (type === 'ueber') {
+                    // Überbewertet: deutlich negatives Alpha (-2 bis -5)
+                    alpha = parseFloat((-(Math.random() * 3 + 2)).toFixed(1));
+                    actualReturn = parseFloat((capmReturn + alpha).toFixed(1));
+                } else {
+                    // Fair bewertet: Alpha ist EXAKT 0
+                    alpha = 0.0;
+                    actualReturn = parseFloat(capmReturn.toFixed(1));
+                }
+
+                // Bei fair: capmReturn muss exakt der actualReturn entsprechen
+                // Daher capmReturn auf gleiche Dezimalstelle runden
+                const finalCapmReturn = type === 'fair' ? actualReturn : capmReturn;
+
+                assets.push({
+                    name: names[i],
+                    beta: beta,
+                    covariance: parseFloat((beta * marketData.variance).toFixed(4)),
+                    actualReturn: actualReturn,
+                    capmReturn: finalCapmReturn,
+                    alpha: type === 'fair' ? 0.0 : parseFloat((actualReturn - finalCapmReturn).toFixed(1)),
+                    treynor: (actualReturn - marketData.rf) / beta,
+                    type: type // für Debug/Überprüfung
+                });
+            });
+
+            // UI aktualisieren
+            updateMarketDisplay();
+            updateAssetTable();
+            buildExercises();
+            resetAllInputs();
+            updateProgress();
+
+            if (smlChart) {
+                updateChart();
+            }
+        }
+
+        // Hilfsfunktion für deutsche Zahlenformatierung
+        function formatDE(number, decimals = 1) {
+            return number.toFixed(decimals).replace('.', ',');
+        }
+
+        // Marktdaten-Anzeige aktualisieren
+        function updateMarketDisplay() {
+            document.getElementById('display-rf').textContent = formatDE(marketData.rf, 1) + '%';
+            document.getElementById('display-rm').textContent = formatDE(marketData.rm, 1) + '%';
+            document.getElementById('display-mrp').textContent = formatDE(marketData.mrp, 1) + '%';
+            document.getElementById('display-var').textContent = formatDE(marketData.variance, 4);
+            document.getElementById('treynor-market').textContent = formatDE(marketData.mrp, 1);
+        }
+
+        // Wertpapier-Tabelle aktualisieren
+        function updateAssetTable() {
+            const tbody = document.getElementById('asset-table-body');
+            tbody.innerHTML = assets.map(asset => `<tr><td class="asset-name">${asset.name}</td><td>${formatDE(asset.actualReturn, 1)}%</td><td>${formatDE(asset.covariance, 4)}</td></tr>
+            `).join('');
+        }
+
+        // Übungen aufbauen
+        function buildExercises() {
+            // Beta-Übungen
+            const betaContainer = document.getElementById('beta-exercises');
+            betaContainer.innerHTML = assets.map((asset, i) => `<div class="exercise-card"><h4>${asset.name}</h4><p>σ<sub>iM</sub> = ${formatDE(asset.covariance, 4)}</p><p>σ<sub>M</sub>² = ${formatDE(marketData.variance, 4)}</p><div class="input-group"><label>β =</label><input type="text" class="answer-input" id="beta-${i}"
+                               data-correct="${asset.beta.toFixed(2)}" data-type="beta"
+                               placeholder="0,00"><span class="feedback" id="feedback-beta-${i}"></span></div></div>
+            `).join('');
+
+            // CAPM-Übungen
+            const capmContainer = document.getElementById('capm-exercises');
+            capmContainer.innerHTML = assets.map((asset, i) => `<div class="exercise-card"><h4>${asset.name}</h4><p>R<sub>f</sub> = ${formatDE(marketData.rf, 1)}%, MRP = ${formatDE(marketData.mrp, 1)}%</p><p>β = ${formatDE(asset.beta, 2)} (aus Aufgabe 1)</p><div class="input-group"><label>μ<sub>CAPM</sub> =</label><input type="text" class="answer-input" id="capm-${i}"
+                               data-correct="${asset.capmReturn.toFixed(1)}" data-type="capm"
+                               placeholder="0,0"><span class="unit">%</span><span class="feedback" id="feedback-capm-${i}"></span></div></div>
+            `).join('');
+
+            // Alpha-Übungen
+            const alphaContainer = document.getElementById('alpha-exercises');
+            alphaContainer.innerHTML = assets.map((asset, i) => `<div class="exercise-card"><h4>${asset.name}</h4><p>μ<sub>realisiert</sub> = ${formatDE(asset.actualReturn, 1)}%</p><p>μ<sub>CAPM</sub> = ${formatDE(asset.capmReturn, 1)}% (aus Aufgabe 2)</p><div class="input-group"><label>α =</label><input type="text" class="answer-input" id="alpha-${i}"
+                               data-correct="${asset.alpha.toFixed(1)}" data-type="alpha"
+                               placeholder="0,0"><span class="unit">%</span><span class="feedback" id="feedback-alpha-${i}"></span></div></div>
+            `).join('');
+
+            // Treynor-Übungen
+            const treynorContainer = document.getElementById('treynor-exercises');
+            treynorContainer.innerHTML = assets.map((asset, i) => `<div class="exercise-card"><h4>${asset.name}</h4><p>μ<sub>i</sub> = ${formatDE(asset.actualReturn, 1)}%, R<sub>f</sub> = ${formatDE(marketData.rf, 1)}%</p><p>β = ${formatDE(asset.beta, 2)}</p><div class="input-group"><label>T =</label><input type="text" class="answer-input" id="treynor-${i}"
+                               data-correct="${asset.treynor.toFixed(1)}" data-type="treynor"
+                               placeholder="0,0"><span class="feedback" id="feedback-treynor-${i}"></span></div></div>
+            `).join('');
+
+            // Aufgabe 5: Interpretation (Single Choice)
+            const interpContainer = document.getElementById('interpretation-exercises');
+            interpContainer.innerHTML = assets.map((asset, i) => {
+                // Bestimme korrekte Antwort basierend auf Alpha
+                let correctAnswer;
+                if (asset.alpha > 0) {
+                    correctAnswer = 'unter';
+                } else if (asset.alpha< 0) {
+                    correctAnswer = 'ueber';
+                } else {
+                    correctAnswer = 'fair';
+                }
+
+                return `<div class="exercise-card"><h4>${asset.name}</h4><p>Ihre berechneten Werte:</p><p>α =<strong>?</strong> (aus Aufgabe 3)</p><p>T =<strong>?</strong>vs. T<sub>M</sub> = ${formatDE(marketData.mrp, 1)} (aus Aufgabe 4)</p><div class="radio-group" id="radio-group-${i}" data-correct="${correctAnswer}"><label class="radio-option"><input type="radio" name="interp-${i}" value="unter">Unterbewertet (Outperformance)</label><label class="radio-option"><input type="radio" name="interp-${i}" value="fair">Fair bewertet</label><label class="radio-option"><input type="radio" name="interp-${i}" value="ueber">Überbewertet (Underperformance)</label></div><div class="radio-feedback" id="radio-feedback-${i}"></div></div>
+            `}).join('');
+
+            // Event Listener für Eingaben
+            document.querySelectorAll('.answer-input').forEach(input => {
+                input.addEventListener('input', () =>checkSingleAnswer(input));
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkSingleAnswer(input);
+                });
+            });
+
+            // Event Listener für Radio-Buttons
+            document.querySelectorAll('.radio-group input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (e) =>checkRadioAnswer(e.target));
+            });
+        }
+
+        // Einzelne Antwort prüfen
+        function checkSingleAnswer(input) {
+            // Komma durch Punkt ersetzen für Berechnung
+            const userValueStr = input.value.replace(',', '.');
+            const userValue = parseFloat(userValueStr);
+            const correctValue = parseFloat(input.dataset.correct);
+            const type = input.dataset.type;
+            const id = input.id;
+            const feedbackEl = document.getElementById('feedback-' + id);
+
+            if (isNaN(userValue)) {
+                input.classList.remove('correct', 'incorrect');
+                feedbackEl.classList.remove('correct', 'incorrect');
+                feedbackEl.textContent = '';
+                return;
+            }
+
+            // Toleranz je nach Typ
+            let tolerance = 0.15;
+            if (type === 'treynor') tolerance = 0.5;
+
+            const isCorrect = Math.abs(userValue - correctValue)<= tolerance;
+
+            input.classList.remove('correct', 'incorrect');
+            feedbackEl.classList.remove('correct', 'incorrect');
+
+            if (isCorrect) {
+                input.classList.add('correct');
+                feedbackEl.classList.add('correct');
+                feedbackEl.textContent = ' Richtig!';
+            } else {
+                input.classList.add('incorrect');
+                feedbackEl.classList.add('incorrect');
+                feedbackEl.textContent = ' Falsch';
+            }
+
+            updateProgress();
+        }
+
+        // Radio-Button Antwort prüfen
+        function checkRadioAnswer(radio) {
+            const name = radio.name;
+            const index = name.split('-')[1];
+            const group = document.getElementById('radio-group-' + index);
+            const correctAnswer = group.dataset.correct;
+            const userAnswer = radio.value;
+            const feedbackEl = document.getElementById('radio-feedback-' + index);
+
+            // Alle Optionen zurücksetzen
+            group.querySelectorAll('.radio-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+
+            const selectedOption = radio.closest('.radio-option');
+            const isCorrect = userAnswer === correctAnswer;
+
+            feedbackEl.classList.remove('correct', 'incorrect');
+
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                feedbackEl.classList.add('correct');
+                feedbackEl.textContent = ' Richtig!';
+            } else {
+                selectedOption.classList.add('incorrect');
+                feedbackEl.classList.add('incorrect');
+                feedbackEl.textContent = ' Falsch – Überprüfen Sie Ihre Berechnungen!';
+            }
+
+            updateProgress();
+        }
+
+        // Alle Antworten prüfen
+        function checkAllAnswers() {
+            document.querySelectorAll('.answer-input').forEach(input => {
+                if (input.value !== '') {
+                    checkSingleAnswer(input);
+                }
+            });
+
+            // Auch Radio-Buttons prüfen
+            document.querySelectorAll('.radio-group').forEach((group, i) => {
+                const checkedRadio = group.querySelector('input[type="radio"]:checked');
+                if (checkedRadio) {
+                    checkRadioAnswer(checkedRadio);
+                }
+            });
+        }
+
+        // Fortschritt aktualisieren
+        function updateProgress() {
+            const inputs = document.querySelectorAll('.answer-input');
+            const correctInputs = document.querySelectorAll('.answer-input.correct').length;
+
+            const radioGroups = document.querySelectorAll('.radio-group');
+            const correctRadios = document.querySelectorAll('.radio-option.correct').length;
+
+            const correct = correctInputs + correctRadios;
+            const total = inputs.length + radioGroups.length;
+
+            document.getElementById('correct-count').textContent = correct;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('progress-fill').style.width = (correct / total * 100) + '%';
+        }
+
+        // Alle Eingaben zurücksetzen
+        function resetAllInputs() {
+            document.querySelectorAll('.answer-input').forEach(input => {
+                input.value = '';
+                input.classList.remove('correct', 'incorrect');
+            });
+
+            document.querySelectorAll('.feedback').forEach(fb => {
+                fb.classList.remove('correct', 'incorrect');
+                fb.textContent = '';
+            });
+
+            // Radio-Buttons zurücksetzen
+            document.querySelectorAll('.radio-group input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            document.querySelectorAll('.radio-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+
+            document.querySelectorAll('.radio-feedback').forEach(fb => {
+                fb.classList.remove('correct', 'incorrect');
+                fb.textContent = '';
+            });
+
+            document.querySelectorAll('.hint-box').forEach(el => {
+                el.classList.remove('visible');
+            });
+
+            hintsVisible = false;
+        }
+
+        // Tipps umschalten
+        function toggleAllHints() {
+            hintsVisible = !hintsVisible;
+            document.querySelectorAll('.hint-box').forEach(el => {
+                el.classList.toggle('visible', hintsVisible);
+            });
+        }
+
+        // Lösungen anzeigen
+        function showAllSolutions() {
+            assets.forEach((asset, i) => {
+                document.getElementById('beta-' + i).value = formatDE(asset.beta, 2);
+                document.getElementById('capm-' + i).value = formatDE(asset.capmReturn, 1);
+                document.getElementById('alpha-' + i).value = formatDE(asset.alpha, 1);
+                document.getElementById('treynor-' + i).value = formatDE(asset.treynor, 1);
+
+                // Radio-Button Lösung setzen
+                let correctAnswer;
+                if (asset.alpha > 0) {
+                    correctAnswer = 'unter';
+                } else if (asset.alpha< 0) {
+                    correctAnswer = 'ueber';
+                } else {
+                    correctAnswer = 'fair';
+                }
+
+                const radio = document.querySelector(`input[name="interp-${i}"][value="${correctAnswer}"]`);
+                if (radio) {
+                    radio.checked = true;
+                }
+            });
+
+            checkAllAnswers();
+        }
+
+        // Chart aktualisieren
+        function updateChart() {
+            const ctx = document.getElementById('smlChart').getContext('2d');
+
+            if (smlChart) {
+                smlChart.destroy();
+            }
+
+            // SML-Linie berechnen
+            const smlPoints = [];
+            for (let beta = 0; beta<= 2; beta += 0.1) {
+                smlPoints.push({
+                    x: beta,
+                    y: marketData.rf + beta * marketData.mrp
+                });
+            }
+
+            // Asset-Punkte
+            const assetPoints = assets.map(asset => ({
+                x: asset.beta,
+                y: asset.actualReturn,
+                name: asset.name,
+                alpha: asset.alpha
+            }));
+
+            // Farben basierend auf Alpha
+            const assetColors = assets.map(asset => {
+                if (asset.alpha > 0) return 'rgb(40, 167, 69)'; // Grün - unterbewertet
+                if (asset.alpha< 0) return 'rgb(234, 91, 12)'; // Orange - überbewertet
+                return 'rgb(108, 117, 125)'; // Grau - fair bewertet
+            });
+
+            smlChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Security Market Line',
+                            data: smlPoints,
+                            borderColor: 'rgb(201, 12, 15)',
+                            backgroundColor: 'rgba(201, 12, 15, 0.1)',
+                            showLine: true,
+                            pointRadius: 0,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Risikofreier Zins',
+                            data: [{ x: 0, y: marketData.rf }],
+                            backgroundColor: 'black',
+                            pointRadius: 8,
+                            pointStyle: 'circle'
+                        },
+                        {
+                            label: 'Marktportfolio',
+                            data: [{ x: 1, y: marketData.rm }],
+                            backgroundColor: 'rgb(184, 37, 133)',
+                            pointRadius: 10,
+                            pointStyle: 'triangle'
+                        },
+                        ...assets.map((asset, i) => ({
+                            label: asset.name,
+                            data: [{ x: asset.beta, y: asset.actualReturn }],
+                            backgroundColor: assetColors[i],
+                            pointRadius: 12,
+                            pointStyle: 'circle'
+                        }))
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label;
+                                    const x = context.parsed.x.toFixed(2);
+                                    const y = context.parsed.y.toFixed(1);
+
+                                    if (datasetLabel.includes('Aktie')) {
+                                        const asset = assets.find(a =>a.name === datasetLabel);
+                                        return [
+                                            `${datasetLabel}`,
+                                            `β = ${x}`,
+                                            `μ = ${y}%`,
+                                            `α = ${asset.alpha.toFixed(1)}%`
+                                        ];
+                                    }
+                                    return `${datasetLabel}: β=${x}, μ=${y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Systematisches Risiko (β)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 2,
+                            ticks: {
+                                stepSize: 0.2
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Erwartete Rendite (μ) in %',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            min: 0,
+                            max: Math.max(20, ...assets.map(a =>a.actualReturn + 2))
+                        }
+                    }
+                }
+            });
+        }</script></body></html>

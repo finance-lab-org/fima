@@ -1,0 +1,1702 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Put-Call-Parität: Das Arbitrage-Spiel</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>
+      :root {
+        /* TH Köln Farben */
+        --th-rot: #C90C0F;
+        --th-orange: #EA5B0C;
+        --th-violett: #B82585;
+        --th-rot-soft: #FBE7E7;
+        --th-orange-soft: #FFF3E9;
+        --th-violett-soft:#F7ECF3;
+
+        /* Neutrale Skala */
+        --bg: #FAFAFA;
+        --card: #FFFFFF;
+        --ink: #1A1A1A;
+        --ink-soft: #404040;
+        --ink-muted: #737373;
+        --ink-faint: #A3A3A3;
+        --rule: #E5E5E5;
+        --rule-soft: #F0F0F0;
+
+        --pos: #2D6A3F;
+        --th-gruen: #2D6A3F;
+        --th-grau: #404040;
+        --th-hellgrau: #F0F0F0;
+        --th-weiss: #FFFFFF;
+
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+      }
+
+      /* ───── HEADER ───── */
+      header.masthead {
+        border-bottom: 2px solid var(--th-rot);
+        padding-bottom: 28px;
+        margin-bottom: 40px;
+      }
+      .eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--th-rot);
+        margin-bottom: 12px;
+      }
+      h1.masthead-title {
+        font-weight: 700;
+        font-size: clamp(28px, 3.5vw, 40px);
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .masthead-sub {
+        font-size: 15px;
+        color: var(--ink-muted);
+        max-width: 760px;
+      }
+
+      /* Level / Timer Header-Zeile */
+      .game-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .level-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--th-violett);
+        padding: 8px 14px;
+        border: 1px solid var(--th-violett);
+        border-radius: 4px;
+        background: var(--th-violett-soft);
+        font-weight: 600;
+      }
+      .timer-container {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .timer {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--ink);
+        padding: 8px 18px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        background: var(--card);
+        letter-spacing: 0.02em;
+      }
+      .timer.warning {
+        color: var(--th-orange);
+        border-color: var(--th-orange);
+        background: var(--th-orange-soft);
+        animation: pulse 1s infinite;
+      }
+      .timer.danger {
+        color: var(--th-rot);
+        border-color: var(--th-rot);
+        background: var(--th-rot-soft);
+        animation: pulse 0.5s infinite;
+      }
+      .timer.stopped {
+        color: var(--pos);
+        border-color: var(--pos);
+        background: transparent;
+        animation: none;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+
+      /* ───── SECTIONS ───── */
+      section {
+        margin-bottom: 48px;
+        scroll-margin-top: 24px;
+      }
+      .section-head {
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+      }
+      .section-num {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--th-rot);
+        letter-spacing: 0.1em;
+      }
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* ───── CARDS ───── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ───── SCREENS ───── */
+      .screen { display: none; }
+      .screen.active { display: block; }
+
+      /* ───── START / SUMMARY SCREEN ───── */
+      .start-screen,
+      .summary-screen {
+        max-width: 860px;
+        margin: 0 auto;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 32px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .start-screen h2,
+      .summary-screen h2 {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin-bottom: 20px;
+      }
+
+      .rules-box,
+      .summary-box {
+        background: var(--bg);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .rules-box h3,
+      .summary-box h3 {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--th-rot);
+        margin-bottom: 14px;
+      }
+      .rules-box ol {
+        margin-left: 20px;
+      }
+      .rules-box li {
+        margin-bottom: 10px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+      }
+
+      /* ───── PASSWORD SECTION ───── */
+      .password-section {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--rule);
+      }
+      .password-section label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        font-weight: 500;
+        margin-bottom: 12px;
+      }
+      .password-input-group {
+        display: flex;
+        gap: 12px;
+      }
+      .password-input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--card);
+        color: var(--ink);
+      }
+      .password-input:focus {
+        outline: none;
+        border-color: var(--th-violett);
+      }
+      .password-input.error {
+        border-color: var(--th-rot);
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+
+      /* ───── BUTTONS ───── */
+      .start-btn {
+        padding: 10px 20px;
+        background: var(--th-rot);
+        color: var(--card);
+        border: 1px solid var(--th-rot);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .start-btn:hover {
+        background: #a00a0c;
+        border-color: #a00a0c;
+      }
+      .start-btn:disabled {
+        background: var(--rule);
+        border-color: var(--rule);
+        color: var(--ink-faint);
+        cursor: not-allowed;
+      }
+
+      .trade-btn {
+        width: 100%;
+        padding: 14px 20px;
+        background: var(--th-rot);
+        color: var(--card);
+        border: 1px solid var(--th-rot);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .trade-btn:hover:not(:disabled) {
+        background: #a00a0c;
+        border-color: #a00a0c;
+      }
+      .trade-btn:disabled {
+        background: var(--rule);
+        border-color: var(--rule);
+        color: var(--ink-faint);
+        cursor: not-allowed;
+      }
+
+      /* ───── MARKTDATEN ───── */
+      .marktdaten {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-orange);
+        border-radius: 6px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+      .marktdaten h3,
+      .marktdaten h4 {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--th-orange);
+        margin-bottom: 14px;
+      }
+      .marktdaten-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 28px;
+      }
+      .marktdaten-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-soft);
+      }
+      .marktdaten-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--ink);
+      }
+
+      /* ───── OPTIONS TABLE ───── */
+      .options-table-container {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow-sm);
+        overflow-x: auto;
+      }
+      .options-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .options-table th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 12px;
+        border-bottom: 1px solid var(--rule);
+        background: transparent;
+      }
+      .options-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--rule-soft);
+      }
+      .options-table tr:last-child td { border-bottom: none; }
+      .options-table tr:hover { background: var(--bg); }
+      .options-table tr.selected-long {
+        background: rgba(45, 106, 63, 0.08);
+      }
+      .options-table tr.selected-short {
+        background: var(--th-rot-soft);
+      }
+      .typ-call {
+        color: var(--th-violett);
+        font-weight: 600;
+      }
+      .typ-put {
+        color: var(--th-rot);
+        font-weight: 600;
+      }
+      .preis {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 500;
+      }
+
+      /* ───── POSITION SELECT ───── */
+      .position-select {
+        padding: 6px 10px;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 13px;
+        background: var(--card);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .position-select:focus {
+        outline: none;
+        border-color: var(--th-violett);
+      }
+      .position-select.long {
+        border-color: var(--pos);
+        background: rgba(45, 106, 63, 0.08);
+        color: var(--pos);
+      }
+      .position-select.short {
+        border-color: var(--th-rot);
+        background: var(--th-rot-soft);
+        color: var(--th-rot);
+      }
+
+      /* ───── TRADE SECTION ───── */
+      .trade-section {
+        margin-top: 24px;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow-sm);
+      }
+      .selection-info {
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        background: var(--bg);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+      }
+      .selection-info p {
+        margin-bottom: 4px;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .trade-warning {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--ink-muted);
+        text-align: center;
+      }
+
+      /* ───── SUMMARY SCREEN ───── */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px 18px;
+      }
+      .summary-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-soft);
+      }
+      .summary-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .time-display {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--th-violett);
+      }
+
+      /* ───── GEWINN EINGABE ───── */
+      .gewinn-eingabe {
+        margin-top: 20px;
+      }
+      .gewinn-eingabe label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .gewinn-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 14px;
+        background: var(--card);
+        color: var(--ink);
+      }
+      .gewinn-select:focus {
+        outline: none;
+        border-color: var(--th-violett);
+      }
+
+      /* ───── SPIELLEITER BOX ───── */
+      .spielleiter-box {
+        margin-top: 24px;
+        padding: 20px;
+        background: var(--th-violett-soft);
+        border: 1px solid var(--th-violett);
+        border-left: 3px solid var(--th-violett);
+        border-radius: 6px;
+      }
+      .spielleiter-box h3 {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--th-violett);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .spielleiter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        padding: 14px;
+        background: var(--card);
+        border-radius: 6px;
+        border: 1px solid var(--rule);
+      }
+      .spielleiter-item {
+        text-align: center;
+      }
+      .spielleiter-item .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        margin-bottom: 4px;
+      }
+      .spielleiter-item .value {
+        font-size: 15px;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--ink);
+      }
+
+      /* ───── LÖSUNG SCREEN ───── */
+      .loesung-screen {
+        max-width: 1160px;
+        margin: 0 auto;
+      }
+      .result-card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+      }
+      .result-card h3 {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--th-violett);
+        margin-bottom: 16px;
+      }
+
+      /* ───── FEEDBACK BOXES ───── */
+      .feedback-box {
+        padding: 20px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+      .feedback-box.success {
+        background: rgba(45, 106, 63, 0.08);
+        border-color: var(--pos);
+        border-left: 3px solid var(--pos);
+      }
+      .feedback-box.partial {
+        background: var(--th-orange-soft);
+        border-color: var(--th-orange);
+        border-left: 3px solid var(--th-orange);
+      }
+      .feedback-box.error {
+        background: var(--th-rot-soft);
+        border-color: var(--th-rot);
+        border-left: 3px solid var(--th-rot);
+      }
+      .feedback-icon {
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .feedback-text {
+        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      /* ───── ZAHLUNGSSTROM TABLE ───── */
+      .zahlungsstrom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        table-layout: fixed;
+        font-size: 13px;
+      }
+      .zahlungsstrom-table th,
+      .zahlungsstrom-table td {
+        width: 25%;
+      }
+      .zahlungsstrom-table th {
+        text-align: center;
+        font-weight: 500;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--rule);
+        background: var(--bg);
+      }
+      .zahlungsstrom-table th:first-child {
+        text-align: left;
+      }
+      .zahlungsstrom-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--rule-soft);
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .zahlungsstrom-table td:first-child {
+        text-align: left;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+      }
+      .zahlungsstrom-table tr.weg1 td:first-child {
+        color: var(--th-rot);
+      }
+      .zahlungsstrom-table tr.weg2 td:first-child {
+        color: var(--th-violett);
+      }
+      .zahlungsstrom-table tr.summe {
+        background: var(--bg);
+        font-weight: 600;
+      }
+      .zahlungsstrom-table tr.summe td {
+        border-bottom: none;
+      }
+
+      /* ───── RANKING TABLE ───── */
+      .ranking-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .ranking-table th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--rule);
+        background: transparent;
+      }
+      .ranking-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--rule-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .ranking-table td:first-child {
+        font-family: 'Inter', sans-serif;
+      }
+      .ranking-table tr:last-child td {
+        border-bottom: none;
+      }
+      .ranking-table tr:hover { background: var(--bg); }
+      .ranking-table tr.highlight {
+        background: var(--th-violett-soft);
+        font-weight: 600;
+      }
+      .medal {
+        font-size: 1.1rem;
+      }
+      .gewinn-cell {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        color: var(--pos);
+      }
+
+      /* ───── NEXT LEVEL SECTION ───── */
+      .next-level-section {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--rule);
+      }
+
+      /* ───── GESAMTZEIT BOX (fixed) ───── */
+      .gesamtzeit-box {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-orange);
+        padding: 12px 16px;
+        border-radius: 6px;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        z-index: 100;
+      }
+      .gesamtzeit-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        margin-bottom: 4px;
+      }
+      .gesamtzeit-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--th-orange);
+      }
+
+      /* ───── HINWEIS-BOX ───── */
+      .hinweis-box {
+        background: var(--th-orange-soft);
+        border: 1px solid var(--th-orange);
+        border-left: 3px solid var(--th-orange);
+        border-radius: 6px;
+        padding: 14px 18px;
+        margin: 16px 0;
+        font-size: 13px;
+        color: var(--ink-soft);
+        display: none;
+      }
+      .hinweis-box.visible {
+        display: block;
+      }
+
+      /* ───── WARTE-SCREEN ───── */
+      .warte-screen {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .warte-screen h2 {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 12px;
+      }
+      .warte-info {
+        font-size: 15px;
+        color: var(--ink-muted);
+      }
+
+      /* ───── FOOTER ───── */
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--rule);
+        font-size: 12px;
+        color: var(--ink-muted);
+      }
+
+      /* ───── RESPONSIVE ───── */
+      @media (max-width: 768px) {
+        .game-header-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .timer {
+          font-size: 24px;
+        }
+        .spielleiter-grid {
+          grid-template-columns: 1fr;
+        }
+        .container {
+          padding: 24px 16px 60px;
+        }
+      }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Put-Call-Parität · Arbitrage-Game</div><h1 class="masthead-title">Put-Call-Parität: Das Arbitrage-Spiel</h1><p class="masthead-sub">Finden Sie im simulierten Optionsmarkt die beste Arbitrage-Kombination. Wählen Sie je einen Call und einen Put, berechnen Sie den risikolosen Gewinn – je schneller, desto besser.</p><div class="game-header-row"><span class="level-badge" id="level-badge">Level 1 – Einstieg</span><div class="timer-container"><span class="timer" id="timer">15:00</span></div></div></header><!-- Gesamtzeit (nur sichtbar wenn persönliche Zeit gestoppt) --><div class="gesamtzeit-box" id="gesamtzeit-box" style="display: none;"><div class="gesamtzeit-label">Spielzeit läuft noch:</div><div class="gesamtzeit-value" id="gesamtzeit">--:--</div></div><!-- SCREEN: Level-Auswahl & Start --><div class="screen active" id="screen-start"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Willkommen zum Arbitrage-Spiel</div></div><div class="start-screen"><h2>Spielregeln & Start</h2><div class="rules-box"><h3>Spielregeln</h3><ol><li><strong>Ziel:</strong>Finden Sie die beste Arbitrage-Strategie mit dem höchsten risikolosen Gewinn!</li><li><strong>Auswahl:</strong>Wählen Sie genau<strong>zwei Optionen</strong>aus dem Markt – eine zum Kaufen (Long) und eine zum Verkaufen (Short).</li><li><strong>Zeit:</strong>Sie haben begrenzte Zeit. Der Timer läuft, sobald Sie das Passwort eingeben.</li><li><strong>Einloggen:</strong>Wenn Sie Ihre Strategie gefunden haben, klicken Sie auf "Optionen traden" – Ihre Zeit wird gestoppt und die Entscheidung ist unwiderruflich!</li><li><strong>Gewinn schätzen:</strong>Nach dem Trade müssen Sie Ihren erwarteten Arbitrage-Gewinn angeben.</li><li><strong>Hinweis:</strong>Sie müssen dem System nur mitteilen, welche beiden Optionen Sie wie (Long/Short) handeln wollen. Um Ihren Gewinn zu ermitteln, müssen Sie jedoch auch die zugehörigen Aktien- und Geldtransaktionen (Kauf/Verkauf der Aktie sowie Kreditaufnahme/Geldanlage) in Ihre Berechnung einbeziehen.</li></ol></div><div class="rules-box"><h3>So gewinnen Sie</h3><ol><li><strong>Beste Strategie:</strong>Sie haben die Kombination mit dem maximalen Arbitrage-Gewinn gefunden.</li><li><strong>Schnellste Zeit:</strong>Bei gleicher Strategie gewinnt, wer schneller war.</li><li><strong>Richtige Berechnung:</strong>Ein Gewinn zählt nur, wenn Sie den erwarteten Arbitrage-Gewinn Ihrer Strategie korrekt berechnet haben!</li></ol></div><div class="password-section"><label for="start-password">Level-Auswahl & Start-Passwort eingeben:</label><div style="margin-bottom: 12px;"><select id="level-select" class="gewinn-select" style="margin-bottom: 12px;"><option value="1">Level 1 – Einstieg (15 Minuten)</option><option value="2">Level 2 – Mittel (10 Minuten)</option><option value="3">Level 3 – Experte (5 Minuten)</option></select></div><div class="password-input-group"><input type="password" id="start-password" class="password-input" placeholder="Passwort eingeben..."><button class="start-btn" onclick="startGame()">Spiel starten</button></div><p id="password-error" style="color: var(--th-rot); margin-top: 8px; font-size: 13px; display: none;">Falsches Passwort!</p></div></div></section></div><!-- SCREEN: Spiel (Optionsmarkt) --><div class="screen" id="screen-game"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Marktdaten</div></div><div class="marktdaten"><h3>Aktuelle Marktbedingungen</h3><div class="marktdaten-grid" id="marktdaten-content"><!-- Wird dynamisch gefüllt --></div></div></section><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Optionsmarkt</div></div><div class="options-table-container"><table class="options-table"><thead><tr><th>Nr.</th><th>Typ</th><th>Underlying</th><th>Strike</th><th>Laufzeit</th><th>Marktpreis</th><th>Position</th></tr></thead><tbody id="options-tbody"><!-- Wird dynamisch gefüllt --></tbody></table></div><div class="hinweis-box" id="hinweis-box"><strong>Achtung:</strong>Sie können nur zwei Optionen auswählen! Bitte entfernen Sie zuerst eine bestehende Auswahl.</div></section><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Trade ausführen</div></div><div class="trade-section"><div class="selection-info" id="selection-info"><p><strong>Ihre aktuelle Auswahl:</strong></p><p id="selection-long">Long (Kaufen):<em>– keine Auswahl –</em></p><p id="selection-short">Short (Verkaufen):<em>– keine Auswahl –</em></p></div><button class="trade-btn" id="trade-btn" onclick="executeTrade()" disabled>Optionen traden</button><p class="trade-warning" id="trade-warning">Achtung: Nach dem Klick wird Ihre Zeit gestoppt und die Entscheidung ist unwiderruflich!</p></div></section></div><!-- SCREEN: Zusammenfassung (nach Trade) --><div class="screen" id="screen-summary"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Trade ausgeführt</div></div><div class="summary-screen"><h2>Ihre Entscheidung ist festgehalten</h2><div class="summary-box"><h3>Ihre Entscheidung</h3><div class="summary-grid"><span class="summary-label">Long (Kaufen):</span><span class="summary-value" id="summary-long">–</span><span class="summary-label">Short (Verkaufen):</span><span class="summary-value" id="summary-short">–</span></div></div><div class="summary-box"><h3>⏱ Ihre Zeit</h3><p class="time-display" id="summary-time">--:--</p></div><div class="gewinn-eingabe"><label for="gewinn-schaetzung">Wie hoch ist Ihr erwarteter Arbitrage-Gewinn?</label><select id="gewinn-schaetzung" class="gewinn-select"><option value="">– Bitte auswählen –</option><option value="-1.00">-1,00 € (Verlust)</option><option value="-0.50">-0,50 € (Verlust)</option><option value="-0.25">-0,25 € (Verlust)</option><option value="0.00">0,00 € (kein Gewinn)</option><option value="0.05">0,05 €</option><option value="0.07">0,07 €</option><option value="0.10">0,10 €</option><option value="0.12">0,12 €</option><option value="0.13">0,13 €</option><option value="0.15">0,15 €</option><option value="0.18">0,18 €</option><option value="0.20">0,20 €</option><option value="0.25">0,25 €</option><option value="0.30">0,30 €</option><option value="0.35">0,35 €</option><option value="0.40">0,40 €</option><option value="0.43">0,43 €</option><option value="0.45">0,45 €</option><option value="0.50">0,50 €</option><option value="0.60">0,60 €</option><option value="0.70">0,70 €</option><option value="0.80">0,80 €</option><option value="0.90">0,90 €</option><option value="1.00">1,00 €</option></select></div><button class="start-btn" style="width: 100%; margin-top: 20px;" onclick="confirmSelection()" id="confirm-btn" disabled>Auswahl bestätigen</button></div></section></div><!-- SCREEN: Warten auf Spielende --><div class="screen" id="screen-waiting"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">⏳ Warten auf Spielende</div></div><div class="summary-screen"><div class="warte-screen"><h2>⏳ Warten auf Spielende...</h2><p class="warte-info">Die Spielzeit läuft noch. Die Lösung wird freigeschaltet, sobald die Zeit abgelaufen ist.</p><div class="spielleiter-box" style="margin-top: 28px; text-align: left;"><h3>Zusammenfassung der Entscheidungen</h3><div class="spielleiter-grid"><div class="spielleiter-item"><div class="label">Level</div><div class="value" id="sl-level">–</div></div><div class="spielleiter-item"><div class="label">Benötigte Zeit</div><div class="value" id="sl-zeit">–</div></div><div class="spielleiter-item"><div class="label">Gewählte Optionen</div><div class="value" id="sl-optionen">–</div></div><div class="spielleiter-item"><div class="label">Geschätzter Gewinn</div><div class="value" id="sl-gewinn">–</div></div></div></div></div><div class="password-section" style="margin-top: 28px;"><label for="solution-password">Passwort für Lösung eingeben (erst möglich wenn Spielzeit abgelaufen):</label><div class="password-input-group"><input type="password" id="solution-password" class="password-input" placeholder="Lösungs-Passwort..."><button class="start-btn" onclick="showSolution()" id="solution-btn">Lösung anzeigen</button></div><p id="solution-error" style="color: var(--th-rot); margin-top: 8px; font-size: 13px; display: none;"></p></div></div></section></div><!-- SCREEN: Lösung --><div class="screen" id="screen-solution"><div class="loesung-screen"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Ihr Ergebnis</div></div><div class="result-card"><h3>Ihr Ergebnis</h3><div class="summary-box" id="ergebnis-uebersicht"><!-- Wird dynamisch gefüllt --></div><div class="feedback-box" id="feedback-box" style="margin-top: 16px;"><div class="feedback-icon" id="feedback-icon">–</div><div class="feedback-text" id="feedback-text">–</div></div></div></section><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Ihre gewählte Strategie</div></div><div class="result-card"><h3>Ihre gewählte Strategie</h3><table class="zahlungsstrom-table" id="user-strategy-table"><!-- Wird dynamisch gefüllt --></table><div id="user-bewertung-box"><!-- Wird dynamisch gefüllt --></div><div id="user-gewinn-box" style="text-align: center; margin-top: 14px; font-size: 15px;"><!-- Wird dynamisch gefüllt --></div></div></section><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Die beste Strategie wäre gewesen</div></div><div class="result-card"><h3>Die beste Strategie wäre gewesen</h3><table class="zahlungsstrom-table" id="best-strategy-table"><!-- Wird dynamisch gefüllt --></table><div id="best-bewertung-box"><!-- Wird dynamisch gefüllt --></div><div id="best-gewinn-box" style="text-align: center; margin-top: 14px; font-size: 15px;"><!-- Wird dynamisch gefüllt --></div></div></section><section><div class="section-head"><div class="section-num">IV</div><div class="section-title">Alle möglichen Strategien (Ranking)</div></div><div class="result-card"><h3>Alle möglichen Strategien (Ranking)</h3><table class="ranking-table" id="ranking-table"><thead><tr><th>Rang</th><th>Call</th><th>Put</th><th>Weg 1</th><th>Weg 2</th><th>Bewertung</th><th>Aktion</th><th>Gewinn</th></tr></thead><tbody id="ranking-tbody"><!-- Wird dynamisch gefüllt --></tbody></table></div></section><section><div class="section-head"><div class="section-num">V</div><div class="section-title">Verfügbare Optionen in diesem Level</div></div><div class="result-card"><h3>Verfügbare Optionen in diesem Level</h3><div id="level-options-container"><!-- Wird dynamisch gefüllt --></div></div></section><div class="next-level-section" id="next-level-section"><p style="text-align: center; margin-bottom: 14px; color: var(--ink-muted); font-size: 14px;">Bereit für die nächste Herausforderung?</p><button class="start-btn" style="width: 100%;" onclick="location.reload()">Neues Spiel starten</button></div></div></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn</footer></div><script>
+        // ==================== PASSWÖRTER (SHA-256 Hashes) ====================
+        // Die Passwörter sind als Hashes gespeichert für mehr Sicherheit
+        const PASSWORDS = {
+            1: {
+                start: "3254f2c0dfeb4146e52074318c6d326100c34e96461e7401c12af39e6d6b9305",
+                solution: "ab35ef02d4ef86f524ef22b49faea09042efb67cce8629b6b3798a14b7a85e8a"
+            },
+            2: {
+                start: "48e4cfb143220f400f5a76ba0d75ddc7a953a91f9fa69d9510138efed48dd47f",
+                solution: "05c03080ad0c407f7f34f9b291ddf6ba6f889c4cf4507a3b805580f75dad3fd7"
+            },
+            3: {
+                start: "3424f8883378c9cfbddffc36fe109b6b40689787a557ca50c1ed79faf648c739",
+                solution: "d5692fe3294c99a69c8c52d0b9d0d3b57acc53eedae41c1d971c0788444b3f57"
+            }
+        };
+
+        // Masterpasswort-Hash - funktioniert immer (auch wenn Zeit noch läuft)
+        const MASTER_PASSWORD_HASH = "bcddb82f1405be124ba6a2c924816ba4b4e6124a06755fdbedb32e6882b79fa1";
+
+        // SHA-256 Hash-Funktion (läuft lokal im Browser)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b =>b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ==================== LEVEL-DATEN ====================
+        const levelData = {
+            1: {
+                name: "Einstieg",
+                zeit: 15 * 60, // 15 Minuten in Sekunden
+                zins: 0.04,
+                aktien: {
+                    "BMW": 100.00,
+                    "Siemens": 150.00,
+                    "Allianz": 200.00
+                },
+                optionen: [
+                    { nr: 1, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.50, valid: true },
+                    { nr: 2, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.40, valid: true },
+                    { nr: 3, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.20, valid: true },
+                    { nr: 4, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.65, valid: true },
+                    { nr: 5, typ: "Call", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 11.80, valid: true },
+                    { nr: 6, typ: "Put", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.90, valid: true },
+                    { nr: 7, typ: "Call", underlying: "Allianz", strike: 200, laufzeit: "6M", laufzeitJahre: 0.5, preis: 15.40, valid: false },
+                    { nr: 8, typ: "Put", underlying: "BMW", strike: 110, laufzeit: "6M", laufzeitJahre: 0.5, preis: 12.30, valid: false },
+                    { nr: 9, typ: "Call", underlying: "BMW", strike: 95, laufzeit: "6M", laufzeitJahre: 0.5, preis: 9.80, valid: false },
+                    { nr: 10, typ: "Put", underlying: "Siemens", strike: 160, laufzeit: "6M", laufzeitJahre: 0.5, preis: 14.20, valid: false }
+                ]
+            },
+            2: {
+                name: "Mittel",
+                zeit: 10 * 60, // 10 Minuten
+                zins: 0.04,
+                aktien: {
+                    "BMW": 100.00,
+                    "Siemens": 150.00,
+                    "Allianz": 200.00,
+                    "Deutsche Bank": 12.00
+                },
+                optionen: [
+                    { nr: 1, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.50, valid: true },
+                    { nr: 2, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.20, valid: true },
+                    { nr: 3, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.40, valid: true },
+                    { nr: 4, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.65, valid: true },
+                    { nr: 5, typ: "Call", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 11.80, valid: true },
+                    { nr: 6, typ: "Put", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.90, valid: true },
+                    { nr: 7, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "3M", laufzeitJahre: 0.25, preis: 5.20, valid: false },
+                    { nr: 8, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "9M", laufzeitJahre: 0.75, preis: 7.80, valid: false },
+                    { nr: 9, typ: "Call", underlying: "BMW", strike: 110, laufzeit: "6M", laufzeitJahre: 0.5, preis: 4.10, valid: false },
+                    { nr: 10, typ: "Put", underlying: "BMW", strike: 95, laufzeit: "6M", laufzeitJahre: 0.5, preis: 3.20, valid: false },
+                    { nr: 11, typ: "Call", underlying: "Siemens", strike: 150, laufzeit: "3M", laufzeitJahre: 0.25, preis: 7.50, valid: false },
+                    { nr: 12, typ: "Put", underlying: "Siemens", strike: 160, laufzeit: "6M", laufzeitJahre: 0.5, preis: 12.30, valid: false },
+                    { nr: 13, typ: "Call", underlying: "Allianz", strike: 200, laufzeit: "6M", laufzeitJahre: 0.5, preis: 15.40, valid: false },
+                    { nr: 14, typ: "Put", underlying: "Deutsche Bank", strike: 12, laufzeit: "6M", laufzeitJahre: 0.5, preis: 1.20, valid: false },
+                    { nr: 15, typ: "Call", underlying: "Deutsche Bank", strike: 15, laufzeit: "6M", laufzeitJahre: 0.5, preis: 0.80, valid: false }
+                ]
+            },
+            3: {
+                name: "Experte",
+                zeit: 5 * 60, // 5 Minuten
+                zins: 0.04,
+                aktien: {
+                    "BMW": 100.00,
+                    "Siemens": 150.00,
+                    "Allianz": 200.00,
+                    "Deutsche Bank": 12.00,
+                    "SAP": 180.00
+                },
+                optionen: [
+                    { nr: 1, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.50, valid: true },
+                    { nr: 2, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.20, valid: true },
+                    { nr: 3, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.35, valid: true },
+                    { nr: 4, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.40, valid: true },
+                    { nr: 5, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "6M", laufzeitJahre: 0.5, preis: 6.65, valid: true },
+                    { nr: 6, typ: "Call", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 11.80, valid: true },
+                    { nr: 7, typ: "Put", underlying: "Siemens", strike: 150, laufzeit: "6M", laufzeitJahre: 0.5, preis: 8.90, valid: true },
+                    { nr: 8, typ: "Call", underlying: "BMW", strike: 100, laufzeit: "3M", laufzeitJahre: 0.25, preis: 5.20, valid: false },
+                    { nr: 9, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "9M", laufzeitJahre: 0.75, preis: 7.80, valid: false },
+                    { nr: 10, typ: "Call", underlying: "BMW", strike: 110, laufzeit: "6M", laufzeitJahre: 0.5, preis: 4.10, valid: false },
+                    { nr: 11, typ: "Put", underlying: "BMW", strike: 95, laufzeit: "6M", laufzeitJahre: 0.5, preis: 3.20, valid: false },
+                    { nr: 12, typ: "Call", underlying: "Siemens", strike: 150, laufzeit: "3M", laufzeitJahre: 0.25, preis: 7.50, valid: false },
+                    { nr: 13, typ: "Put", underlying: "Siemens", strike: 160, laufzeit: "6M", laufzeitJahre: 0.5, preis: 12.30, valid: false },
+                    { nr: 14, typ: "Call", underlying: "Allianz", strike: 200, laufzeit: "6M", laufzeitJahre: 0.5, preis: 15.40, valid: false },
+                    { nr: 15, typ: "Put", underlying: "Deutsche Bank", strike: 12, laufzeit: "6M", laufzeitJahre: 0.5, preis: 1.20, valid: false },
+                    { nr: 16, typ: "Call", underlying: "SAP", strike: 180, laufzeit: "6M", laufzeitJahre: 0.5, preis: 14.20, valid: false },
+                    { nr: 17, typ: "Put", underlying: "BMW", strike: 100, laufzeit: "12M", laufzeitJahre: 1.0, preis: 8.50, valid: false },
+                    { nr: 18, typ: "Call", underlying: "Siemens", strike: 155, laufzeit: "6M", laufzeitJahre: 0.5, preis: 9.80, valid: false }
+                ]
+            }
+        };
+
+        // ==================== SPIELZUSTAND ====================
+        let currentLevel = 1;
+        let gameStarted = false;
+        let personalTimeStopped = false;
+        let gameTimeUp = false;
+
+        let totalTimeRemaining = 0;
+        let personalTimeRemaining = 0;
+        let personalTimeUsed = 0;
+
+        let timerInterval = null;
+        let gesamtzeitInterval = null;
+
+        let selectedLong = null;
+        let selectedShort = null;
+        let gewinnSchaetzung = null;
+
+        // ==================== HILFSFUNKTIONEN ====================
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatPreis(num) {
+            return num.toFixed(2).replace('.', ',');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s =>s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function getOptionByNr(nr) {
+            return levelData[currentLevel].optionen.find(o =>o.nr === parseInt(nr));
+        }
+
+        // ==================== SPIEL STARTEN ====================
+        async function startGame() {
+            const selectedLevelValue = document.getElementById('level-select').value;
+            currentLevel = parseInt(selectedLevelValue);
+
+            const password = document.getElementById('start-password').value.trim();
+
+            let isValidPassword = false;
+
+            try {
+                const inputHash = await hashPassword(password);
+                const correctHash = PASSWORDS[currentLevel].start;
+
+                // Auch Masterpasswort prüfen
+                const isMaster = inputHash === MASTER_PASSWORD_HASH;
+                isValidPassword = (inputHash === correctHash) || isMaster;
+            } catch (error) {
+                // Fallback: Direkte Passwort-Prüfung ohne Hash (für file:// Protokoll)
+                console.error('Hash-Fehler:', error);
+                const klartextPasswords = { 1: "14723", 2: "36947", 3: "79182" };
+                isValidPassword = (password === klartextPasswords[currentLevel]) || (password === 'Arbitrage');
+            }
+
+            if (!isValidPassword) {
+                document.getElementById('start-password').classList.add('error');
+                document.getElementById('password-error').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('start-password').classList.remove('error');
+                }, 300);
+                return;
+            }
+
+            // Spiel initialisieren
+            gameStarted = true;
+            personalTimeStopped = false;
+            gameTimeUp = false;
+
+            const data = levelData[currentLevel];
+            totalTimeRemaining = data.zeit;
+            personalTimeRemaining = data.zeit;
+            personalTimeUsed = 0;
+
+            // UI aktualisieren
+            document.getElementById('level-badge').textContent = `Level ${currentLevel} – ${data.name}`;
+            document.getElementById('timer').textContent = formatTime(personalTimeRemaining);
+
+            renderMarktdaten();
+            renderOptionsTable();
+
+            showScreen('screen-game');
+
+            // Timer starten
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!personalTimeStopped) {
+                    personalTimeRemaining--;
+                    personalTimeUsed = levelData[currentLevel].zeit - personalTimeRemaining;
+
+                    const timerEl = document.getElementById('timer');
+                    timerEl.textContent = formatTime(personalTimeRemaining);
+
+                    // Warnungen
+                    if (personalTimeRemaining<= 60) {
+                        timerEl.classList.add('danger');
+                        timerEl.classList.remove('warning');
+                    } else if (personalTimeRemaining<= 180) {
+                        timerEl.classList.add('warning');
+                    }
+
+                    if (personalTimeRemaining<= 0) {
+                        // Zeit abgelaufen - automatisch Trade mit aktueller Auswahl
+                        personalTimeStopped = true;
+                        timerEl.classList.add('stopped');
+                        timerEl.textContent = "00:00";
+
+                        if (selectedLong && selectedShort) {
+                            executeTrade();
+                        } else {
+                            // Keine vollständige Auswahl - direkt zum Warte-Screen
+                            gameTimeUp = true;
+                            showWaitingScreen();
+                        }
+                    }
+                }
+
+                // Gesamtzeit weiter runterzählen
+                totalTimeRemaining--;
+                if (totalTimeRemaining<= 0) {
+                    gameTimeUp = true;
+                    clearInterval(timerInterval);
+                    document.getElementById('gesamtzeit').textContent = "00:00";
+
+                    // Falls noch im Warte-Screen, Lösungs-Button aktivieren
+                    document.getElementById('solution-btn').disabled = false;
+                }
+
+                // Gesamtzeit-Anzeige aktualisieren
+                if (document.getElementById('gesamtzeit-box').style.display !== 'none') {
+                    document.getElementById('gesamtzeit').textContent = formatTime(Math.max(0, totalTimeRemaining));
+                }
+
+            }, 1000);
+        }
+
+        function showWaitingScreen() {
+            // Spielleiter-Übersicht füllen (auch wenn keine vollständige Auswahl)
+            document.getElementById('sl-level').textContent = `Level ${currentLevel}`;
+            document.getElementById('sl-zeit').textContent = 'Zeit abgelaufen';
+            document.getElementById('sl-optionen').textContent = selectedLong && selectedShort
+                ? `Long: #${selectedLong.nr}, Short: #${selectedShort.nr}`
+                : 'Keine vollständige Auswahl';
+            document.getElementById('sl-gewinn').textContent = gewinnSchaetzung !== null
+                ? `${formatPreis(gewinnSchaetzung)} €`
+                : '–';
+
+            // Gesamtzeit-Box anzeigen
+            document.getElementById('gesamtzeit-box').style.display = 'block';
+            document.getElementById('gesamtzeit').textContent = formatTime(totalTimeRemaining);
+
+            showScreen('screen-waiting');
+        }
+
+        // ==================== MARKT RENDERN ====================
+        function renderMarktdaten() {
+            const data = levelData[currentLevel];
+            let html = `<span class="marktdaten-label">Risikoloser Zinssatz:</span><span class="marktdaten-value">r = ${(data.zins * 100).toFixed(1).replace('.', ',')}% p.a. (stetig)</span>
+            `;
+
+            for (const [aktie, kurs] of Object.entries(data.aktien)) {
+                html += `<span class="marktdaten-label">Aktienkurs ${aktie} (S₀):</span><span class="marktdaten-value">${formatPreis(kurs)} €</span>
+                `;
+            }
+
+            document.getElementById('marktdaten-content').innerHTML = html;
+        }
+
+        function renderOptionsTable() {
+            const data = levelData[currentLevel];
+            let html = '';
+
+            data.optionen.forEach(opt => {
+                html += `<tr id="row-${opt.nr}" data-nr="${opt.nr}"><td>${opt.nr}</td><td class="typ-${opt.typ.toLowerCase()}">${opt.typ}</td><td>${opt.underlying}</td><td class="preis">${opt.strike.toFixed(0)} €</td><td>${opt.laufzeit}</td><td class="preis">${formatPreis(opt.preis)} €</td><td><select class="position-select" id="pos-${opt.nr}" onchange="handlePositionChange(${opt.nr}, this.value)"><option value="">–</option><option value="long">Long (Kaufen)</option><option value="short">Short (Verkaufen)</option></select></td></tr>
+                `;
+            });
+
+            document.getElementById('options-tbody').innerHTML = html;
+        }
+
+        // ==================== POSITION AUSWÄHLEN ====================
+        function handlePositionChange(optNr, position) {
+            const selectEl = document.getElementById(`pos-${optNr}`);
+            const rowEl = document.getElementById(`row-${optNr}`);
+
+            // Vorherige Klassen entfernen
+            rowEl.classList.remove('selected-long', 'selected-short');
+            selectEl.classList.remove('long', 'short');
+
+            // Hinweis ausblenden
+            document.getElementById('hinweis-box').classList.remove('visible');
+
+            if (position === '') {
+                // Auswahl entfernt
+                if (selectedLong && selectedLong.nr === optNr) {
+                    selectedLong = null;
+                }
+                if (selectedShort && selectedShort.nr === optNr) {
+                    selectedShort = null;
+                }
+            } else if (position === 'long') {
+                // Prüfen ob schon eine Long-Position existiert
+                if (selectedLong && selectedLong.nr !== optNr) {
+                    // Bereits eine andere Long-Position
+                    document.getElementById('hinweis-box').classList.add('visible');
+                    selectEl.value = '';
+                    return;
+                }
+                // Prüfen ob diese Option bereits Short ist
+                if (selectedShort && selectedShort.nr === optNr) {
+                    selectedShort = null;
+                }
+
+                selectedLong = getOptionByNr(optNr);
+                rowEl.classList.add('selected-long');
+                selectEl.classList.add('long');
+
+            } else if (position === 'short') {
+                // Prüfen ob schon eine Short-Position existiert
+                if (selectedShort && selectedShort.nr !== optNr) {
+                    // Bereits eine andere Short-Position
+                    document.getElementById('hinweis-box').classList.add('visible');
+                    selectEl.value = '';
+                    return;
+                }
+                // Prüfen ob diese Option bereits Long ist
+                if (selectedLong && selectedLong.nr === optNr) {
+                    selectedLong = null;
+                }
+
+                selectedShort = getOptionByNr(optNr);
+                rowEl.classList.add('selected-short');
+                selectEl.classList.add('short');
+            }
+
+            updateSelectionInfo();
+            updateTradeButton();
+        }
+
+        function updateSelectionInfo() {
+            const longText = selectedLong
+                ? `#${selectedLong.nr}: ${selectedLong.typ} auf ${selectedLong.underlying}, K=${selectedLong.strike}€, ${selectedLong.preis.toFixed(2).replace('.', ',')}€`
+                : '<em>– keine Auswahl –</em>';
+
+            const shortText = selectedShort
+                ? `#${selectedShort.nr}: ${selectedShort.typ} auf ${selectedShort.underlying}, K=${selectedShort.strike}€, ${selectedShort.preis.toFixed(2).replace('.', ',')}€`
+                : '<em>– keine Auswahl –</em>';
+
+            document.getElementById('selection-long').innerHTML = `<span style="color: var(--th-gruen);">Long (Kaufen):</span> ${longText}`;
+            document.getElementById('selection-short').innerHTML = `<span style="color: var(--th-rot);">Short (Verkaufen):</span> ${shortText}`;
+        }
+
+        function updateTradeButton() {
+            const btn = document.getElementById('trade-btn');
+            const warning = document.getElementById('trade-warning');
+
+            // Prüfen ob beide Positionen gewählt wurden
+            if (!selectedLong || !selectedShort) {
+                btn.disabled = true;
+                warning.textContent = ' Achtung: Nach dem Klick wird Ihre Zeit gestoppt und die Entscheidung ist unwiderruflich!';
+                warning.style.color = 'var(--th-grau)';
+                return;
+            }
+
+            // Prüfen ob unterschiedliche Typen (ein Call und ein Put)
+            const hasCall = selectedLong.typ === 'Call' || selectedShort.typ === 'Call';
+            const hasPut = selectedLong.typ === 'Put' || selectedShort.typ === 'Put';
+            const hasBothTypes = hasCall && hasPut;
+
+            if (!hasBothTypes) {
+                // Gleiche Typen gewählt - Fehler!
+                btn.disabled = true;
+                warning.textContent = ' Fehler: Für eine Put-Call-Parität benötigen Sie zwingend einen Call und einen Put.';
+                warning.style.color = 'var(--th-rot)';
+                return;
+            }
+
+            // Alles korrekt - Button aktivieren
+            btn.disabled = false;
+            warning.textContent = ' Achtung: Nach dem Klick wird Ihre Zeit gestoppt und die Entscheidung ist unwiderruflich!';
+            warning.style.color = 'var(--th-grau)';
+        }
+
+        // ==================== TRADE AUSFÜHREN ====================
+        function executeTrade() {
+            if (!selectedLong || !selectedShort) return;
+
+            // Zeit stoppen
+            personalTimeStopped = true;
+            personalTimeUsed = levelData[currentLevel].zeit - personalTimeRemaining;
+
+            const timerEl = document.getElementById('timer');
+            timerEl.classList.remove('warning', 'danger');
+            timerEl.classList.add('stopped');
+
+            // Zusammenfassung anzeigen
+            document.getElementById('summary-long').textContent =
+                `#${selectedLong.nr}: ${selectedLong.typ} auf ${selectedLong.underlying}, K=${selectedLong.strike}€, ${formatPreis(selectedLong.preis)}€`;
+            document.getElementById('summary-short').textContent =
+                `#${selectedShort.nr}: ${selectedShort.typ} auf ${selectedShort.underlying}, K=${selectedShort.strike}€, ${formatPreis(selectedShort.preis)}€`;
+            document.getElementById('summary-time').textContent = formatTime(personalTimeUsed);
+
+            // Gesamtzeit-Box anzeigen
+            document.getElementById('gesamtzeit-box').style.display = 'block';
+            document.getElementById('gesamtzeit').textContent = formatTime(totalTimeRemaining);
+
+            showScreen('screen-summary');
+
+            // Gewinn-Auswahl aktivieren
+            document.getElementById('gewinn-schaetzung').addEventListener('change', function() {
+                document.getElementById('confirm-btn').disabled = this.value === '';
+            });
+        }
+
+        // ==================== AUSWAHL BESTÄTIGEN ====================
+        function confirmSelection() {
+            gewinnSchaetzung = parseFloat(document.getElementById('gewinn-schaetzung').value);
+
+            // Spielleiter-Übersicht füllen
+            document.getElementById('sl-level').textContent = `Level ${currentLevel}`;
+            document.getElementById('sl-zeit').textContent = formatTime(personalTimeUsed);
+            document.getElementById('sl-optionen').textContent = `Long: #${selectedLong.nr}, Short: #${selectedShort.nr}`;
+            document.getElementById('sl-gewinn').textContent = `${formatPreis(gewinnSchaetzung)} €`;
+
+            showScreen('screen-waiting');
+        }
+
+        // ==================== LÖSUNG ANZEIGEN ====================
+        async function showSolution() {
+            const password = document.getElementById('solution-password').value.trim();
+
+            try {
+                const inputHash = await hashPassword(password);
+                const correctHash = PASSWORDS[currentLevel].solution;
+
+                // Masterpasswort-Check ZUERST - überspringt alle anderen Checks
+                if (inputHash === MASTER_PASSWORD_HASH) {
+                    // Mit Masterpasswort direkt zur Lösung, egal ob Zeit läuft
+                    proceedToSolution();
+                    return;
+                }
+
+                // Prüfen ob Spielzeit abgelaufen
+                if (totalTimeRemaining > 0) {
+                    document.getElementById('solution-error').textContent =
+                        `⏳ Bitte warten Sie noch ${formatTime(totalTimeRemaining)}, bis die Spielzeit abgelaufen ist.`;
+                    document.getElementById('solution-error').style.display = 'block';
+                    return;
+                }
+
+                // Normales Passwort prüfen (Hash-Vergleich)
+                if (inputHash !== correctHash) {
+                    document.getElementById('solution-password').classList.add('error');
+                    document.getElementById('solution-error').textContent = ' Falsches Passwort!';
+                    document.getElementById('solution-error').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('solution-password').classList.remove('error');
+                    }, 300);
+                    return;
+                }
+
+                proceedToSolution();
+            } catch (error) {
+                // Fallback: Direkte Passwort-Prüfung ohne Hash (für file:// Protokoll)
+                console.error('Hash-Fehler:', error);
+
+                // Masterpasswort im Klartext prüfen als Fallback
+                if (password === 'Arbitrage') {
+                    proceedToSolution();
+                    return;
+                }
+
+                // Prüfen ob Spielzeit abgelaufen
+                if (totalTimeRemaining > 0) {
+                    document.getElementById('solution-error').textContent =
+                        `⏳ Bitte warten Sie noch ${formatTime(totalTimeRemaining)}, bis die Spielzeit abgelaufen ist.`;
+                    document.getElementById('solution-error').style.display = 'block';
+                    return;
+                }
+
+                // Level-Passwörter im Klartext als Fallback
+                const klartextPasswords = { 1: "58291", 2: "82514", 3: "43658" };
+                if (password === klartextPasswords[currentLevel]) {
+                    proceedToSolution();
+                    return;
+                }
+
+                document.getElementById('solution-password').classList.add('error');
+                document.getElementById('solution-error').textContent = ' Falsches Passwort!';
+                document.getElementById('solution-error').style.display = 'block';
+            }
+        }
+
+        function proceedToSolution() {
+            try {
+                console.log('proceedToSolution aufgerufen');
+
+                // Gesamtzeit-Box ausblenden
+                document.getElementById('gesamtzeit-box').style.display = 'none';
+
+                // Prüfen ob vollständige Auswahl vorhanden
+                const hasValidSelection = selectedLong && selectedShort;
+                console.log('hasValidSelection:', hasValidSelection);
+
+                // Berechnungen durchführen
+                let userResult;
+                try {
+                    userResult = hasValidSelection
+                        ? calculateArbitrage(selectedLong, selectedShort)
+                        : { gewinn: 0, valid: false, error: 'Keine vollständige Auswahl getroffen' };
+                    console.log('userResult:', userResult);
+                } catch (e) {
+                    console.error('Fehler bei calculateArbitrage:', e);
+                    userResult = { gewinn: 0, valid: false, error: 'Berechnungsfehler' };
+                }
+
+                let allCombinations, bestResult;
+                try {
+                    allCombinations = calculateAllCombinations();
+                    bestResult = allCombinations[0];
+                    console.log('bestResult:', bestResult);
+                } catch (e) {
+                    console.error('Fehler bei calculateAllCombinations:', e);
+                    allCombinations = [];
+                    bestResult = { gewinn: 0, valid: false };
+                }
+
+                // Feedback generieren (mit Toleranz für Fließkomma-Vergleich)
+                const hatBesteStrategie = hasValidSelection && bestResult && Math.abs(userResult.gewinn - bestResult.gewinn)< 0.01;
+                const hatRichtigGeschaetzt = hasValidSelection && gewinnSchaetzung !== null && Math.abs(gewinnSchaetzung - userResult.gewinn)< 0.01;
+
+                // Ergebnis-Übersicht als Tabelle
+                const longOption = selectedLong ? `${selectedLong.typ} #${selectedLong.nr}` : '–';
+                const shortOption = selectedShort ? `${selectedShort.typ} #${selectedShort.nr}` : '–';
+                const geschaetzterGewinn = gewinnSchaetzung !== null ? formatPreis(gewinnSchaetzung) : '–';
+
+                document.getElementById('ergebnis-uebersicht').innerHTML = `<div class="summary-grid"><span class="summary-label">Ihre Entscheidung:</span><span class="summary-value"><span style="color: var(--th-gruen);">Long</span> ${longOption} |<span style="color: var(--th-rot);">Short</span> ${shortOption}</span><span class="summary-label">Benötigte Zeit:</span><span class="summary-value" style="font-size: 1.2rem; font-weight: 700;">${formatTime(personalTimeUsed)}</span><span class="summary-label">Tatsächlicher Gewinn:</span><span class="summary-value" style="font-size: 1.2rem; font-weight: 700; color: ${userResult.gewinn >= 0 ? 'var(--th-gruen)' : 'var(--th-rot)'};">${hasValidSelection ? formatPreis(userResult.gewinn) + ' €' : '–'}</span><span class="summary-label">Geschätzter Gewinn:</span><span class="summary-value" style="font-size: 1.2rem; font-weight: 700;">${geschaetzterGewinn} ${gewinnSchaetzung !== null ? '€' : ''}</span></div>
+                `;
+
+                const feedbackBox = document.getElementById('feedback-box');
+                const feedbackIcon = document.getElementById('feedback-icon');
+                const feedbackText = document.getElementById('feedback-text');
+
+                if (!hasValidSelection) {
+                    feedbackBox.className = 'feedback-box error';
+                    feedbackIcon.textContent = '';
+                    feedbackText.innerHTML = `<em>Keine vollständige Auswahl getroffen. Die beste Strategie hätte ${bestResult ? formatPreis(bestResult.gewinn) : '?'} € Gewinn gebracht.</em>`;
+                } else if (hatBesteStrategie && hatRichtigGeschaetzt) {
+                    feedbackBox.className = 'feedback-box success';
+                    feedbackIcon.textContent = '';
+                    feedbackText.innerHTML = `<em>Beste Strategie gefunden & korrekt berechnet!</em>`;
+                } else if (hatBesteStrategie) {
+                    feedbackBox.className = 'feedback-box partial';
+                    feedbackIcon.textContent = '○';
+                    feedbackText.innerHTML = `<em>Beste Strategie gefunden, aber Berechnung nicht korrekt.</em>`;
+                } else if (hatRichtigGeschaetzt && userResult.gewinn > 0) {
+                    feedbackBox.className = 'feedback-box partial';
+                    feedbackIcon.textContent = '○';
+                    feedbackText.innerHTML = `<em>Berechnung korrekt, aber nicht die beste Strategie (max. ${formatPreis(bestResult.gewinn)} €).</em>`;
+                } else if (userResult.gewinn > 0) {
+                    feedbackBox.className = 'feedback-box partial';
+                    feedbackIcon.textContent = '○';
+                    feedbackText.innerHTML = `<em>Weder beste Strategie noch korrekte Berechnung.</em>`;
+                } else {
+                    feedbackBox.className = 'feedback-box error';
+                    feedbackIcon.textContent = '';
+                    feedbackText.innerHTML = `<em>Die beste Strategie hätte ${bestResult ? formatPreis(bestResult.gewinn) : '?'} € Gewinn gebracht.</em>`;
+                }
+
+                // User-Strategie Tabelle
+                if (hasValidSelection) {
+                    renderStrategyTable('user-strategy-table', userResult);
+                    document.getElementById('user-gewinn-box').innerHTML = `<strong>Ihr Arbitrage-Ergebnis:</strong><span style="color: ${userResult.gewinn > 0 ? 'var(--th-gruen)' : 'var(--th-rot)'}; font-weight: 700;">
+                            ${formatPreis(userResult.gewinn)} €</span>
+                        ${userResult.gewinn > 0 ? '' : ''}
+                    `;
+                } else {
+                    document.getElementById('user-strategy-table').innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--th-rot); padding: 2rem;">Keine vollständige Auswahl getroffen</td></tr>
+                    `;
+                    document.getElementById('user-bewertung-box').innerHTML = '';
+                    document.getElementById('user-gewinn-box').innerHTML = '';
+                }
+
+                // Beste Strategie Tabelle
+                if (bestResult && bestResult.valid !== false) {
+                    renderStrategyTable('best-strategy-table', bestResult);
+                    document.getElementById('best-gewinn-box').innerHTML = `<strong>Maximaler Arbitrage-Gewinn:</strong><span style="color: var(--th-gruen); font-weight: 700;">
+                            ${formatPreis(bestResult.gewinn)} €</span> 
+                    `;
+                } else {
+                    document.getElementById('best-strategy-table').innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem;">Keine gültige Strategie gefunden</td></tr>
+                    `;
+                    document.getElementById('best-bewertung-box').innerHTML = '';
+                    document.getElementById('best-gewinn-box').innerHTML = '';
+                }
+
+                // Ranking Tabelle
+                if (allCombinations && allCombinations.length > 0) {
+                    renderRankingTable(allCombinations, userResult);
+                } else {
+                    document.getElementById('ranking-tbody').innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem;">Keine Kombinationen gefunden</td></tr>
+                    `;
+                }
+
+                // Verfügbare Optionen des Levels anzeigen
+                renderLevelOptions();
+
+                console.log('Wechsle zu screen-solution');
+                showScreen('screen-solution');
+
+            } catch (error) {
+                console.error('Fehler in proceedToSolution:', error);
+                alert('Ein Fehler ist aufgetreten: ' + error.message);
+                showScreen('screen-solution');
+            }
+        }
+
+        function renderLevelOptions() {
+            const data = levelData[currentLevel];
+            let html = `<div class="marktdaten" style="margin-top: 1rem;"><h4 style="color: var(--th-orange); margin-bottom: 0.5rem;">Marktdaten</h4><p><strong>Zinssatz:</strong>r = ${(data.zins * 100).toFixed(1).replace('.', ',')}% p.a. (stetig)</p><p><strong>Aktienkurse:</strong> ${Object.entries(data.aktien).map(([name, kurs]) => `${name}: ${formatPreis(kurs)} €`).join(' | ')}</p></div><table class="options-table" style="margin-top: 1rem;"><thead><tr><th>Nr.</th><th>Typ</th><th>Underlying</th><th>Strike</th><th>Laufzeit</th><th>Marktpreis</th></tr></thead><tbody>
+            `;
+
+            data.optionen.forEach(opt => {
+                html += `<tr><td>${opt.nr}</td><td class="typ-${opt.typ.toLowerCase()}">${opt.typ}</td><td>${opt.underlying}</td><td class="preis">${opt.strike.toFixed(0)} €</td><td>${opt.laufzeit}</td><td class="preis">${formatPreis(opt.preis)} €</td></tr>
+                `;
+            });
+
+            html += `</tbody></table>
+            `;
+
+            document.getElementById('level-options-container').innerHTML = html;
+        }
+
+        // ==================== BERECHNUNGEN ====================
+        function calculateArbitrage(longOpt, shortOpt) {
+            const data = levelData[currentLevel];
+
+            // Call und Put identifizieren
+            let call, put, callAction, putAction;
+
+            if (longOpt.typ === 'Call') {
+                call = longOpt;
+                callAction = 'kaufen';
+            } else {
+                put = longOpt;
+                putAction = 'kaufen';
+            }
+
+            if (shortOpt.typ === 'Call') {
+                call = shortOpt;
+                callAction = 'verkaufen';
+            } else {
+                put = shortOpt;
+                putAction = 'verkaufen';
+            }
+
+            // Prüfen ob gültige Kombination
+            if (!call || !put) {
+                return { gewinn: 0, valid: false, error: 'Keine gültige Call/Put Kombination' };
+            }
+
+            if (call.underlying !== put.underlying || call.strike !== put.strike || call.laufzeit !== put.laufzeit) {
+                return { gewinn: 0, valid: false, error: 'Optionen sind nicht kompatibel' };
+            }
+
+            const S0 = data.aktien[call.underlying];
+            const K = call.strike;
+            const T = call.laufzeitJahre;
+            const r = data.zins;
+            const c = call.preis;
+            const p = put.preis;
+            const PV_K = K * Math.exp(-r * T);
+
+            // Zahlungsströme berechnen
+            let cashflowT0 = 0;
+
+            if (putAction === 'kaufen') {
+                cashflowT0 -= S0; // Aktie kaufen
+                cashflowT0 -= p; // Put kaufen
+            } else {
+                cashflowT0 += S0; // Aktie verkaufen
+                cashflowT0 += p; // Put verkaufen
+            }
+
+            if (callAction === 'kaufen') {
+                cashflowT0 -= PV_K; // Geld anlegen
+                cashflowT0 -= c; // Call kaufen
+            } else {
+                cashflowT0 += PV_K; // Geld aufnehmen
+                cashflowT0 += c; // Call verkaufen
+            }
+
+            return {
+                gewinn: cashflowT0,
+                valid: true,
+                call: call,
+                put: put,
+                callAction: callAction,
+                putAction: putAction,
+                S0: S0,
+                K: K,
+                PV_K: PV_K,
+                c: c,
+                p: p
+            };
+        }
+
+        function calculateAllCombinations() {
+            const data = levelData[currentLevel];
+            const validOptions = data.optionen.filter(o =>o.valid !== false);
+            const calls = validOptions.filter(o =>o.typ === 'Call');
+            const puts = validOptions.filter(o =>o.typ === 'Put');
+
+            let combinations = [];
+
+            calls.forEach(call => {
+                puts.forEach(put => {
+                    if (call.underlying === put.underlying &&
+                        call.strike === put.strike &&
+                        call.laufzeit === put.laufzeit) {
+
+                        const S0 = data.aktien[call.underlying];
+                        const K = call.strike;
+                        const T = call.laufzeitJahre;
+                        const r = data.zins;
+                        const c = call.preis;
+                        const p = put.preis;
+                        const PV_K = K * Math.exp(-r * T);
+
+                        const weg1 = S0 + p;
+                        const weg2 = PV_K + c;
+                        const differenz = weg1 - weg2;
+
+                        let strategie, gewinn, callAction, putAction;
+                        if (differenz > 0.001) {
+                            strategie = 'Weg 1 verk., Weg 2 kauf.';
+                            gewinn = differenz;
+                            callAction = 'kaufen';
+                            putAction = 'verkaufen';
+                        } else if (differenz< -0.001) {
+                            strategie = 'Weg 2 verk., Weg 1 kauf.';
+                            gewinn = Math.abs(differenz);
+                            callAction = 'verkaufen';
+                            putAction = 'kaufen';
+                        } else {
+                            strategie = 'Keine Arbitrage';
+                            gewinn = 0;
+                            callAction = '-';
+                            putAction = '-';
+                        }
+
+                        combinations.push({
+                            call: call,
+                            put: put,
+                            weg1: weg1,
+                            weg2: weg2,
+                            differenz: differenz,
+                            gewinn: gewinn,
+                            strategie: strategie,
+                            callAction: callAction,
+                            putAction: putAction,
+                            S0: S0,
+                            K: K,
+                            PV_K: PV_K,
+                            c: c,
+                            p: p,
+                            valid: true
+                        });
+                    }
+                });
+            });
+
+            // Nach Gewinn sortieren
+            combinations.sort((a, b) =>b.gewinn - a.gewinn);
+
+            return combinations;
+        }
+
+        function renderStrategyTable(tableId, result) {
+            // Bewertungsbox-ID ermitteln (user-strategy-table ->user-bewertung-box)
+            const bewertungContainerId = tableId.replace('-strategy-table', '-bewertung-box');
+            const bewertungContainer = document.getElementById(bewertungContainerId);
+
+            if (!result || !result.valid) {
+                document.getElementById(tableId).innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--th-rot);">
+                        ${result?.error || 'Ungültige Strategie'}</td></tr>
+                `;
+                // Bewertungsbox leeren wenn vorhanden
+                if (bewertungContainer) {
+                    bewertungContainer.innerHTML = '';
+                }
+                return;
+            }
+
+            let html = `<thead><tr><th>Transaktion</th><th>Zahlungsstrom t=0</th><th>Wert T (S<sub>T</sub>&lt;K)</th><th>Wert T (S<sub>T</sub>≥K)</th></tr></thead><tbody>
+            `;
+
+            // Aktien- und Geldtransaktionen basierend auf Strategie
+            if (result.callAction === 'kaufen' && result.putAction === 'verkaufen') {
+                // Long Call + Short Put ->Short Aktie + Geldanlage
+                html += `<tr class="weg1"><td>Leerverkauf Aktie</td><td>+${formatPreis(result.S0)} €</td><td>-S<sub>T</sub></td><td>-S<sub>T</sub></td></tr><tr class="weg2"><td>Geldanlage</td><td>${formatPreis(-result.PV_K)} €</td><td>K</td><td>K</td></tr>
+                `;
+            } else if (result.callAction === 'verkaufen' && result.putAction === 'kaufen') {
+                // Short Call + Long Put ->Long Aktie + Geldaufnahme
+                html += `<tr class="weg1"><td>Kauf Aktie</td><td>${formatPreis(-result.S0)} €</td><td>S<sub>T</sub></td><td>S<sub>T</sub></td></tr><tr class="weg2"><td>Geldaufnahme</td><td>+${formatPreis(result.PV_K)} €</td><td>-K</td><td>-K</td></tr>
+                `;
+            }
+
+            // Optionspositionen mit Nummern
+            if (result.callAction === 'kaufen') {
+                html += `<tr class="weg2"><td>Kauf Call #${result.call.nr}</td><td>${formatPreis(-result.c)} €</td><td>0</td><td>S<sub>T</sub> - K</td></tr>
+                `;
+            } else {
+                html += `<tr class="weg2"><td>Verkauf Call #${result.call.nr}</td><td>+${formatPreis(result.c)} €</td><td>0</td><td>-(S<sub>T</sub> - K)</td></tr>
+                `;
+            }
+
+            if (result.putAction === 'kaufen') {
+                html += `<tr class="weg1"><td>Kauf Put #${result.put.nr}</td><td>${formatPreis(-result.p)} €</td><td>K - S<sub>T</sub></td><td>0</td></tr>
+                `;
+            } else {
+                html += `<tr class="weg1"><td>Verkauf Put #${result.put.nr}</td><td>+${formatPreis(result.p)} €</td><td>-(K - S<sub>T</sub>)</td><td>0</td></tr>
+                `;
+            }
+
+            html += `<tr class="summe"><td>Summe</td><td>${result.gewinn >= 0 ? '+' : ''}${formatPreis(result.gewinn)} €</td><td>= 0</td><td>= 0</td></tr></tbody>
+            `;
+
+            // Tabelle in das Element schreiben
+            document.getElementById(tableId).innerHTML = html;
+
+            // Bewertungslogik in separaten Container schreiben
+            const weg1Wert = result.S0 + result.p;
+            const weg2Wert = result.PV_K + result.c;
+            const weg1Teurer = weg1Wert >weg2Wert;
+
+            // Konkrete Aktionen basierend auf Bewertung
+            let weg1Aktion, weg2Aktion;
+            if (weg1Teurer) {
+                // Weg 1 verkaufen = Short Put + Leerverkauf Aktie
+                // Weg 2 kaufen = Long Call + Geldanlage
+                weg1Aktion = 'Short Put #' + result.put.nr + ' + Leerverkauf Aktie';
+                weg2Aktion = 'Long Call #' + result.call.nr + ' + Geldanlage';
+            } else {
+                // Weg 1 kaufen = Long Put + Kauf Aktie
+                // Weg 2 verkaufen = Short Call + Geldaufnahme
+                weg1Aktion = 'Long Put #' + result.put.nr + ' + Kauf Aktie';
+                weg2Aktion = 'Short Call #' + result.call.nr + ' + Geldaufnahme';
+            }
+
+            const bewertungHtml = `<div style="margin-top: 1rem; padding: 1rem; background: var(--th-hellgrau); border-radius: 8px; font-size: 0.95rem;"><p style="margin-bottom: 0.5rem;"><span style="color: var(--th-rot); font-weight: 600;">Weg 1</span> (S₀ + p = ${formatPreis(weg1Wert)} €) ist<strong>${weg1Teurer ? 'überbewertet' : 'unterbewertet'}</strong></p><p style="margin-bottom: 0.5rem;"><span style="color: var(--th-violett); font-weight: 600;">Weg 2</span> (PV(K) + c = ${formatPreis(weg2Wert)} €) ist<strong>${weg1Teurer ? 'unterbewertet' : 'überbewertet'}</strong></p><p style="margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid #ddd;">Deshalb:<span style="color: var(--th-rot); font-weight: 600;">Weg 1 ${weg1Teurer ? 'verkaufen' : 'kaufen'}</span> (${weg1Aktion}) und<span style="color: var(--th-violett); font-weight: 600;">Weg 2 ${weg1Teurer ? 'kaufen' : 'verkaufen'}</span> (${weg2Aktion})</p></div>
+            `;
+
+            // Bewertungsbox in den entsprechenden Container schreiben (wenn vorhanden)
+            if (bewertungContainer) {
+                bewertungContainer.innerHTML = bewertungHtml;
+            }
+        }
+
+        function renderRankingTable(combinations, userResult) {
+            const medals = ['', '', ''];
+            let html = '';
+
+            combinations.forEach((kombi, i) => {
+                const isUserChoice = userResult.call && userResult.put &&
+                    kombi.call.nr === userResult.call.nr &&
+                    kombi.put.nr === userResult.put.nr;
+
+                const weg1Teurer = kombi.weg1 >kombi.weg2;
+                const bewertung = weg1Teurer ? 'Weg 1 überbewertet' : 'Weg 2 überbewertet';
+                const aktion = weg1Teurer
+                    ? `Short Put #${kombi.put.nr}, Long Call #${kombi.call.nr}`
+                    : `Long Put #${kombi.put.nr}, Short Call #${kombi.call.nr}`;
+
+                // Farbliche Markierung des teureren Wegs
+                const weg1Style = weg1Teurer
+                    ? 'font-weight: 700; color: var(--th-rot);'
+                    : '';
+                const weg2Style = !weg1Teurer
+                    ? 'font-weight: 700; color: var(--th-violett);'
+                    : '';
+
+                html += `<tr class="${isUserChoice ? 'highlight' : ''}"><td>${i< 3 ? medals[i] : (i + 1) + '.'}</td><td>#${kombi.call.nr} (${formatPreis(kombi.call.preis)}€)</td><td>#${kombi.put.nr} (${formatPreis(kombi.put.preis)}€)</td><td style="font-family: 'JetBrains Mono', monospace; ${weg1Style}">${formatPreis(kombi.weg1)}€</td><td style="font-family: 'JetBrains Mono', monospace; ${weg2Style}">${formatPreis(kombi.weg2)}€</td><td><small style="color: ${weg1Teurer ? 'var(--th-rot)' : 'var(--th-violett)'};">${bewertung}</small></td><td><small>${aktion}</small></td><td class="gewinn-cell">+${formatPreis(kombi.gewinn)}€</td></tr>
+                `;
+            });
+
+            document.getElementById('ranking-tbody').innerHTML = html;
+        }</script></body></html>

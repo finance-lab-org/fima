@@ -1,0 +1,948 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Portfolio-Theorie Visualizer — TH Köln</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script><style>
+      :root {
+        /* TH Köln Farben */
+        --th-rot: #C90C0F;
+        --th-orange: #EA5B0C;
+        --th-violett: #B82585;
+        --th-rot-soft: #FBE7E7;
+        --th-orange-soft: #FFF3E9;
+        --th-violett-soft:#F7ECF3;
+
+        /* Neutrale Skala */
+        --bg: #FAFAFA;
+        --card: #FFFFFF;
+        --ink: #1A1A1A;
+        --ink-soft: #404040;
+        --ink-muted: #737373;
+        --ink-faint: #A3A3A3;
+        --rule: #E5E5E5;
+        --rule-soft: #F0F0F0;
+
+        --pos: #2D6A3F;
+
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+      }
+
+      /* ───── HEADER ───── */
+      header.masthead {
+        border-bottom: 2px solid var(--th-rot);
+        padding-bottom: 28px;
+        margin-bottom: 40px;
+      }
+      .eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--th-rot);
+        margin-bottom: 12px;
+      }
+      h1.masthead-title {
+        font-weight: 700;
+        font-size: clamp(28px, 3.5vw, 40px);
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .masthead-sub {
+        font-size: 15px;
+        color: var(--ink-muted);
+        max-width: 760px;
+      }
+
+      /* ───── SECTIONS ───── */
+      section {
+        margin-bottom: 48px;
+        scroll-margin-top: 24px;
+      }
+      .section-head {
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+      }
+      .section-num {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--th-rot);
+        letter-spacing: 0.1em;
+      }
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* ───── CARDS ───── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* ───── TABS ───── */
+      .tabs {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 32px;
+        overflow-x: auto;
+      }
+      .tab {
+        flex: 0 0 auto;
+        padding: 12px 20px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-muted);
+        letter-spacing: 0.02em;
+        transition: all 0.15s;
+        margin-bottom: -1px;
+      }
+      .tab:hover {
+        color: var(--ink);
+      }
+      .tab.active {
+        color: var(--th-rot);
+        border-bottom-color: var(--th-rot);
+        font-weight: 600;
+      }
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.3s;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ───── CONTENT GRID ───── */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 968px) {
+        .content-grid { grid-template-columns: 1fr; }
+      }
+
+      /* ───── INPUT PANEL (Controls) ───── */
+      .input-panel {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+      .input-panel .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--th-rot);
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .input-group {
+        margin-bottom: 18px;
+      }
+      .input-group label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .input-group input[type="range"] {
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--rule);
+        outline: none;
+        -webkit-appearance: none;
+      }
+      .input-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--th-rot);
+        cursor: pointer;
+        border: 3px solid var(--card);
+        box-shadow: 0 0 0 1px var(--rule);
+        transition: background 0.15s;
+      }
+      .input-group input[type="range"]::-webkit-slider-thumb:hover {
+        background: var(--th-violett);
+      }
+      .input-group input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--th-rot);
+        cursor: pointer;
+        border: 3px solid var(--card);
+        box-shadow: 0 0 0 1px var(--rule);
+      }
+
+      .input-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .input-row input[type="range"] {
+        flex: 1;
+      }
+      .input-row input[type="number"] {
+        width: 76px;
+        padding: 7px 8px;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        font-weight: 500;
+        text-align: center;
+        color: var(--ink);
+        background: var(--card);
+        transition: border-color 0.15s;
+      }
+      .input-row input[type="number"]:focus {
+        outline: none;
+        border-color: var(--th-rot);
+      }
+
+      .value-display {
+        float: right;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        color: var(--th-rot);
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+
+      /* ───── CHART CONTAINER ───── */
+      .chart-container {
+        background: var(--card);
+        padding: 20px;
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        height: 520px;
+        position: relative;
+      }
+
+      /* ───── RESULTS PANEL ───── */
+      .results-panel {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-orange);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+      }
+      .results-panel .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--th-orange);
+        padding-bottom: 8px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+      }
+      .result-item {
+        text-align: left;
+        padding: 14px 16px;
+        background: var(--bg);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+      }
+      .result-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      .result-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      /* ───── PRESETS / BUTTONS ───── */
+      .preset-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .btn {
+        padding: 10px 14px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: transparent;
+        color: var(--ink-soft);
+        text-align: center;
+      }
+      .btn:hover {
+        border-color: var(--ink);
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .btn-primary {
+        border-color: var(--rule);
+        color: var(--ink-soft);
+      }
+      .btn-primary:hover {
+        border-color: var(--th-violett);
+        color: var(--th-violett);
+        background: var(--th-violett-soft);
+      }
+      .btn-secondary {
+        border-color: var(--rule);
+        color: var(--ink-soft);
+      }
+      .btn-secondary:hover {
+        border-color: var(--th-orange);
+        color: var(--th-orange);
+        background: var(--th-orange-soft);
+      }
+
+      /* ───── INFO BOX ───── */
+      .info-box {
+        background: var(--th-orange-soft);
+        border-left: 3px solid var(--th-orange);
+        padding: 14px 18px;
+        margin-bottom: 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+      .info-box strong {
+        color: var(--ink);
+      }
+
+      /* ───── SCATTER CONTROLS ───── */
+      .scatter-controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      /* ───── CORRELATION SHOWCASE ───── */
+      .correlation-showcase {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 20px;
+      }
+      @media (max-width: 968px) {
+        .correlation-showcase { grid-template-columns: 1fr; }
+      }
+      .correlation-card {
+        background: var(--card);
+        padding: 22px 20px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--rule);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.15s;
+      }
+      .correlation-card:hover {
+        border-color: var(--th-violett);
+        box-shadow: var(--shadow-md);
+      }
+      .correlation-card h3 {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--th-rot);
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        letter-spacing: 0.02em;
+      }
+      .correlation-card p {
+        font-size: 13px;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+      .correlation-card p strong {
+        color: var(--ink);
+      }
+
+      /* ───── VARIANCE BREAKDOWN ───── */
+      .variance-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .variance-bar {
+        background: var(--card);
+        padding: 14px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--th-violett);
+      }
+      .variance-bar >div:first-child {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
+      }
+      .variance-bar >div:first-child strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .variance-bar-fill {
+        height: 28px;
+        border-radius: 4px;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        color: white;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      /* ───── FOOTER ───── */
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--rule);
+        font-size: 12px;
+        color: var(--ink-muted);
+      }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Portfoliotheorie · Zwei-Wertpapierfall</div><h1 class="masthead-title">Portfolio-Theorie Visualizer</h1><p class="masthead-sub">Interaktive Visualisierung der Portfoliotheorie im Zwei-Wertpapierfall</p></header><div class="tabs"><button class="tab active" onclick="switchTab(0)">Portfolio Explorer</button><button class="tab" onclick="switchTab(1)">Korrelation</button><button class="tab" onclick="switchTab(2)">Diversifikation</button></div><!-- Tab 1: Portfolio Explorer --><div class="tab-content active"><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Portfolio Explorer</div></div><div class="content-grid"><div class="input-panel"><h3 class="section-title">Wertpapier A</h3><div class="input-group"><label>Erwartete Rendite μ<sub>A</sub><span class="value-display" id="muA-display">8,0%</span></label><div class="input-row"><input type="range" id="muA" min="0" max="25" step="0.5" value="8" oninput="updatePortfolio()"><input type="number" id="muA-input" min="0" max="25" step="0.5" value="8" oninput="syncSlider('muA')"></div></div><div class="input-group"><label>Volatilität σ<sub>A</sub><span class="value-display" id="sigmaA-display">12,0%</span></label><div class="input-row"><input type="range" id="sigmaA" min="1" max="40" step="0.5" value="12" oninput="updatePortfolio()"><input type="number" id="sigmaA-input" min="1" max="40" step="0.5" value="12" oninput="syncSlider('sigmaA')"></div></div><h3 class="section-title" style="margin-top: 25px;">Wertpapier B</h3><div class="input-group"><label>Erwartete Rendite μ<sub>B</sub><span class="value-display" id="muB-display">15,0%</span></label><div class="input-row"><input type="range" id="muB" min="0" max="25" step="0.5" value="15" oninput="updatePortfolio()"><input type="number" id="muB-input" min="0" max="25" step="0.5" value="15" oninput="syncSlider('muB')"></div></div><div class="input-group"><label>Volatilität σ<sub>B</sub><span class="value-display" id="sigmaB-display">25,0%</span></label><div class="input-row"><input type="range" id="sigmaB" min="1" max="40" step="0.5" value="25" oninput="updatePortfolio()"><input type="number" id="sigmaB-input" min="1" max="40" step="0.5" value="25" oninput="syncSlider('sigmaB')"></div></div><h3 class="section-title" style="margin-top: 25px;">Korrelation & Gewichtung</h3><div class="input-group"><label>Korrelation ρ<sub>AB</sub><span class="value-display" id="rho-display">0,2</span></label><div class="input-row"><input type="range" id="rho" min="-1" max="1" step="0.05" value="0.2" oninput="updatePortfolio()"><input type="number" id="rho-input" min="-1" max="1" step="0.05" value="0.2" oninput="syncSlider('rho')"></div></div><div class="input-group"><label>Gewicht x<sub>A</sub><span class="value-display" id="xA-display">60%</span></label><div class="input-row"><input type="range" id="xA" min="0" max="100" step="1" value="60" oninput="updatePortfolio()"><input type="number" id="xA-input" min="0" max="100" step="1" value="60" oninput="syncSlider('xA')"></div></div><div class="preset-buttons"><button class="btn btn-secondary" onclick="findMVP()">MVP finden</button><button class="btn btn-primary" onclick="setPreset('balanced')"> 50/50</button><button class="btn btn-primary" onclick="setPreset('conservative')"> 20/80</button><button class="btn btn-primary" onclick="setPreset('aggressive')"> 80/20</button></div></div><div><div class="chart-container"><canvas id="portfolioChart"></canvas></div></div></div><div class="results-panel"><h3 class="section-title">Portfolio-Kennzahlen</h3><div class="results-grid"><div class="result-item"><div class="result-label">Erwartete Rendite</div><div class="result-value" id="result-mu">10,8%</div></div><div class="result-item"><div class="result-label">Volatilität</div><div class="result-value" id="result-sigma">13,4%</div></div><div class="result-item"><div class="result-label">Gewicht A</div><div class="result-value" id="result-xA">60%</div></div><div class="result-item"><div class="result-label">Gewicht B</div><div class="result-value" id="result-xB">40%</div></div><div class="result-item"><div class="result-label">MVP Volatilität</div><div class="result-value" id="result-mvp">11,2%</div></div><div class="result-item"><div class="result-label">Risikoreduktion</div><div class="result-value" id="result-reduction" style="color: var(--th-orange);">-2,3%</div></div></div></div></section></div><!-- Tab 2: Korrelation --><div class="tab-content"><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Korrelation</div></div><div class="info-box"><strong>Korrelation verstehen:</strong>Die Korrelation (ρ) misst die Stärke des linearen Zusammenhangs zwischen zwei Wertpapieren. Werte nahe +1 bedeuten starken Gleichlauf, Werte nahe -1 starken Gegenlauf.</div><div class="content-grid"><div class="input-panel"><h3 class="section-title">Streudiagramm-Generator</h3><div class="input-group"><label>Korrelation ρ<span class="value-display" id="scatter-rho-display">0,8</span></label><div class="input-row"><input type="range" id="scatter-rho" min="-1" max="1" step="0.1" value="0.8" oninput="updateScatter()"><input type="number" id="scatter-rho-input" min="-1" max="1" step="0.1" value="0.8" oninput="syncSlider('scatter-rho')"></div></div><div class="input-group"><label>Anzahl Datenpunkte<span class="value-display" id="scatter-n-display">50</span></label><div class="input-row"><input type="range" id="scatter-n" min="20" max="200" step="10" value="50" oninput="updateScatter()"><input type="number" id="scatter-n-input" min="20" max="200" step="10" value="50" oninput="syncSlider('scatter-n')"></div></div><button class="btn btn-secondary" onclick="generateNewScatter()" style="width: 100%; margin-top: 15px;">Neue Daten generieren</button><h3 class="section-title" style="margin-top: 30px;">Spezialfälle</h3><div class="preset-buttons"><button class="btn btn-primary" onclick="setScatterRho(1)">ρ = +1</button><button class="btn btn-primary" onclick="setScatterRho(0)">ρ = 0</button><button class="btn btn-primary" onclick="setScatterRho(-1)">ρ = -1</button></div></div><div><div class="chart-container"><canvas id="scatterChart"></canvas></div></div></div><h3 class="section-title" style="margin-top: 30px;">Spezialfälle der Korrelation</h3><div class="correlation-showcase"><div class="correlation-card"><h3>ρ = +1</h3><p style="font-size: 3em; margin: 20px 0;"></p><p><strong>Perfekter Gleichlauf</strong></p><p style="margin-top: 10px; color: #6c757d;">σ<sub>P</sub> = x<sub>A</sub>σ<sub>A</sub> + x<sub>B</sub>σ<sub>B</sub></p><p style="margin-top: 10px; font-size: 0.9em;">Keine Diversifikation möglich</p></div><div class="correlation-card"><h3>ρ = 0</h3><p style="font-size: 3em; margin: 20px 0;"></p><p><strong>Keine Korrelation</strong></p><p style="margin-top: 10px; color: #6c757d;">σ<sub>P</sub> = √(x<sub>A</sub>²σ<sub>A</sub>² + x<sub>B</sub>²σ<sub>B</sub>²)</p><p style="margin-top: 10px; font-size: 0.9em;">Gute Diversifikation</p></div><div class="correlation-card"><h3>ρ = -1</h3><p style="font-size: 3em; margin: 20px 0;"></p><p><strong>Perfekter Gegenlauf</strong></p><p style="margin-top: 10px; color: #6c757d;">σ<sub>P</sub> = |x<sub>A</sub>σ<sub>A</sub> - x<sub>B</sub>σ<sub>B</sub>|</p><p style="margin-top: 10px; font-size: 0.9em;">Maximale Diversifikation</p></div></div></section></div><!-- Tab 3: Diversifikation --><div class="tab-content"><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Diversifikation</div></div><div class="info-box"><strong>Diversifikationseffekt:</strong>Die Portfoliovarianz σ²<sub>P</sub> = x²<sub>A</sub>σ²<sub>A</sub> + x²<sub>B</sub>σ²<sub>B</sub> + 2x<sub>A</sub>x<sub>B</sub>ρσ<sub>A</sub>σ<sub>B</sub>zeigt, wie die Korrelation das Gesamtrisiko beeinflusst.</div><div class="content-grid"><div class="input-panel"><h3 class="section-title">Parameter</h3><div class="input-group"><label>Gewicht x<sub>A</sub><span class="value-display" id="div-xA-display">60%</span></label><div class="input-row"><input type="range" id="div-xA" min="0" max="100" step="1" value="60" oninput="updateDiversification()"><input type="number" id="div-xA-input" min="0" max="100" step="1" value="60" oninput="syncSlider('div-xA')"></div></div><div class="input-group"><label>Korrelation ρ<span class="value-display" id="div-rho-display">0,2</span></label><div class="input-row"><input type="range" id="div-rho" min="-1" max="1" step="0.05" value="0.2" oninput="updateDiversification()"><input type="number" id="div-rho-input" min="-1" max="1" step="0.05" value="0.2" oninput="syncSlider('div-rho')"></div></div><div class="input-group"><label>σ<sub>A</sub><span class="value-display" id="div-sigmaA-display">12,0%</span></label><div class="input-row"><input type="range" id="div-sigmaA" min="5" max="40" step="0.5" value="12" oninput="updateDiversification()"><input type="number" id="div-sigmaA-input" min="5" max="40" step="0.5" value="12" oninput="syncSlider('div-sigmaA')"></div></div><div class="input-group"><label>σ<sub>B</sub><span class="value-display" id="div-sigmaB-display">25,0%</span></label><div class="input-row"><input type="range" id="div-sigmaB" min="5" max="40" step="0.5" value="25" oninput="updateDiversification()"><input type="number" id="div-sigmaB-input" min="5" max="40" step="0.5" value="25" oninput="syncSlider('div-sigmaB')"></div></div></div><div><h3 class="section-title">Zerlegung der Varianz</h3><div class="variance-breakdown"><div class="variance-bar"><div style="margin-bottom: 10px;"><strong>Risikobeitrag A:</strong>x²<sub>A</sub>σ²<sub>A</sub></div><div class="variance-bar-fill" id="var-a-bar" style="background: var(--th-violett);">0.0052</div></div><div class="variance-bar"><div style="margin-bottom: 10px;"><strong>Risikobeitrag B:</strong>x²<sub>B</sub>σ²<sub>B</sub></div><div class="variance-bar-fill" id="var-b-bar" style="background: var(--th-rot);">0.0100</div></div><div class="variance-bar"><div style="margin-bottom: 10px;"><strong>Interaktionsterm:</strong> 2x<sub>A</sub>x<sub>B</sub>ρσ<sub>A</sub>σ<sub>B</sub></div><div class="variance-bar-fill" id="var-int-bar" style="background: var(--th-orange);">0.0029</div></div><div class="variance-bar" style="border-left-color: var(--th-orange); border-left-width: 6px;"><div style="margin-bottom: 10px;"><strong>Gesamtvarianz σ²<sub>P</sub>:</strong></div><div class="variance-bar-fill" id="var-total-bar" style="background: #212529;">0.0181</div></div></div></div></div><div class="results-panel" style="margin-top: 30px;"><h3 class="section-title">Risikoreduktion durch Diversifikation</h3><div class="results-grid"><div class="result-item"><div class="result-label">Gewichtete Einzelrisiken</div><div class="result-value" id="div-individual">16,5%</div></div><div class="result-item"><div class="result-label">Portfoliorisiko</div><div class="result-value" id="div-portfolio">13,4%</div></div><div class="result-item"><div class="result-label">Absolute Reduktion</div><div class="result-value" id="div-absolute" style="color: var(--th-orange);">-3,1%</div></div><div class="result-item"><div class="result-label">Relative Reduktion</div><div class="result-value" id="div-relative" style="color: var(--th-orange);">-18,8%</div></div></div></div></section></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn</footer></div><script>
+        // Helper function to format numbers with German decimal separator
+        function formatGerman(num, decimals = 1) {
+            return num.toFixed(decimals).replace('.', ',');
+        }
+
+        // Helper function to sync slider with number input
+        function syncSlider(id) {
+            const input = document.getElementById(id + '-input');
+            const slider = document.getElementById(id);
+            const value = parseFloat(input.value);
+
+            // Validate and constrain value
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            const constrained = Math.max(min, Math.min(max, value));
+
+            slider.value = constrained;
+            input.value = constrained;
+
+            // Trigger the appropriate update function
+            if (id.startsWith('div-')) {
+                updateDiversification();
+            } else if (id.startsWith('scatter-')) {
+                updateScatter();
+            } else {
+                updatePortfolio();
+            }
+        }
+
+        // Global variables
+        let portfolioChart, scatterChart;
+        let scatterData = [];
+
+        // Tab switching
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+
+            contents.forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+
+            // Initialize charts when switching to their tabs
+            if (index === 0 && !portfolioChart) initPortfolioChart();
+            if (index === 1 && !scatterChart) initScatterChart();
+        }
+
+        // Portfolio calculations
+        function calculatePortfolio(muA, sigmaA, muB, sigmaB, rho, xA) {
+            const xB = 1 - xA;
+            const muP = xA * muA + xB * muB;
+            const variance = Math.pow(xA * sigmaA, 2) + Math.pow(xB * sigmaB, 2) +
+                           2 * xA * xB * rho * sigmaA * sigmaB;
+            const sigmaP = Math.sqrt(Math.max(0, variance));
+            return { muP, sigmaP, variance };
+        }
+
+        function calculateMVP(sigmaA, sigmaB, rho) {
+            const cov = rho * sigmaA * sigmaB;
+            const xA = (Math.pow(sigmaB, 2) - cov) / (Math.pow(sigmaA, 2) + Math.pow(sigmaB, 2) - 2 * cov);
+            return Math.max(0, Math.min(1, xA));
+        }
+
+        function generatePortfolioCurve(muA, sigmaA, muB, sigmaB, rho, steps = 100) {
+            const points = [];
+            for (let i = 0; i<= steps; i++) {
+                const xA = i / steps;
+                const result = calculatePortfolio(muA, sigmaA, muB, sigmaB, rho, xA);
+                points.push({ x: result.sigmaP, y: result.muP, xA: xA });
+            }
+            return points;
+        }
+
+        // Initialize Portfolio Chart
+        function initPortfolioChart() {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            portfolioChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Portfoliokurve',
+                        data: [],
+                        borderColor: '#B82585',
+                        backgroundColor: 'rgba(184, 37, 133, 0.1)',
+                        showLine: true,
+                        pointRadius: 0,
+                        borderWidth: 3
+                    }, {
+                        label: 'Effizienter Rand',
+                        data: [],
+                        borderColor: '#EA5B0C',
+                        backgroundColor: 'rgba(234, 91, 12, 0.1)',
+                        showLine: true,
+                        pointRadius: 0,
+                        borderWidth: 4
+                    }, {
+                        label: 'Wertpapier A',
+                        data: [],
+                        backgroundColor: '#B82585',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }, {
+                        label: 'Wertpapier B',
+                        data: [],
+                        backgroundColor: '#C90C0F',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }, {
+                        label: 'MVP',
+                        data: [],
+                        backgroundColor: '#000',
+                        pointRadius: 10,
+                        pointHoverRadius: 12,
+                        pointStyle: 'star'
+                    }, {
+                        label: 'Aktuelles Portfolio',
+                        data: [],
+                        backgroundColor: '#EA5B0C',
+                        pointRadius: 12,
+                        pointHoverRadius: 14,
+                        pointStyle: 'triangle'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': μ=' + context.parsed.y.toFixed(2) + '%, σ=' + context.parsed.x.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Volatilität σ (%)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            min: 0
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Erwartete Rendite μ (%)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+            updatePortfolio();
+        }
+
+        // Update Portfolio
+        function updatePortfolio() {
+            const muA = parseFloat(document.getElementById('muA').value);
+            const sigmaA = parseFloat(document.getElementById('sigmaA').value);
+            const muB = parseFloat(document.getElementById('muB').value);
+            const sigmaB = parseFloat(document.getElementById('sigmaB').value);
+            const rho = parseFloat(document.getElementById('rho').value);
+            const xA = parseFloat(document.getElementById('xA').value) / 100;
+
+            // Sync number inputs with sliders
+            document.getElementById('muA-input').value = muA;
+            document.getElementById('sigmaA-input').value = sigmaA;
+            document.getElementById('muB-input').value = muB;
+            document.getElementById('sigmaB-input').value = sigmaB;
+            document.getElementById('rho-input').value = rho;
+            document.getElementById('xA-input').value = (xA * 100).toFixed(0);
+
+            // Update displays with German formatting
+            document.getElementById('muA-display').textContent = formatGerman(muA) + '%';
+            document.getElementById('sigmaA-display').textContent = formatGerman(sigmaA) + '%';
+            document.getElementById('muB-display').textContent = formatGerman(muB) + '%';
+            document.getElementById('sigmaB-display').textContent = formatGerman(sigmaB) + '%';
+            document.getElementById('rho-display').textContent = formatGerman(rho, 2);
+            document.getElementById('xA-display').textContent = (xA * 100).toFixed(0) + '%';
+
+            // Calculate portfolio
+            const current = calculatePortfolio(muA, sigmaA, muB, sigmaB, rho, xA);
+            const curve = generatePortfolioCurve(muA, sigmaA, muB, sigmaB, rho);
+
+            // Find MVP
+            const mvpXA = calculateMVP(sigmaA, sigmaB, rho);
+            const mvp = calculatePortfolio(muA, sigmaA, muB, sigmaB, rho, mvpXA);
+
+            // Find efficient frontier (from MVP to the asset with higher return)
+            // The efficient frontier is the upper part of the portfolio curve
+            const mvpIndex = curve.findIndex(p =>Math.abs(p.xA - mvpXA)< 0.01);
+
+            // Determine which direction from MVP leads to higher returns
+            // If muA >muB, efficient frontier goes from MVP towards xA=1 (higher indices)
+            // If muB >muA, efficient frontier goes from MVP towards xA=0 (lower indices)
+            // If muA == muB, the entire curve has the same return, so efficient frontier is just MVP
+            let efficientFrontier;
+            if (Math.abs(muA - muB)< 0.001) {
+                // Equal returns: efficient frontier is just the MVP point
+                efficientFrontier = [curve[mvpIndex]];
+            } else if (muA >muB) {
+                // A has higher return: efficient frontier goes from MVP to A (xA=1, end of array)
+                efficientFrontier = curve.slice(mvpIndex);
+            } else {
+                // B has higher return: efficient frontier goes from MVP to B (xA=0, start of array)
+                efficientFrontier = curve.slice(0, mvpIndex + 1);
+            }
+
+            // Update chart
+            if (portfolioChart) {
+                // Round data points to avoid floating-point precision issues
+                const roundPoint = (p) => ({ x: Math.round(p.x * 1000) / 1000, y: Math.round(p.y * 1000) / 1000 });
+                const roundedCurve = curve.map(roundPoint);
+                const roundedEfficientFrontier = efficientFrontier.map(roundPoint);
+
+                portfolioChart.data.datasets[0].data = roundedCurve;
+                portfolioChart.data.datasets[1].data = roundedEfficientFrontier;
+                portfolioChart.data.datasets[2].data = [{ x: sigmaA, y: muA }];
+                portfolioChart.data.datasets[3].data = [{ x: sigmaB, y: muB }];
+                portfolioChart.data.datasets[4].data = [{ x: Math.round(mvp.sigmaP * 1000) / 1000, y: Math.round(mvp.muP * 1000) / 1000 }];
+                portfolioChart.data.datasets[5].data = [{ x: Math.round(current.sigmaP * 1000) / 1000, y: Math.round(current.muP * 1000) / 1000 }];
+
+                // Calculate sensible Y-axis bounds with minimum range
+                const allYValues = [muA, muB, mvp.muP, current.muP];
+                const yMin = Math.min(...allYValues);
+                const yMax = Math.max(...allYValues);
+                const yRange = yMax - yMin;
+                const minRange = 2; // Minimum 2 percentage points range
+
+                if (yRange< minRange) {
+                    const mid = (yMin + yMax) / 2;
+                    portfolioChart.options.scales.y.min = Math.max(0, mid - minRange / 2);
+                    portfolioChart.options.scales.y.max = mid + minRange / 2;
+                } else {
+                    // Add 10% padding
+                    portfolioChart.options.scales.y.min = Math.max(0, yMin - yRange * 0.1);
+                    portfolioChart.options.scales.y.max = yMax + yRange * 0.1;
+                }
+
+                portfolioChart.update();
+            }
+
+            // Update results with German formatting
+            const naiveRisk = xA * sigmaA + (1 - xA) * sigmaB;
+            const riskReduction = naiveRisk - current.sigmaP;
+
+            document.getElementById('result-mu').textContent = formatGerman(current.muP, 2) + '%';
+            document.getElementById('result-sigma').textContent = formatGerman(current.sigmaP, 2) + '%';
+            document.getElementById('result-xA').textContent = formatGerman(xA * 100) + '%';
+            document.getElementById('result-xB').textContent = formatGerman((1 - xA) * 100) + '%';
+            document.getElementById('result-mvp').textContent = formatGerman(mvp.sigmaP, 2) + '%';
+            document.getElementById('result-reduction').textContent = (rho< 1 ? '-' : '') + formatGerman(Math.abs(riskReduction), 2) + '%';
+        }
+
+        // Preset functions
+        function setPreset(type) {
+            const slider = document.getElementById('xA');
+            switch(type) {
+                case 'balanced':
+                    slider.value = 50;
+                    break;
+                case 'conservative':
+                    slider.value = 20;
+                    break;
+                case 'aggressive':
+                    slider.value = 80;
+                    break;
+            }
+            updatePortfolio();
+        }
+
+        function findMVP() {
+            const sigmaA = parseFloat(document.getElementById('sigmaA').value);
+            const sigmaB = parseFloat(document.getElementById('sigmaB').value);
+            const rho = parseFloat(document.getElementById('rho').value);
+
+            const mvpXA = calculateMVP(sigmaA, sigmaB, rho);
+            document.getElementById('xA').value = (mvpXA * 100).toFixed(0);
+            updatePortfolio();
+        }
+
+        // Scatter Chart
+        function initScatterChart() {
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            scatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Renditepaare',
+                        data: [],
+                        backgroundColor: '#B82585',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }, {
+                        label: 'Regressionsgerade',
+                        data: [],
+                        borderColor: '#C90C0F',
+                        backgroundColor: 'rgba(201, 12, 15, 0.1)',
+                        showLine: true,
+                        pointRadius: 0,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Rendite A (%)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Rendite B (%)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+            generateNewScatter();
+        }
+
+        function generateCorrelatedData(n, rho) {
+            const data = [];
+            for (let i = 0; i< n; i++) {
+                // Box-Muller transform for normal distribution
+                const u1 = Math.random();
+                const u2 = Math.random();
+                const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+                const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+
+                // Create correlated variables
+                const x = z0;
+                const y = rho * z0 + Math.sqrt(1 - rho * rho) * z1;
+
+                data.push({
+                    x: x * 3 + 5, // Scale and shift for better visualization
+                    y: y * 8 + 10
+                });
+            }
+            return data;
+        }
+
+        function calculateRegression(data) {
+            const n = data.length;
+            const sumX = data.reduce((sum, p) =>sum + p.x, 0);
+            const sumY = data.reduce((sum, p) =>sum + p.y, 0);
+            const sumXY = data.reduce((sum, p) =>sum + p.x * p.y, 0);
+            const sumX2 = data.reduce((sum, p) =>sum + p.x * p.x, 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            const xMin = Math.min(...data.map(p =>p.x));
+            const xMax = Math.max(...data.map(p =>p.x));
+
+            return [
+                { x: xMin, y: slope * xMin + intercept },
+                { x: xMax, y: slope * xMax + intercept }
+            ];
+        }
+
+        function generateNewScatter() {
+            const rho = parseFloat(document.getElementById('scatter-rho').value);
+            const n = parseInt(document.getElementById('scatter-n').value);
+
+            scatterData = generateCorrelatedData(n, rho);
+            updateScatter();
+        }
+
+        function updateScatter() {
+            const rho = parseFloat(document.getElementById('scatter-rho').value);
+            const n = parseInt(document.getElementById('scatter-n').value);
+
+            // Sync number inputs
+            document.getElementById('scatter-rho-input').value = rho;
+            document.getElementById('scatter-n-input').value = n;
+
+            // Update displays with German formatting
+            document.getElementById('scatter-rho-display').textContent = formatGerman(rho);
+            document.getElementById('scatter-n-display').textContent = n;
+
+            if (scatterData.length !== n) {
+                generateNewScatter();
+                return;
+            }
+
+            const regression = calculateRegression(scatterData);
+
+            if (scatterChart) {
+                scatterChart.data.datasets[0].data = scatterData;
+                scatterChart.data.datasets[1].data = regression;
+                scatterChart.update();
+            }
+        }
+
+        function setScatterRho(value) {
+            document.getElementById('scatter-rho').value = value;
+            generateNewScatter();
+        }
+
+        // Diversification Tab
+        function updateDiversification() {
+            const xA = parseFloat(document.getElementById('div-xA').value) / 100;
+            const rho = parseFloat(document.getElementById('div-rho').value);
+            const sigmaA = parseFloat(document.getElementById('div-sigmaA').value) / 100;
+            const sigmaB = parseFloat(document.getElementById('div-sigmaB').value) / 100;
+            const xB = 1 - xA;
+
+            // Sync number inputs
+            document.getElementById('div-xA-input').value = (xA * 100).toFixed(0);
+            document.getElementById('div-rho-input').value = rho;
+            document.getElementById('div-sigmaA-input').value = sigmaA * 100;
+            document.getElementById('div-sigmaB-input').value = sigmaB * 100;
+
+            // Update displays with German formatting
+            document.getElementById('div-xA-display').textContent = (xA * 100).toFixed(0) + '%';
+            document.getElementById('div-rho-display').textContent = formatGerman(rho, 2);
+            document.getElementById('div-sigmaA-display').textContent = formatGerman(sigmaA * 100) + '%';
+            document.getElementById('div-sigmaB-display').textContent = formatGerman(sigmaB * 100) + '%';
+
+            // Calculate components
+            const varA = Math.pow(xA * sigmaA, 2);
+            const varB = Math.pow(xB * sigmaB, 2);
+            const varInt = 2 * xA * xB * rho * sigmaA * sigmaB;
+            const varTotal = varA + varB + varInt;
+            const sigmaP = Math.sqrt(Math.max(0, varTotal));
+
+            // Calculate naive risk (weighted average of individual risks)
+            const naiveRisk = xA * sigmaA + xB * sigmaB;
+            const absoluteReduction = naiveRisk - sigmaP;
+            const relativeReduction = (absoluteReduction / naiveRisk) * 100;
+
+            // Update variance bars
+            const maxVar = Math.max(varA, varB, Math.abs(varInt), varTotal);
+
+            document.getElementById('var-a-bar').textContent = formatGerman(varA, 6);
+            document.getElementById('var-a-bar').style.width = (Math.abs(varA) / maxVar * 100) + '%';
+
+            document.getElementById('var-b-bar').textContent = formatGerman(varB, 6);
+            document.getElementById('var-b-bar').style.width = (Math.abs(varB) / maxVar * 100) + '%';
+
+            document.getElementById('var-int-bar').textContent = formatGerman(varInt, 6);
+            document.getElementById('var-int-bar').style.width = (Math.abs(varInt) / maxVar * 100) + '%';
+            document.getElementById('var-int-bar').style.background = varInt >= 0 ? '#EA5B0C' : '#28a745';
+
+            document.getElementById('var-total-bar').textContent = formatGerman(varTotal, 6);
+            document.getElementById('var-total-bar').style.width = (Math.abs(varTotal) / maxVar * 100) + '%';
+
+            // Update results with German formatting
+            document.getElementById('div-individual').textContent = formatGerman(naiveRisk * 100, 2) + '%';
+            document.getElementById('div-portfolio').textContent = formatGerman(sigmaP * 100, 2) + '%';
+            document.getElementById('div-absolute').textContent = (absoluteReduction >= 0 ? '-' : '+') + formatGerman(Math.abs(absoluteReduction) * 100, 2) + '%';
+            document.getElementById('div-relative').textContent = (relativeReduction >= 0 ? '-' : '+') + formatGerman(Math.abs(relativeReduction), 1) + '%';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            initPortfolioChart();
+            updateDiversification();
+        });</script></body></html>
