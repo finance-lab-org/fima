@@ -783,6 +783,10 @@
         border-radius: 3px;
         flex-shrink: 0;
       }
+      .legend-icon {
+        flex-shrink: 0;
+        display: block;
+      }
 
       /* ───── ALERT BOXES ───── */
       .alert {
@@ -889,7 +893,7 @@
       .change-neutral {
         background: var(--rule-soft);
         color: var(--ink-muted);
-      }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Portfoliotheorie · n-Wertpapierfall</div><h1 class="masthead-title">Portfolio-Analyzer</h1><p class="masthead-sub">Interaktive Portfoliotheorie: n-Wertpapierfall mit Effizienzlinie. Definieren Sie Wertpapiere und Korrelationen, berechnen Sie das MVP und Tangentialportfolio und erkunden Sie den Portfolioraum.</p></header><div class="tabs"><button class="tab active" onclick="switchTab(0)">1. Portfolio-Setup</button><button class="tab" onclick="switchTab(1)">2. Korrelationen</button><button class="tab" onclick="switchTab(2)">3. Portfolioraum</button></div><!-- Tab 1: Portfolio Setup --><div class="tab-content active"><div class="alert alert-info"><strong>Schritt 1:</strong>Definieren Sie Ihre Wertpapiere und deren Parameter</div><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Anzahl der Wertpapiere</div></div><div class="section"><div class="form-group"><label for="numAssets">Wie viele Aktien sollen im Portfolio sein?</label><input type="number" id="numAssets" value="4" min="2" max="20" step="1" onchange="updateAssetInputs()"></div><div class="form-group"><label for="riskFreeRate">Risikofreier Zinssatz (annualisiert, in %)</label><input type="number" id="riskFreeRate" value="2.0" step="0.1" min="0"></div><button class="btn" onclick="loadExampleData()">Beispieldaten laden (S&amp;P500, Gold, Anleihen, Bitcoin)</button></div></section><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Wertpapier-Parameter</div></div><div class="section"><div id="assetInputs" class="asset-grid"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Portfolio-Gewichte</div></div><div class="section"><div class="input-mode-toggle"><button class="toggle-btn active" onclick="setWeightMode('percent')">Prozent-Eingabe (%)</button><button class="toggle-btn" onclick="setWeightMode('euro')">Euro-Werte (€)</button></div><div id="weightInputs"><!-- Dynamisch generiert --></div><div id="portfolioSummary" style="margin-top: 15px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; font-size: 13px;"><!-- Zusammenfassung --></div><button class="btn" style="margin-top: 15px;" onclick="normalizeWeights()">Gewichte automatisch normalisieren</button></div></section><div style="text-align: center; margin-top: 20px;"><button class="btn" onclick="switchTab(1)">Weiter zu Korrelationen</button></div></div><!-- Tab 2: Korrelationen --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 2:</strong>Geben Sie die Korrelationen zwischen den Wertpapieren ein</div><section><div class="section-head"><div class="section-num">IV</div><div class="section-title">Korrelationsmatrix</div></div><div class="section"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Schieberegler: -1.0 (perfekte negative Korrelation) bis +1.0 (perfekte positive Korrelation)</p><div id="correlationInputs"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">V</div><div class="section-title">Resultierende Kovarianzmatrix</div></div><div class="section covariance-matrix"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Automatisch berechnet aus Korrelationen und Standardabweichungen</p><div id="covarianceDisplay" class="matrix-display"><!-- Dynamisch generiert --></div></div></section><div style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center;"><button class="btn btn-secondary" onclick="switchTab(0)">Zurück zu Setup</button><button class="btn" onclick="switchTab(2)">Weiter zum Portfolioraum</button></div></div><!-- Tab 3: Portfolioraum --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 3:</strong>Portfolioraum mit Effizienzlinie - Ziehen Sie den roten Punkt zu Ihrem Wunsch-Portfolio</div><div style="display: flex; gap: 20px; flex-wrap: wrap;"><!-- Linke Seite: Chart --><div style="flex: 1; min-width: 600px;"><section><div class="section-head"><div class="section-num">VI</div><div class="section-title">Rendite-Risiko-Diagramm</div></div><div class="section"><div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;"><button class="btn" onclick="calculatePortfolios()">Portfolios berechnen</button><button class="btn btn-secondary" onclick="resetZoom()">Zoom zurücksetzen</button></div><div class="chart-container"><canvas id="portfolioChart"></canvas></div><div class="legend"><div class="legend-item"><div class="legend-color" style="background: rgba(128, 128, 128, 0.3);"></div><span>Zufällige Portfolios</span></div><div class="legend-item"><div class="legend-color" style="background: #FF6B6B;"></div><span>Ihr Portfolio (verschiebbar)</span></div><div class="legend-item"><div class="legend-color" style="background: #4ECDC4;"></div><span>MVP</span></div><div class="legend-item"><div class="legend-color" style="background: #FFD93D;"></div><span>Tangentialportfolio</span></div><div class="legend-item"><div class="legend-color" style="background: #B82585;"></div><span>Effizienzlinie</span></div></div></div></section></div><!-- Rechte Seite: Info-Panel --><div style="flex: 0 0 400px; min-width: 350px;"><section style="position: sticky; top: 20px;"><div class="section-head"><div class="section-num">VII</div><div class="section-title">Portfolio-Details</div></div><div class="section"><div id="portfolioDetailsPanel"><p style="color: var(--ink-muted); text-align: center; padding: 40px 20px; font-size: 13px;">Klicken Sie auf "Portfolios berechnen" oder bewegen Sie die Maus über einen der Portfoliopunkte im Diagramm</p></div></div></section></div></div><div style="text-align: center; margin-top: 20px;"><button class="btn btn-secondary" onclick="switchTab(1)">Zurück zu Korrelationen</button></div></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn · <a href="impressum.html">Impressum</a></footer></div><script>
+      }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Portfoliotheorie · n-Wertpapierfall</div><h1 class="masthead-title">Portfolio-Analyzer</h1><p class="masthead-sub">Interaktive Portfoliotheorie: n-Wertpapierfall mit Effizienzlinie. Definieren Sie Wertpapiere und Korrelationen, berechnen Sie das MVP und Tangentialportfolio und erkunden Sie den Portfolioraum.</p></header><div class="tabs"><button class="tab active" onclick="switchTab(0)">1. Portfolio-Setup</button><button class="tab" onclick="switchTab(1)">2. Korrelationen</button><button class="tab" onclick="switchTab(2)">3. Portfolioraum</button></div><!-- Tab 1: Portfolio Setup --><div class="tab-content active"><div class="alert alert-info"><strong>Schritt 1:</strong>Definieren Sie Ihre Wertpapiere und deren Parameter</div><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Anzahl der Wertpapiere</div></div><div class="section"><div class="form-group"><label for="numAssets">Wie viele Aktien sollen im Portfolio sein?</label><input type="number" id="numAssets" value="4" min="2" max="20" step="1" onchange="updateAssetInputs()"></div><div class="form-group"><label for="riskFreeRate">Risikofreier Zinssatz (annualisiert, in %)</label><input type="number" id="riskFreeRate" value="2.0" step="0.1" min="0"></div><button class="btn" onclick="loadExampleData()">Beispieldaten laden (S&amp;P500, Gold, Anleihen, Bitcoin)</button></div></section><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Wertpapier-Parameter</div></div><div class="section"><div id="assetInputs" class="asset-grid"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Portfolio-Gewichte</div></div><div class="section"><div class="input-mode-toggle"><button class="toggle-btn active" onclick="setWeightMode('percent')">Prozent-Eingabe (%)</button><button class="toggle-btn" onclick="setWeightMode('euro')">Euro-Werte (€)</button></div><div id="weightInputs"><!-- Dynamisch generiert --></div><div id="portfolioSummary" style="margin-top: 15px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; font-size: 13px;"><!-- Zusammenfassung --></div><button class="btn" style="margin-top: 15px;" onclick="normalizeWeights()">Gewichte automatisch normalisieren</button></div></section><div style="text-align: center; margin-top: 20px;"><button class="btn" onclick="switchTab(1)">Weiter zu Korrelationen</button></div></div><!-- Tab 2: Korrelationen --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 2:</strong>Geben Sie die Korrelationen zwischen den Wertpapieren ein</div><section><div class="section-head"><div class="section-num">IV</div><div class="section-title">Korrelationsmatrix</div></div><div class="section"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Schieberegler: -1.0 (perfekte negative Korrelation) bis +1.0 (perfekte positive Korrelation)</p><div id="correlationInputs"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">V</div><div class="section-title">Resultierende Kovarianzmatrix</div></div><div class="section covariance-matrix"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Automatisch berechnet aus Korrelationen und Standardabweichungen</p><div id="covarianceDisplay" class="matrix-display"><!-- Dynamisch generiert --></div></div></section><div style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center;"><button class="btn btn-secondary" onclick="switchTab(0)">Zurück zu Setup</button><button class="btn" onclick="switchTab(2)">Weiter zum Portfolioraum</button></div></div><!-- Tab 3: Portfolioraum --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 3:</strong>Portfolioraum mit Effizienzlinie - Ziehen Sie den roten Punkt zu Ihrem Wunsch-Portfolio</div><div style="display: flex; gap: 20px; flex-wrap: wrap;"><!-- Linke Seite: Chart --><div style="flex: 1; min-width: 600px;"><section><div class="section-head"><div class="section-num">VI</div><div class="section-title">Rendite-Risiko-Diagramm</div></div><div class="section"><div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;"><button class="btn" onclick="calculatePortfolios()">Portfolios berechnen</button><button class="btn btn-secondary" onclick="resetZoom()">Zoom zurücksetzen</button></div><div class="chart-container"><canvas id="portfolioChart"></canvas></div><div class="legend"><div class="legend-item"><svg class="legend-icon" width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#FF6B6B" stroke="#fff" stroke-width="1.5"/></svg><span>Ihr Portfolio (verschiebbar)</span></div><div class="legend-item"><svg class="legend-icon" width="15" height="15" viewBox="0 0 16 16"><path d="M8 2 L14 14 L2 14 Z" fill="#EA5B0C"/></svg><span>Einzelwertpapiere</span></div><div class="legend-item"><svg class="legend-icon" width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#4ECDC4" stroke="#fff" stroke-width="1.5"/></svg><span>MVP</span></div><div class="legend-item"><svg class="legend-icon" width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#FFD93D" stroke="#fff" stroke-width="1.5"/></svg><span>Tangentialportfolio</span></div><div class="legend-item"><svg class="legend-icon" width="16" height="15" viewBox="0 0 16 16"><line x1="1" y1="8" x2="15" y2="8" stroke="#B82585" stroke-width="3"/></svg><span>Effizienzlinie</span></div><div class="legend-item"><svg class="legend-icon" width="16" height="15" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="11" rx="1.5" fill="rgba(90,98,140,0.18)" stroke="rgba(90,98,140,0.45)"/></svg><span>Portfolioraum (simuliert)</span></div></div></div></section></div><!-- Rechte Seite: Info-Panel --><div style="flex: 0 0 400px; min-width: 350px;"><section style="position: sticky; top: 20px;"><div class="section-head"><div class="section-num">VII</div><div class="section-title">Portfolio-Details</div></div><div class="section"><div id="portfolioDetailsPanel"><p style="color: var(--ink-muted); text-align: center; padding: 40px 20px; font-size: 13px;">Klicken Sie auf "Portfolios berechnen" oder bewegen Sie die Maus über einen der Portfoliopunkte im Diagramm</p></div></div></section></div></div><div style="text-align: center; margin-top: 20px;"><button class="btn btn-secondary" onclick="switchTab(1)">Zurück zu Korrelationen</button></div></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn · <a href="impressum.html">Impressum</a></footer></div><script>
         // ════════════════════════════════════════════════════════════
         // Globale State
         // ════════════════════════════════════════════════════════════
@@ -899,10 +903,11 @@
         let portfolioWeights = [];
         let weightMode = 'percent';
         let portfolioChart = null;
-        let simulatedPortfolios = [];
         let mvpData = null;
         let tangentialData = null;
         let isMatrixPSD = true;
+        let isDragging = false;
+        let portfolioSpacePolygon = [];   // Randpunkte des zulässigen Portfolioraums
 
         // ════════════════════════════════════════════════════════════
         // Numerische Helpers
@@ -1010,44 +1015,181 @@
         }
 
         // ════════════════════════════════════════════════════════════
-        // Sampling (Box-Muller + Marsaglia-Tsang + Dirichlet)
+        // Inverse Optimierung — nächstgelegenes zulässiges Long-Only-
+        // Portfolio zu einem Zielpunkt (σ, μ); für den Drag des PF-Punkts.
         // ════════════════════════════════════════════════════════════
-        function normalSample() {
-            let u, v;
-            do { u = Math.random(); } while (u === 0);
-            v = Math.random();
-            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-        }
-        function gammaSample(alpha) {
-            if (alpha < 1) {
-                const r = gammaSample(alpha + 1);
-                return r * Math.pow(Math.random(), 1 / alpha);
+        // Euklidische Projektion auf den Simplex {w ≥ 0, Σw = 1} (Duchi 2008)
+        function projectSimplex(v) {
+            const n = v.length;
+            const u = v.slice().sort((a, b) => b - a);
+            let css = 0, theta = 0;
+            for (let i = 0; i < n; i++) {
+                css += u[i];
+                const t = (css - 1) / (i + 1);
+                if (u[i] - t > 0) theta = t;
             }
-            const d = alpha - 1 / 3;
-            const c = 1 / Math.sqrt(9 * d);
-            while (true) {
-                let x, v;
-                do { x = normalSample(); v = 1 + c * x; } while (v <= 0);
-                v = v * v * v;
-                const u = Math.random();
-                if (u < 1 - 0.0331 * x * x * x * x) return d * v;
-                if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
-            }
+            return v.map(x => Math.max(x - theta, 0));
         }
-        function dirichletSample(n, alpha) {
-            if (alpha === undefined) alpha = 1;
-            const sample = new Array(n);
-            let total = 0;
-            for (let i = 0; i < n; i++) { sample[i] = gammaSample(alpha); total += sample[i]; }
-            if (total <= 0) return new Array(n).fill(1 / n);
-            for (let i = 0; i < n; i++) sample[i] /= total;
-            return sample;
+
+        // Nächstgelegenes zulässiges Long-Only-Portfolio zum Zielpunkt (σ*, μ*):
+        // min (σ(w)-σ*)² + (μ(w)-μ*)²  u.B. w∈Simplex {w≥0, Σw=1}.
+        // Die Zielfunktion ist in w nicht konvex → Multi-Start gegen lokale
+        // Minima, u. a. mit dem Frontier-Seed (Min-Varianz-PF zur Zielrendite,
+        // konvexes QP) als garantiert korrekter Startpunkt.
+        function inversePortfolio(targetSigma, targetMu, startW) {
+            const n = startW.length;
+            if (n === 0) return null;
+            const Sigma = covarianceMatrixAnnual;
+            const mu = assetData.map(a => a.expectedReturn / 100);
+            const muMin = Math.min.apply(null, mu), muMax = Math.max.apply(null, mu);
+
+            function objVal(w) {
+                let varP = 0, muP = 0;
+                for (let i = 0; i < n; i++) {
+                    let s = 0;
+                    for (let j = 0; j < n; j++) s += Sigma[i][j] * w[j];
+                    varP += w[i] * s; muP += w[i] * mu[i];
+                }
+                const sigma = Math.sqrt(Math.max(varP, 1e-12));
+                const dS = sigma - targetSigma, dM = muP - targetMu;
+                return dS * dS + dM * dM;
+            }
+            // Projizierter Gradientenabstieg mit Backtracking-Line-Search
+            function refine(w0) {
+                let w = projectSimplex(w0.slice());
+                let step = 1.0;
+                for (let iter = 0; iter < 180; iter++) {
+                    const Sw = matVecMul(Sigma, w);
+                    let varP = 0, muP = 0;
+                    for (let i = 0; i < n; i++) { varP += w[i] * Sw[i]; muP += w[i] * mu[i]; }
+                    const sigma = Math.sqrt(Math.max(varP, 1e-12));
+                    const dSig = sigma - targetSigma, dMu = muP - targetMu;
+                    const f0 = dSig * dSig + dMu * dMu;
+                    if (f0 < 1e-12) break;
+                    const grad = new Array(n);
+                    for (let i = 0; i < n; i++) grad[i] = 2 * dSig * (Sw[i] / sigma) + 2 * dMu * mu[i];
+                    let improved = false;
+                    for (let bt = 0; bt < 25; bt++) {
+                        const wNew = projectSimplex(w.map((x, i) => x - step * grad[i]));
+                        if (objVal(wNew) < f0 - 1e-14) { w = wNew; step *= 1.3; improved = true; break; }
+                        step *= 0.5;
+                    }
+                    if (!improved || step < 1e-12) break;
+                }
+                return w;
+            }
+
+            const starts = [startW.slice(), new Array(n).fill(1 / n)];
+            const muClamped = Math.max(muMin, Math.min(muMax, targetMu));
+            const frontierSeed = computeLongOnlyMinRisk(Sigma, mu, muClamped);
+            if (frontierSeed) starts.push(frontierSeed);
+            // Nächstgelegenes Einzelwertpapier als Eckpunkt-Seed (für Drags an die Ränder)
+            let nearAsset = -1, nearD = Infinity;
+            for (let i = 0; i < n; i++) {
+                const dx = assetData[i].stdDev / 100 - targetSigma, dy = mu[i] - targetMu;
+                const dd = dx * dx + dy * dy;
+                if (dd < nearD) { nearD = dd; nearAsset = i; }
+            }
+            if (nearAsset >= 0) { const e = new Array(n).fill(0); e[nearAsset] = 1; starts.push(e); }
+
+            let best = null, bestF = Infinity;
+            for (let s = 0; s < starts.length; s++) {
+                const w = refine(starts[s]);
+                const f = objVal(w);
+                if (f < bestF) { bestF = f; best = w; }
+            }
+            return best;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Drag des „Ihr Portfolio"-Punkts (einmalig an Canvas gebunden)
+        // ════════════════════════════════════════════════════════════
+        function setupChartDragHandlers() {
+            const canvas = document.getElementById('portfolioChart');
+            if (!canvas || canvas.dataset.dragBound === '1') return;
+            canvas.dataset.dragBound = '1';
+
+            function ownPointPixel() {
+                if (!portfolioChart) return null;
+                const dsIdx = portfolioChart.data.datasets.findIndex(d => d.label === 'Ihr Portfolio');
+                if (dsIdx < 0) return null;
+                const meta = portfolioChart.getDatasetMeta(dsIdx);
+                if (!meta || !meta.data || !meta.data[0]) return null;
+                return { x: meta.data[0].x, y: meta.data[0].y, dsIdx: dsIdx };
+            }
+            function relPos(evt) {
+                const rect = canvas.getBoundingClientRect();
+                const t = evt.touches && evt.touches[0];
+                return { x: (t ? t.clientX : evt.clientX) - rect.left, y: (t ? t.clientY : evt.clientY) - rect.top };
+            }
+            function applyDrag(pos) {
+                const xs = portfolioChart.scales.x, ys = portfolioChart.scales.y;
+                let targetSigma = xs.getValueForPixel(pos.x) / 100;
+                const targetMu = ys.getValueForPixel(pos.y) / 100;
+                targetSigma = Math.max(0, targetSigma);
+                const w = inversePortfolio(targetSigma, targetMu, portfolioWeights.map(x => x / 100));
+                if (!w) return;
+                portfolioWeights = w.map(x => x * 100);
+                const m = calculatePortfolioMetrics(portfolioWeights);
+                const dsIdx = portfolioChart.data.datasets.findIndex(d => d.label === 'Ihr Portfolio');
+                if (dsIdx >= 0) {
+                    portfolioChart.data.datasets[dsIdx].data[0] = { x: m.risk * 100, y: m.return * 100, weights: portfolioWeights };
+                    portfolioChart.stop();   // laufende Animation abbrechen — sonst friert die Y-Position des Punkts ein
+                    portfolioChart.update('none');
+                }
+                showPortfolioDetails('Ihr Portfolio', portfolioWeights, m.risk, m.return);
+            }
+            // Drosselung: höchstens ein Optimierungslauf pro Animationsframe
+            let pendingPos = null, rafId = null;
+            function scheduleDrag(pos) {
+                pendingPos = pos;
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    rafId = null;
+                    if (pendingPos && isDragging) applyDrag(pendingPos);
+                });
+            }
+            function onDown(evt) {
+                const p = ownPointPixel();
+                if (!p) return;
+                const pos = relPos(evt);
+                if (Math.hypot(pos.x - p.x, pos.y - p.y) <= 20) {
+                    isDragging = true;
+                    canvas.style.cursor = 'grabbing';
+                    evt.preventDefault();
+                }
+            }
+            function onMove(evt) {
+                if (!portfolioChart) return;
+                const pos = relPos(evt);
+                if (!isDragging) {
+                    const p = ownPointPixel();
+                    if (p) canvas.style.cursor = Math.hypot(pos.x - p.x, pos.y - p.y) <= 20 ? 'grab' : 'default';
+                    return;
+                }
+                evt.preventDefault();
+                scheduleDrag(pos);
+            }
+            function onUp() {
+                if (!isDragging) return;
+                if (pendingPos) applyDrag(pendingPos);   // letzten Stand sicher anwenden (rAF könnte noch ausstehen)
+                pendingPos = null;
+                isDragging = false;
+                canvas.style.cursor = 'grab';
+                updateWeightInputs();
+            }
+            canvas.addEventListener('mousedown', onDown);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onUp);
+            canvas.addEventListener('touchstart', onDown, { passive: false });
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchend', onUp);
         }
 
         // ════════════════════════════════════════════════════════════
         // Initialisierung
         // ════════════════════════════════════════════════════════════
-        document.addEventListener('DOMContentLoaded', () => updateAssetInputs());
+        document.addEventListener('DOMContentLoaded', () => { updateAssetInputs(); setupChartDragHandlers(); });
 
         // ════════════════════════════════════════════════════════════
         // Tab-Wechsel
@@ -1521,41 +1663,142 @@
         }
 
         // ════════════════════════════════════════════════════════════
-        // Monte-Carlo-Simulation (Dirichlet-Mix für breitere Streuung)
+        // Sampling (Box-Muller + Marsaglia-Tsang + Dirichlet) — für den
+        // simulierten Portfolioraum (Hintergrundfläche)
         // ════════════════════════════════════════════════════════════
-        function simulatePortfolios(numSimulations) {
-            if (numSimulations === undefined) numSimulations = 5000;
-            const n = assetData.length;
-            const portfolios = [];
-            for (let i = 0; i < numSimulations; i++) {
-                const alpha = (i / numSimulations < 0.7) ? 0.5 : 1.0;
-                const w = dirichletSample(n, alpha);
-                const weights = w.map(x => x * 100);
-                const metrics = calculatePortfolioMetrics(weights);
-                if (!Number.isFinite(metrics.risk) || !Number.isFinite(metrics.return)) continue;
-                portfolios.push({ weights: weights, return: metrics.return, risk: metrics.risk, sharpe: metrics.sharpe });
-            }
-            return portfolios;
+        function normalSample() {
+            let u, v;
+            do { u = Math.random(); } while (u === 0);
+            v = Math.random();
+            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
         }
+        function gammaSample(alpha) {
+            if (alpha < 1) return gammaSample(alpha + 1) * Math.pow(Math.random(), 1 / alpha);
+            const d = alpha - 1 / 3, c = 1 / Math.sqrt(9 * d);
+            while (true) {
+                let x, v;
+                do { x = normalSample(); v = 1 + c * x; } while (v <= 0);
+                v = v * v * v;
+                const u = Math.random();
+                if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+                if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+            }
+        }
+        function dirichletSample(n, alpha) {
+            if (alpha === undefined) alpha = 1;
+            const s = new Array(n);
+            let t = 0;
+            for (let i = 0; i < n; i++) { s[i] = gammaSample(alpha); t += s[i]; }
+            if (t <= 0) return new Array(n).fill(1 / n);
+            for (let i = 0; i < n; i++) s[i] /= t;
+            return s;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Zulässiger Portfolioraum als Randpolygon.
+        // Für jede Rendite μ ist der erreichbare Risikobereich ein Intervall
+        // [σ_min(μ), σ_max(μ)] → wir hüllen die Punktwolke je μ-Bin ein.
+        // Punktwolke = simulierte PF (Dirichlet) + analytische Min-Varianz-
+        // Frontier (exakter linker Rand) + Einzelwertpapier-Ecken.
+        // ════════════════════════════════════════════════════════════
+        function computePortfolioSpacePolygon() {
+            const n = assetData.length;
+            if (n < 2) return [];
+            const muDec = assetData.map(a => a.expectedReturn / 100);
+            const muPct = assetData.map(a => a.expectedReturn);
+            const muMin = Math.min.apply(null, muPct), muMax = Math.max.apply(null, muPct);
+
+            const pts = [];
+            const numSim = n > 10 ? 4500 : 3000;
+            for (let k = 0; k < numSim; k++) {
+                const w = dirichletSample(n, k < numSim * 0.7 ? 0.4 : 1.0);
+                let varP = 0, muP = 0;
+                for (let i = 0; i < n; i++) {
+                    let sdot = 0;
+                    for (let j = 0; j < n; j++) sdot += covarianceMatrixAnnual[i][j] * w[j];
+                    varP += w[i] * sdot; muP += w[i] * muDec[i];
+                }
+                pts.push({ x: Math.sqrt(Math.max(varP, 0)) * 100, y: muP * 100 });
+            }
+            // Analytische Min-Varianz-Frontier über den gesamten Renditebereich
+            const F = 70;
+            for (let i = 0; i <= F; i++) {
+                const tr = (muMin + (muMax - muMin) * i / F) / 100;
+                const w = computeLongOnlyMinRisk(covarianceMatrixAnnual, muDec, tr);
+                if (w) { const m = calculatePortfolioMetrics(w.map(x => x * 100)); pts.push({ x: m.risk * 100, y: m.return * 100 }); }
+            }
+            // Einzelwertpapier-Ecken
+            for (let i = 0; i < n; i++) pts.push({ x: assetData[i].stdDev, y: assetData[i].expectedReturn });
+
+            // Degeneriert: alle Renditen (fast) gleich → schmales horizontales Band
+            if (muMax - muMin < 0.3) {
+                let lo = Infinity, hi = -Infinity;
+                pts.forEach(p => { if (p.x < lo) lo = p.x; if (p.x > hi) hi = p.x; });
+                if (!isFinite(lo)) return [];
+                const yc = muMin, band = 0.4;
+                return [{ x: lo, y: yc - band }, { x: hi, y: yc - band }, { x: hi, y: yc + band }, { x: lo, y: yc + band }];
+            }
+
+            // Einhüllende je μ-Bin
+            const BINS = 48;
+            const left = new Array(BINS).fill(Infinity), right = new Array(BINS).fill(-Infinity);
+            const leftY = new Array(BINS), rightY = new Array(BINS);
+            pts.forEach(p => {
+                let b = Math.floor((p.y - muMin) / (muMax - muMin) * BINS);
+                b = Math.max(0, Math.min(BINS - 1, b));
+                if (p.x < left[b]) { left[b] = p.x; leftY[b] = p.y; }
+                if (p.x > right[b]) { right[b] = p.x; rightY[b] = p.y; }
+            });
+            const poly = [];
+            for (let b = 0; b < BINS; b++) if (isFinite(left[b])) poly.push({ x: left[b], y: leftY[b] });
+            for (let b = BINS - 1; b >= 0; b--) if (isFinite(right[b])) poly.push({ x: right[b], y: rightY[b] });
+            return poly;
+        }
+
+        // Chart.js-Plugin: füllt den Portfolioraum als Fläche im Hintergrund
+        const portfolioSpacePlugin = {
+            id: 'portfolioSpace',
+            beforeDatasetsDraw: function (chart) {
+                if (!portfolioSpacePolygon || portfolioSpacePolygon.length < 3) return;
+                const ctx = chart.ctx, xs = chart.scales.x, ys = chart.scales.y, area = chart.chartArea;
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(area.left, area.top, area.right - area.left, area.bottom - area.top);
+                ctx.clip();
+                ctx.beginPath();
+                for (let i = 0; i < portfolioSpacePolygon.length; i++) {
+                    const p = portfolioSpacePolygon[i];
+                    const px = xs.getPixelForValue(p.x), py = ys.getPixelForValue(p.y);
+                    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(90, 98, 140, 0.12)';
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(90, 98, 140, 0.30)';
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
 
         // ════════════════════════════════════════════════════════════
         // Haupt-Berechnung
         // ════════════════════════════════════════════════════════════
         function calculatePortfolios() {
+            updateCovarianceDisplay();
             if (!isMatrixPSD) {
                 showWarning('Kovarianzmatrix ist nicht positiv definit. Bitte Korrelationen anpassen.');
                 return;
             }
             const weightSum = portfolioWeights.reduce((a, b) => a + b, 0);
             const weightsValid = Math.abs(weightSum - 100) < 0.1;
-            const numSim = assetData.length > 10 ? 3000 : 5000;
 
-            simulatedPortfolios = simulatePortfolios(numSim);
             mvpData = calculateMVP();
             tangentialData = calculateTangentialPortfolio();
+            portfolioSpacePolygon = computePortfolioSpacePolygon();
             const currentPortfolio = calculatePortfolioMetrics(portfolioWeights);
 
-            drawPortfolioChart(simulatedPortfolios, currentPortfolio, mvpData, tangentialData);
+            drawPortfolioChart(currentPortfolio, mvpData, tangentialData);
 
             if (weightsValid) {
                 showPortfolioDetails('Ihr Portfolio', portfolioWeights, currentPortfolio.risk, currentPortfolio.return);
@@ -1563,7 +1806,7 @@
                 document.getElementById('portfolioDetailsPanel').innerHTML = (
                     '<div style="padding: 16px; background: #FFF4E5; border-left: 4px solid #D4A017; border-radius: 6px;">' +
                         '<strong>Hinweis:</strong> Die Summe Ihrer Portfoliogewichte beträgt ' + weightSum.toFixed(2) + '% (sollte 100% sein).<br>' +
-                        'Effizienzlinie, MVP und Tangentialportfolio wurden trotzdem berechnet. Bewegen Sie die Maus über die farbigen Punkte für Details.' +
+                        'Effizienzlinie, MVP und Tangentialportfolio wurden trotzdem berechnet. Ziehen Sie den roten Punkt oder klicken Sie auf einen der farbigen Punkte für Details.' +
                     '</div>'
                 );
             }
@@ -1580,33 +1823,30 @@
         // ════════════════════════════════════════════════════════════
         // Chart zeichnen
         // ════════════════════════════════════════════════════════════
-        function drawPortfolioChart(simulated, current, mvpResult, tangentialResult) {
+        function drawPortfolioChart(current, mvpResult, tangentialResult) {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             if (portfolioChart) portfolioChart.destroy();
 
             const efficientFrontier = calculateEfficientFrontier(60);
             const assetPoints = assetData.map(a => ({ x: a.stdDev, y: a.expectedReturn, label: a.name }));
 
-            const allX = simulated.map(p => p.risk * 100).concat(efficientFrontier.map(p => p.x), assetPoints.map(p => p.x), [current.risk * 100]);
-            const allY = simulated.map(p => p.return * 100).concat(efficientFrontier.map(p => p.y), assetPoints.map(p => p.y), [current.return * 100]);
+            const extraX = [current.risk * 100];
+            const extraY = [current.return * 100];
+            if (mvpResult && mvpResult.metrics) { extraX.push(mvpResult.metrics.risk * 100); extraY.push(mvpResult.metrics.return * 100); }
+            if (tangentialResult && tangentialResult.metrics) { extraX.push(tangentialResult.metrics.risk * 100); extraY.push(tangentialResult.metrics.return * 100); }
+            const spaceX = portfolioSpacePolygon.map(p => p.x);
+            const spaceY = portfolioSpacePolygon.map(p => p.y);
+            const allX = efficientFrontier.map(p => p.x).concat(assetPoints.map(p => p.x), extraX, spaceX);
+            const allY = efficientFrontier.map(p => p.y).concat(assetPoints.map(p => p.y), extraY, spaceY);
             const maxX = Math.max.apply(null, allX);
             const minY = Math.min.apply(null, allY);
             const maxY = Math.max.apply(null, allY);
             const yPad = (maxY - minY) * 0.1 || 1;
 
             const n = assetData.length;
-            const simPointR = n > 10 ? 1.5 : (n > 5 ? 2 : 3);
             const mainPointR = n > 10 ? 8 : 7;
 
             const datasets = [
-                {
-                    label: 'Zufällige Portfolios',
-                    data: simulated.map(p => ({ x: p.risk * 100, y: p.return * 100, weights: p.weights })),
-                    backgroundColor: 'rgba(128, 128, 128, 0.18)',
-                    pointRadius: simPointR,
-                    pointHoverRadius: 5,
-                    order: 6
-                },
                 {
                     label: 'Effizienzlinie',
                     data: efficientFrontier,
@@ -1670,6 +1910,7 @@
             portfolioChart = new Chart(ctx, {
                 type: 'scatter',
                 data: { datasets: datasets },
+                plugins: [portfolioSpacePlugin],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -1696,7 +1937,7 @@
                         },
                         zoom: {
                             zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' },
-                            pan: { enabled: true, mode: 'xy' }
+                            pan: { enabled: false }
                         }
                     },
                     scales: {
