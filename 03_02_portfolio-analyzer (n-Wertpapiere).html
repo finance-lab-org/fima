@@ -890,690 +890,937 @@
         background: var(--rule-soft);
         color: var(--ink-muted);
       }</style></head><body><div class="container"><header class="masthead"><div class="eyebrow">Portfoliotheorie · n-Wertpapierfall</div><h1 class="masthead-title">Portfolio-Analyzer</h1><p class="masthead-sub">Interaktive Portfoliotheorie: n-Wertpapierfall mit Effizienzlinie. Definieren Sie Wertpapiere und Korrelationen, berechnen Sie das MVP und Tangentialportfolio und erkunden Sie den Portfolioraum.</p></header><div class="tabs"><button class="tab active" onclick="switchTab(0)">1. Portfolio-Setup</button><button class="tab" onclick="switchTab(1)">2. Korrelationen</button><button class="tab" onclick="switchTab(2)">3. Portfolioraum</button></div><!-- Tab 1: Portfolio Setup --><div class="tab-content active"><div class="alert alert-info"><strong>Schritt 1:</strong>Definieren Sie Ihre Wertpapiere und deren Parameter</div><section><div class="section-head"><div class="section-num">I</div><div class="section-title">Anzahl der Wertpapiere</div></div><div class="section"><div class="form-group"><label for="numAssets">Wie viele Aktien sollen im Portfolio sein?</label><input type="number" id="numAssets" value="4" min="2" max="20" step="1" onchange="updateAssetInputs()"></div><div class="form-group"><label for="riskFreeRate">Risikofreier Zinssatz (annualisiert, in %)</label><input type="number" id="riskFreeRate" value="2.0" step="0.1" min="0"></div><button class="btn" onclick="loadExampleData()">Beispieldaten laden (S&amp;P500, Gold, Anleihen, Bitcoin)</button></div></section><section><div class="section-head"><div class="section-num">II</div><div class="section-title">Wertpapier-Parameter</div></div><div class="section"><div id="assetInputs" class="asset-grid"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">III</div><div class="section-title">Portfolio-Gewichte</div></div><div class="section"><div class="input-mode-toggle"><button class="toggle-btn active" onclick="setWeightMode('percent')">Prozent-Eingabe (%)</button><button class="toggle-btn" onclick="setWeightMode('euro')">Euro-Werte (€)</button></div><div id="weightInputs"><!-- Dynamisch generiert --></div><div id="portfolioSummary" style="margin-top: 15px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; font-size: 13px;"><!-- Zusammenfassung --></div><button class="btn" style="margin-top: 15px;" onclick="normalizeWeights()">Gewichte automatisch normalisieren</button></div></section><div style="text-align: center; margin-top: 20px;"><button class="btn" onclick="switchTab(1)">Weiter zu Korrelationen</button></div></div><!-- Tab 2: Korrelationen --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 2:</strong>Geben Sie die Korrelationen zwischen den Wertpapieren ein</div><section><div class="section-head"><div class="section-num">IV</div><div class="section-title">Korrelationsmatrix</div></div><div class="section"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Schieberegler: -1.0 (perfekte negative Korrelation) bis +1.0 (perfekte positive Korrelation)</p><div id="correlationInputs"><!-- Dynamisch generiert --></div></div></section><section><div class="section-head"><div class="section-num">V</div><div class="section-title">Resultierende Kovarianzmatrix</div></div><div class="section covariance-matrix"><p style="margin-bottom: 15px; color: var(--ink-muted); font-size: 13px;">Automatisch berechnet aus Korrelationen und Standardabweichungen</p><div id="covarianceDisplay" class="matrix-display"><!-- Dynamisch generiert --></div></div></section><div style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center;"><button class="btn btn-secondary" onclick="switchTab(0)">Zurück zu Setup</button><button class="btn" onclick="switchTab(2)">Weiter zum Portfolioraum</button></div></div><!-- Tab 3: Portfolioraum --><div class="tab-content"><div class="alert alert-info"><strong>Schritt 3:</strong>Portfolioraum mit Effizienzlinie - Ziehen Sie den roten Punkt zu Ihrem Wunsch-Portfolio</div><div style="display: flex; gap: 20px; flex-wrap: wrap;"><!-- Linke Seite: Chart --><div style="flex: 1; min-width: 600px;"><section><div class="section-head"><div class="section-num">VI</div><div class="section-title">Rendite-Risiko-Diagramm</div></div><div class="section"><div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;"><button class="btn" onclick="calculatePortfolios()">Portfolios berechnen</button><button class="btn btn-secondary" onclick="resetZoom()">Zoom zurücksetzen</button></div><div class="chart-container"><canvas id="portfolioChart"></canvas></div><div class="legend"><div class="legend-item"><div class="legend-color" style="background: rgba(128, 128, 128, 0.3);"></div><span>Zufällige Portfolios</span></div><div class="legend-item"><div class="legend-color" style="background: #FF6B6B;"></div><span>Ihr Portfolio (verschiebbar)</span></div><div class="legend-item"><div class="legend-color" style="background: #4ECDC4;"></div><span>MVP</span></div><div class="legend-item"><div class="legend-color" style="background: #FFD93D;"></div><span>Tangentialportfolio</span></div><div class="legend-item"><div class="legend-color" style="background: #B82585;"></div><span>Effizienzlinie</span></div></div></div></section></div><!-- Rechte Seite: Info-Panel --><div style="flex: 0 0 400px; min-width: 350px;"><section style="position: sticky; top: 20px;"><div class="section-head"><div class="section-num">VII</div><div class="section-title">Portfolio-Details</div></div><div class="section"><div id="portfolioDetailsPanel"><p style="color: var(--ink-muted); text-align: center; padding: 40px 20px; font-size: 13px;">Klicken Sie auf "Portfolios berechnen" oder bewegen Sie die Maus über einen der Portfoliopunkte im Diagramm</p></div></div></section></div></div><div style="text-align: center; margin-top: 20px;"><button class="btn btn-secondary" onclick="switchTab(1)">Zurück zu Korrelationen</button></div></div><footer>TH Köln · Finanzmanagement und Kapitalmarkt · Prof. Dr. Marc Mehlhorn · <a href="impressum.html">Impressum</a></footer></div><script>
-        // Globale Variablen
+        // ════════════════════════════════════════════════════════════
+        // Globale State
+        // ════════════════════════════════════════════════════════════
         let assetData = [];
         let correlationMatrix = [];
-        let covarianceMatrix = [];
+        let covarianceMatrixAnnual = [];   // ANNUALISIERT (kein 252-Roundtrip)
         let portfolioWeights = [];
         let weightMode = 'percent';
         let portfolioChart = null;
         let simulatedPortfolios = [];
         let mvpData = null;
         let tangentialData = null;
-        let selectedPortfolio = null;
+        let isMatrixPSD = true;
 
-        // Initialisierung
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAssetInputs();
-        });
+        // ════════════════════════════════════════════════════════════
+        // Numerische Helpers
+        // ════════════════════════════════════════════════════════════
+        function num(val, fallback) {
+            if (fallback === undefined) fallback = 0;
+            if (val === null || val === undefined) return fallback;
+            const s = String(val).replace(',', '.').trim();
+            if (s === '') return fallback;
+            const n = parseFloat(s);
+            return Number.isFinite(n) ? n : fallback;
+        }
+        function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
 
-        // Tab-Wechsel
-        function switchTab(tabIndex) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
+        // ════════════════════════════════════════════════════════════
+        // Matrix-Operationen
+        // ════════════════════════════════════════════════════════════
+        function matVecMul(M, v) {
+            const n = v.length;
+            const out = new Array(n).fill(0);
+            for (let i = 0; i < n; i++)
+                for (let j = 0; j < n; j++)
+                    out[i] += M[i][j] * v[j];
+            return out;
+        }
 
-            tabs.forEach((tab, index) => {
-                if (index === tabIndex) {
-                    tab.classList.add('active');
-                    contents[index].classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                    contents[index].classList.remove('active');
-                }
+        // Inverse via Gauss-Jordan mit Pivoting
+        function matInverse(M) {
+            const n = M.length;
+            const A = M.map((row, i) => {
+                const r = row.slice();
+                for (let j = 0; j < n; j++) r.push(i === j ? 1 : 0);
+                return r;
             });
+            for (let i = 0; i < n; i++) {
+                let pivotRow = i;
+                let maxAbs = Math.abs(A[i][i]);
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(A[k][i]) > maxAbs) {
+                        maxAbs = Math.abs(A[k][i]);
+                        pivotRow = k;
+                    }
+                }
+                if (maxAbs < 1e-12) return null;
+                if (pivotRow !== i) { const tmp = A[i]; A[i] = A[pivotRow]; A[pivotRow] = tmp; }
+                const piv = A[i][i];
+                for (let j = 0; j < 2 * n; j++) A[i][j] /= piv;
+                for (let k = 0; k < n; k++) {
+                    if (k !== i) {
+                        const factor = A[k][i];
+                        for (let j = 0; j < 2 * n; j++) A[k][j] -= factor * A[i][j];
+                    }
+                }
+            }
+            return A.map(row => row.slice(n));
+        }
 
-            // Aktualisiere Displays wenn zu Tab 2 oder 3 gewechselt wird
+        // Cholesky-basierter Positiv-Definit-Test
+        function isPositiveDefinite(M) {
+            const n = M.length;
+            if (n === 0) return true;
+            const L = Array(n).fill(0).map(() => new Array(n).fill(0));
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j <= i; j++) {
+                    let sum = 0;
+                    for (let k = 0; k < j; k++) sum += L[i][k] * L[j][k];
+                    if (i === j) {
+                        const d = M[i][i] - sum;
+                        if (d <= 1e-12) return false;
+                        L[i][j] = Math.sqrt(d);
+                    } else {
+                        L[i][j] = (M[i][j] - sum) / L[j][j];
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Gauss-Solver Ax = b
+        function gaussSolve(A, b) {
+            const n = b.length;
+            const M = A.map((row, i) => [...row, b[i]]);
+            for (let i = 0; i < n; i++) {
+                let pivotRow = i;
+                let maxAbs = Math.abs(M[i][i]);
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(M[k][i]) > maxAbs) { maxAbs = Math.abs(M[k][i]); pivotRow = k; }
+                }
+                if (maxAbs < 1e-12) return null;
+                if (pivotRow !== i) { const tmp = M[i]; M[i] = M[pivotRow]; M[pivotRow] = tmp; }
+                const piv = M[i][i];
+                for (let j = 0; j <= n; j++) M[i][j] /= piv;
+                for (let k = 0; k < n; k++) {
+                    if (k !== i) {
+                        const factor = M[k][i];
+                        for (let j = 0; j <= n; j++) M[k][j] -= factor * M[i][j];
+                    }
+                }
+            }
+            return M.map(row => row[n]);
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Sampling (Box-Muller + Marsaglia-Tsang + Dirichlet)
+        // ════════════════════════════════════════════════════════════
+        function normalSample() {
+            let u, v;
+            do { u = Math.random(); } while (u === 0);
+            v = Math.random();
+            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        }
+        function gammaSample(alpha) {
+            if (alpha < 1) {
+                const r = gammaSample(alpha + 1);
+                return r * Math.pow(Math.random(), 1 / alpha);
+            }
+            const d = alpha - 1 / 3;
+            const c = 1 / Math.sqrt(9 * d);
+            while (true) {
+                let x, v;
+                do { x = normalSample(); v = 1 + c * x; } while (v <= 0);
+                v = v * v * v;
+                const u = Math.random();
+                if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+                if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+            }
+        }
+        function dirichletSample(n, alpha) {
+            if (alpha === undefined) alpha = 1;
+            const sample = new Array(n);
+            let total = 0;
+            for (let i = 0; i < n; i++) { sample[i] = gammaSample(alpha); total += sample[i]; }
+            if (total <= 0) return new Array(n).fill(1 / n);
+            for (let i = 0; i < n; i++) sample[i] /= total;
+            return sample;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Initialisierung
+        // ════════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', () => updateAssetInputs());
+
+        // ════════════════════════════════════════════════════════════
+        // Tab-Wechsel
+        // ════════════════════════════════════════════════════════════
+        function switchTab(tabIndex) {
+            document.querySelectorAll('.tab').forEach((tab, i) =>
+                tab.classList.toggle('active', i === tabIndex));
+            document.querySelectorAll('.tab-content').forEach((c, i) =>
+                c.classList.toggle('active', i === tabIndex));
             if (tabIndex === 1) {
                 updateCorrelationInputs();
                 updateCovarianceDisplay();
             } else if (tabIndex === 2) {
-                // Auto-calculate when entering tab 3
-                setTimeout(() =>calculatePortfolios(), 100);
+                setTimeout(calculatePortfolios, 100);
             }
         }
 
-        // Asset-Inputs aktualisieren
+        // ════════════════════════════════════════════════════════════
+        // Asset-Inputs — Daten erhalten bei n-Änderung
+        // ════════════════════════════════════════════════════════════
         function updateAssetInputs() {
-            const numAssets = parseInt(document.getElementById('numAssets').value);
-            const container = document.getElementById('assetInputs');
-            const weightContainer = document.getElementById('weightInputs');
+            const raw = parseInt(document.getElementById('numAssets').value);
+            const numAssets = clamp(Number.isFinite(raw) ? raw : 4, 2, 20);
+            document.getElementById('numAssets').value = numAssets;
 
-            // Asset-Daten initialisieren
+            const oldAssets = assetData.slice();
+            const oldWeights = portfolioWeights.slice();
+            const oldCorr = correlationMatrix.map(r => r ? r.slice() : null);
+
             assetData = [];
-            for (let i = 0; i< numAssets; i++) {
-                const existingData = assetData[i] || {};
+            for (let i = 0; i < numAssets; i++) {
+                const ex = oldAssets[i] || {};
                 assetData.push({
-                    name: existingData.name || `Wertpapier ${i + 1}`,
-                    expectedReturn: existingData.expectedReturn || 8.0,
-                    stdDev: existingData.stdDev || 15.0
+                    name: ex.name || ('Wertpapier ' + (i + 1)),
+                    expectedReturn: Number.isFinite(ex.expectedReturn) ? ex.expectedReturn : 8.0,
+                    stdDev: Number.isFinite(ex.stdDev) ? ex.stdDev : 15.0
                 });
             }
 
-            // Gewichte initialisieren
-            portfolioWeights = new Array(numAssets).fill(100 / numAssets);
-
-            // UI generieren
-            container.innerHTML = assetData.map((asset, i) => `<div class="asset-card"><h3>Wertpapier ${i + 1}</h3><div class="form-group"><label>Name</label><input type="text" value="${asset.name}"
-                               onchange="assetData[${i}].name = this.value; updateAllDisplays();"></div><div class="form-group"><label>Erwartete Rendite (%, ann.)</label><input type="number" value="${asset.expectedReturn}" step="0.1"
-                               onchange="assetData[${i}].expectedReturn = parseFloat(this.value); updateCovarianceDisplay();"></div><div class="form-group"><label>Standardabweichung (%, ann.)</label><input type="number" value="${asset.stdDev}" step="0.1" min="0.1"
-                               onchange="assetData[${i}].stdDev = parseFloat(this.value); updateCovarianceDisplay();"></div></div>
-            `).join('');
-
-            // Korrelationsmatrix initialisieren
-            initializeCorrelationMatrix(numAssets);
-
-            // Gewichte-UI aktualisieren
-            updateWeightInputs();
-        }
-
-        // Gewichte-Eingabe-Modus
-        function setWeightMode(mode) {
-            weightMode = mode;
-            document.querySelectorAll('.input-mode-toggle .toggle-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            updateWeightInputs();
-        }
-
-        // Gewichte-Inputs aktualisieren
-        function updateWeightInputs() {
-            const container = document.getElementById('weightInputs');
-            const numAssets = assetData.length;
-
-            if (weightMode === 'percent') {
-                container.innerHTML = assetData.map((asset, i) => `<div class="form-group"><label>${asset.name} - Gewicht (%)</label><input type="number" value="${portfolioWeights[i].toFixed(2)}"
-                               step="0.1" min="0" max="100"
-                               onchange="portfolioWeights[${i}] = parseFloat(this.value); updatePortfolioSummary();"></div>
-                `).join('');
+            portfolioWeights = new Array(numAssets).fill(0);
+            const usable = Math.min(oldWeights.length, numAssets);
+            let s = 0;
+            for (let i = 0; i < usable; i++) { portfolioWeights[i] = oldWeights[i] || 0; s += portfolioWeights[i]; }
+            if (s < 1) {
+                portfolioWeights = new Array(numAssets).fill(100 / numAssets);
             } else {
-                container.innerHTML = `<div class="form-group"><label>Gesamtwert Portfolio (€)</label><input type="number" id="totalValue" value="10000" step="100" min="1"
-                               onchange="updateWeightInputs();"></div>
-                    ${assetData.map((asset, i) => {
-                        const totalValue = parseFloat(document.getElementById('totalValue')?.value || 10000);
-                        const euroValue = (portfolioWeights[i] / 100) * totalValue;
-                        return `<div class="form-group"><label>${asset.name} - Positionswert (€)</label><input type="number" value="${euroValue.toFixed(2)}"
-                                       step="10" min="0"
-                                       onchange="updateWeightFromEuro(${i}, this.value);"></div>
-                        `;
-                    }).join('')}
-                `;
+                const total = portfolioWeights.reduce((a, b) => a + b, 0);
+                if (total > 0) for (let i = 0; i < numAssets; i++) portfolioWeights[i] = (portfolioWeights[i] / total) * 100;
+                else portfolioWeights = new Array(numAssets).fill(100 / numAssets);
             }
 
-            updatePortfolioSummary();
-        }
-
-        // Gewicht aus Euro-Wert berechnen
-        function updateWeightFromEuro(index, euroValue) {
-            const totalValue = parseFloat(document.getElementById('totalValue').value);
-            portfolioWeights[index] = (parseFloat(euroValue) / totalValue) * 100;
-            updatePortfolioSummary();
-        }
-
-        // Portfolio-Zusammenfassung aktualisieren
-        function updatePortfolioSummary() {
-            const sum = portfolioWeights.reduce((a, b) =>a + b, 0);
-            const summaryDiv = document.getElementById('portfolioSummary');
-
-            const isValid = Math.abs(sum - 100)< 0.1;
-            const color = isValid ? '#28a745' : '#dc3545';
-
-            summaryDiv.innerHTML = `<strong>Summe der Gewichte:</strong><span style="color: ${color}; font-size: 1.2em; font-weight: 700;">
-                    ${sum.toFixed(2)}%</span>
-                ${!isValid ? '<span style="color: #dc3545;">Gewichte müssen 100% ergeben!</span>' : ' '}
-            `;
-        }
-
-        // Gewichte normalisieren
-        function normalizeWeights() {
-            const sum = portfolioWeights.reduce((a, b) =>a + b, 0);
-            if (sum > 0) {
-                portfolioWeights = portfolioWeights.map(w => (w / sum) * 100);
-                updateWeightInputs();
-            }
-        }
-
-        // Korrelationsmatrix initialisieren
-        function initializeCorrelationMatrix(n) {
-            correlationMatrix = Array(n).fill(0).map(() =>Array(n).fill(0));
-            for (let i = 0; i< n; i++) {
-                for (let j = 0; j< n; j++) {
-                    if (i === j) {
-                        correlationMatrix[i][j] = 1.0;
-                    } else if (i< j) {
-                        correlationMatrix[i][j] = 0.3; // Default
-                    } else {
-                        correlationMatrix[i][j] = correlationMatrix[j][i];
-                    }
+            const newCorr = Array(numAssets).fill(0).map(() => new Array(numAssets).fill(0));
+            for (let i = 0; i < numAssets; i++) {
+                for (let j = 0; j < numAssets; j++) {
+                    if (i === j) newCorr[i][j] = 1.0;
+                    else if (oldCorr && oldCorr[i] && Number.isFinite(oldCorr[i][j])) newCorr[i][j] = oldCorr[i][j];
+                    else newCorr[i][j] = 0.3;
                 }
             }
-        }
+            correlationMatrix = newCorr;
 
-        // Korrelations-Inputs aktualisieren
-        function updateCorrelationInputs() {
-            const container = document.getElementById('correlationInputs');
-            const n = assetData.length;
-
-            let html = '';
-            for (let i = 0; i< n; i++) {
-                for (let j = i + 1; j< n; j++) {
-                    const corr = correlationMatrix[i][j];
-                    html += `<div class="slider-container"><div class="slider-label"><span><strong>${assetData[i].name}</strong><strong>${assetData[j].name}</strong></span><span id="corr_${i}_${j}_value" style="font-weight: 700; color: var(--th-violett);">
-                                    ${corr.toFixed(2)}</span></div><input type="range" min="-1" max="1" step="0.01" value="${corr}"
-                                   oninput="updateCorrelation(${i}, ${j}, this.value);"></div>
-                    `;
-                }
-            }
-
-            container.innerHTML = html;
-        }
-
-        // Korrelation aktualisieren
-        function updateCorrelation(i, j, value) {
-            const corr = parseFloat(value);
-            correlationMatrix[i][j] = corr;
-            correlationMatrix[j][i] = corr;
-            document.getElementById(`corr_${i}_${j}_value`).textContent = corr.toFixed(2);
+            renderAssetCards();
+            updateWeightInputs();
             updateCovarianceDisplay();
         }
 
-        // Kovarianzmatrix berechnen und anzeigen
-        function updateCovarianceDisplay() {
-            const n = assetData.length;
-            covarianceMatrix = Array(n).fill(0).map(() =>Array(n).fill(0));
+        function renderAssetCards() {
+            const container = document.getElementById('assetInputs');
+            container.innerHTML = assetData.map((asset, i) => (
+                '<div class="asset-card">' +
+                    '<h3>Wertpapier ' + (i + 1) + '</h3>' +
+                    '<div class="form-group">' +
+                        '<label>Name</label>' +
+                        '<input type="text" value="' + escapeHtml(asset.name) + '"' +
+                            ' onchange="assetData[' + i + '].name = this.value; updateAllDisplays();">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                        '<label>Erwartete Rendite (%, ann.)</label>' +
+                        '<input type="number" value="' + asset.expectedReturn + '" step="0.1"' +
+                            ' onchange="assetData[' + i + '].expectedReturn = num(this.value, 0); updateCovarianceDisplay();">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                        '<label>Standardabweichung (%, ann.)</label>' +
+                        '<input type="number" value="' + asset.stdDev + '" step="0.1" min="0.01"' +
+                            ' onchange="assetData[' + i + '].stdDev = Math.max(0.01, num(this.value, 15)); updateCovarianceDisplay();">' +
+                    '</div>' +
+                '</div>'
+            )).join('');
+        }
 
-            for (let i = 0; i< n; i++) {
-                for (let j = 0; j< n; j++) {
-                    // Standardabweichungen sind in % und annualisiert, also durch 100 teilen
-                    const sigma_i = assetData[i].stdDev / 100;
-                    const sigma_j = assetData[j].stdDev / 100;
-                    // Kovarianz annualisiert berechnen
-                    const cov_annual = correlationMatrix[i][j] * sigma_i * sigma_j;
-                    // Auf Tagesbasis umrechnen (durch 252 teilen)
-                    covarianceMatrix[i][j] = cov_annual / 252;
+        // ════════════════════════════════════════════════════════════
+        // Gewichts-Modus
+        // ════════════════════════════════════════════════════════════
+        function setWeightMode(mode, btn) {
+            weightMode = mode;
+            document.querySelectorAll('.input-mode-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+            const target = btn || (event && event.target);
+            if (target) target.classList.add('active');
+            updateWeightInputs();
+        }
+
+        function updateWeightInputs() {
+            const container = document.getElementById('weightInputs');
+            if (weightMode === 'percent') {
+                container.innerHTML = assetData.map((asset, i) => (
+                    '<div class="form-group">' +
+                        '<label>' + escapeHtml(asset.name) + ' - Gewicht (%)</label>' +
+                        '<input type="number" value="' + portfolioWeights[i].toFixed(2) + '"' +
+                            ' step="0.1" min="0" max="100"' +
+                            ' onchange="portfolioWeights[' + i + '] = Math.max(0, num(this.value, 0)); updatePortfolioSummary();">' +
+                    '</div>'
+                )).join('');
+            } else {
+                const totalValueEl = document.getElementById('totalValue');
+                const totalValue = num(totalValueEl ? totalValueEl.value : 10000, 10000);
+                let html = (
+                    '<div class="form-group">' +
+                        '<label>Gesamtwert Portfolio (€)</label>' +
+                        '<input type="number" id="totalValue" value="' + totalValue + '" step="100" min="1"' +
+                            ' onchange="updateWeightInputs();">' +
+                    '</div>'
+                );
+                html += assetData.map((asset, i) => {
+                    const euroValue = (portfolioWeights[i] / 100) * totalValue;
+                    return (
+                        '<div class="form-group">' +
+                            '<label>' + escapeHtml(asset.name) + ' - Positionswert (€)</label>' +
+                            '<input type="number" value="' + euroValue.toFixed(2) + '"' +
+                                ' step="10" min="0"' +
+                                ' onchange="updateWeightFromEuro(' + i + ', this.value);">' +
+                        '</div>'
+                    );
+                }).join('');
+                container.innerHTML = html;
+            }
+            updatePortfolioSummary();
+        }
+
+        function updateWeightFromEuro(index, euroValue) {
+            const totalValue = num(document.getElementById('totalValue').value, 0);
+            if (totalValue <= 0) return;
+            portfolioWeights[index] = Math.max(0, (num(euroValue, 0) / totalValue) * 100);
+            updatePortfolioSummary();
+        }
+
+        function updatePortfolioSummary() {
+            const sum = portfolioWeights.reduce((a, b) => a + b, 0);
+            const summaryDiv = document.getElementById('portfolioSummary');
+            const isValid = Math.abs(sum - 100) < 0.1;
+            const color = isValid ? 'var(--pos, #28a745)' : 'var(--th-rot)';
+            summaryDiv.innerHTML = (
+                '<strong>Summe der Gewichte:</strong> ' +
+                '<span style="color: ' + color + '; font-size: 1.2em; font-weight: 700;">' + sum.toFixed(2) + '%</span>' +
+                (!isValid ? ' <span style="color: var(--th-rot); margin-left: 8px;">Gewichte müssen 100% ergeben!</span>' : ' ')
+            );
+        }
+
+        function normalizeWeights() {
+            const sum = portfolioWeights.reduce((a, b) => a + b, 0);
+            if (sum > 0) {
+                portfolioWeights = portfolioWeights.map(w => (w / sum) * 100);
+            } else {
+                const n = portfolioWeights.length;
+                portfolioWeights = new Array(n).fill(100 / n);
+            }
+            updateWeightInputs();
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Korrelationsmatrix — Slider (n<8) oder Heatmap-Tabelle (n>=8)
+        // ════════════════════════════════════════════════════════════
+        function updateCorrelationInputs() {
+            const container = document.getElementById('correlationInputs');
+            const n = assetData.length;
+            if (n >= 8) renderCorrelationMatrix(container, n);
+            else renderCorrelationSliders(container, n);
+        }
+
+        function renderCorrelationSliders(container, n) {
+            let html = '';
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const corr = correlationMatrix[i][j];
+                    html += (
+                        '<div class="slider-container">' +
+                            '<div class="slider-label">' +
+                                '<span><strong>' + escapeHtml(assetData[i].name) + '</strong> &harr; <strong>' + escapeHtml(assetData[j].name) + '</strong></span>' +
+                                '<span id="corr_' + i + '_' + j + '_value" style="font-weight: 700; color: var(--th-violett);">' + corr.toFixed(2) + '</span>' +
+                            '</div>' +
+                            '<input type="range" min="-0.999" max="0.999" step="0.01" value="' + corr + '"' +
+                                ' oninput="updateCorrelation(' + i + ', ' + j + ', this.value);">' +
+                        '</div>'
+                    );
                 }
             }
+            container.innerHTML = html;
+        }
 
-            // Matrix-Tabelle erstellen
-            let html = `<div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #856404;"><strong>ℹ Hinweis zur Berechnung:</strong><br><span style="font-size: 0.9em; color: #666;">Diese Kovarianzmatrix wird aus den<strong>Korrelationen</strong>und den<strong>annualisierten Standardabweichungen</strong>berechnet (Formel: Cov = Korr × σ<sub>i</sub> × σ<sub>j</sub> / 252).<br><strong>Unterschied zu Excel:</strong>Wenn Ihre Excel-Kovarianzmatrix direkt aus den historischen Tagesdaten
-                    mit VARP() berechnet wurde, können geringfügige Abweichungen auftreten (typisch 0,01% - 0,5%),
-                    da unterschiedliche Berechnungsmethoden verwendet werden (Stichprobe vs. Grundgesamtheit).</span></div><p style="margin-bottom: 10px; color: #666; font-size: 0.9em; font-weight: 600;">Tägliche Kovarianzmatrix (nicht annualisiert)</p>
-            `;
-            html += '<table class="correlation-table"><thead><tr><th></th>';
-            assetData.forEach(asset => {
-                html += `<th>${asset.name}</th>`;
-            });
+        function renderCorrelationMatrix(container, n) {
+            let html = '<div style="overflow-x: auto;"><table style="border-collapse: collapse; font-size: 12px; font-family: \'JetBrains Mono\', monospace;"><thead><tr><th style="padding: 8px; min-width: 100px;"></th>';
+            for (let j = 0; j < n; j++) {
+                html += '<th style="padding: 6px 4px; text-align: center; min-width: 64px; font-weight: 600; font-size: 11px; max-width: 80px;">' + escapeHtml(assetData[j].name.slice(0, 14)) + '</th>';
+            }
             html += '</tr></thead><tbody>';
+            for (let i = 0; i < n; i++) {
+                html += '<tr><th style="padding: 4px 8px; text-align: right; font-weight: 600; font-size: 11px; min-width: 100px;">' + escapeHtml(assetData[i].name.slice(0, 16)) + '</th>';
+                for (let j = 0; j < n; j++) {
+                    const v = correlationMatrix[i][j];
+                    const color = corrColor(v);
+                    if (i === j) {
+                        html += '<td style="padding: 8px; text-align: center; background: ' + color + '; min-width: 64px; font-weight: 600;">1.00</td>';
+                    } else if (j > i) {
+                        html += (
+                            '<td style="padding: 0; background: ' + color + '; min-width: 64px;">' +
+                                '<input type="number" value="' + v.toFixed(2) + '" step="0.05" min="-0.999" max="0.999"' +
+                                    ' onchange="updateCorrelation(' + i + ', ' + j + ', this.value); updateCorrelationInputs();"' +
+                                    ' style="width: 64px; padding: 6px 2px; border: none; background: transparent; text-align: center; font-size: 11px; font-family: \'JetBrains Mono\', monospace;">' +
+                            '</td>'
+                        );
+                    } else {
+                        html += '<td style="padding: 8px; text-align: center; background: ' + color + '; min-width: 64px; color: var(--ink-muted);">' + v.toFixed(2) + '</td>';
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table></div>';
+            html += '<p style="margin-top: 12px; font-size: 12px; color: var(--ink-muted);">Editierbar: obere Dreieckshälfte (über der Diagonalen). Werte werden automatisch gespiegelt.</p>';
+            container.innerHTML = html;
+        }
 
+        function corrColor(v) {
+            const a = Math.abs(v);
+            if (v >= 0) {
+                const r = Math.round(255 - (255 - 184) * a);
+                const g = Math.round(255 - (255 - 37) * a);
+                const b = Math.round(255 - (255 - 133) * a);
+                return 'rgba(' + r + ',' + g + ',' + b + ', ' + (0.15 + 0.45 * a) + ')';
+            } else {
+                const r = Math.round(255 - (255 - 201) * a);
+                const g = Math.round(255 - (255 - 12) * a);
+                const b = Math.round(255 - (255 - 15) * a);
+                return 'rgba(' + r + ',' + g + ',' + b + ', ' + (0.15 + 0.45 * a) + ')';
+            }
+        }
+
+        function updateCorrelation(i, j, value) {
+            const corr = clamp(num(value, 0), -0.999, 0.999);
+            correlationMatrix[i][j] = corr;
+            correlationMatrix[j][i] = corr;
+            const el = document.getElementById('corr_' + i + '_' + j + '_value');
+            if (el) el.textContent = corr.toFixed(2);
+            updateCovarianceDisplay();
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Kovarianzmatrix (annualisiert) — mit PSD-Test
+        // ════════════════════════════════════════════════════════════
+        function updateCovarianceDisplay() {
+            const n = assetData.length;
+            covarianceMatrixAnnual = Array(n).fill(0).map(() => new Array(n).fill(0));
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const sigma_i = assetData[i].stdDev / 100;
+                    const sigma_j = assetData[j].stdDev / 100;
+                    covarianceMatrixAnnual[i][j] = correlationMatrix[i][j] * sigma_i * sigma_j;
+                }
+            }
+            isMatrixPSD = isPositiveDefinite(covarianceMatrixAnnual);
+
+            const intro = isMatrixPSD ? (
+                '<div style="background: #FFF7E6; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #D4A017;">' +
+                    '<strong>Hinweis zur Berechnung:</strong><br>' +
+                    '<span style="font-size: 13px; color: var(--ink-soft);">Die annualisierte Kovarianzmatrix wird direkt aus den Korrelationen und annualisierten Standardabweichungen berechnet (Cov<sub>ij</sub> = &rho;<sub>ij</sub> &middot; &sigma;<sub>i</sub> &middot; &sigma;<sub>j</sub>).<br><strong>Unterschied zu Excel:</strong> Wenn Ihre Excel-Kovarianzmatrix direkt aus historischen Tagesdaten berechnet wurde, können geringfügige Abweichungen auftreten (typisch < 0,5 %).</span>' +
+                '</div>'
+            ) : (
+                '<div style="background: var(--th-rot-soft); padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid var(--th-rot);">' +
+                    '<strong style="color: var(--th-rot);">⚠ Warnung: Kovarianzmatrix ist nicht positiv definit!</strong><br>' +
+                    '<span style="font-size: 13px; color: var(--ink-soft);">Die gewählte Kombination aus Korrelationen ist mathematisch inkonsistent (z. B. &rho;<sub>AB</sub>=0,9, &rho;<sub>AC</sub>=0,9, &rho;<sub>BC</sub>=&minus;0,9). MVP/TP/Effizienzlinie können nicht zuverlässig berechnet werden. Bitte Korrelationen anpassen.</span>' +
+                '</div>'
+            );
+
+            let html = intro + '<p style="margin-bottom: 10px; color: var(--ink-muted); font-size: 13px; font-weight: 600;">Annualisierte Kovarianzmatrix</p>';
+            html += '<table class="correlation-table"><thead><tr><th></th>';
+            assetData.forEach(asset => { html += '<th>' + escapeHtml(asset.name) + '</th>'; });
+            html += '</tr></thead><tbody>';
             assetData.forEach((asset, i) => {
-                html += `<tr><th>${asset.name}</th>`;
-                covarianceMatrix[i].forEach(cov => {
-                    html += `<td>${cov.toFixed(10)}</td>`;
-                });
+                html += '<tr><th>' + escapeHtml(asset.name) + '</th>';
+                covarianceMatrixAnnual[i].forEach(cov => { html += '<td>' + cov.toFixed(6) + '</td>'; });
                 html += '</tr>';
             });
             html += '</tbody></table>';
-
             document.getElementById('covarianceDisplay').innerHTML = html;
         }
 
-        // Alle Displays aktualisieren
         function updateAllDisplays() {
             updateWeightInputs();
             updateCorrelationInputs();
             updateCovarianceDisplay();
         }
 
-        // Portfolio-Risiko und Rendite berechnen
+        // ════════════════════════════════════════════════════════════
+        // Portfolio-Metriken (annualisiert)
+        // ════════════════════════════════════════════════════════════
         function calculatePortfolioMetrics(weights) {
             const n = weights.length;
-            const w = weights.map(wt =>wt / 100); // Prozent zu Dezimal
-
-            // Erwartete Rendite (annualisiert)
+            const w = weights.map(wt => wt / 100);
             let expectedReturn = 0;
-            for (let i = 0; i< n; i++) {
-                expectedReturn += w[i] * (assetData[i].expectedReturn / 100);
-            }
-
-            // Varianz - covarianceMatrix ist täglich, also erst berechnen dann * 252
+            for (let i = 0; i < n; i++) expectedReturn += w[i] * (assetData[i].expectedReturn / 100);
             let variance = 0;
-            for (let i = 0; i< n; i++) {
-                for (let j = 0; j< n; j++) {
-                    variance += w[i] * w[j] * covarianceMatrix[i][j];
-                }
-            }
-            // Varianz auf Jahresbasis
-            variance = variance * 252;
-
+            for (let i = 0; i < n; i++)
+                for (let j = 0; j < n; j++)
+                    variance += w[i] * w[j] * covarianceMatrixAnnual[i][j];
+            variance = Math.max(0, variance);
             const stdDev = Math.sqrt(variance);
-
-            return {
-                return: expectedReturn,
-                risk: stdDev,
-                sharpe: (expectedReturn - (parseFloat(document.getElementById('riskFreeRate').value) / 100)) / stdDev
-            };
+            const rf = num(document.getElementById('riskFreeRate').value, 0) / 100;
+            const sharpe = stdDev > 1e-6 ? (expectedReturn - rf) / stdDev : NaN;
+            return { return: expectedReturn, risk: stdDev, sharpe: sharpe };
         }
 
-        // Minimum-Varianz-Portfolio berechnen (vereinfachte Version)
+        // ════════════════════════════════════════════════════════════
+        // MVP — analytisch (Long-Only mit Aktive-Set-Methode)
+        // ════════════════════════════════════════════════════════════
         function calculateMVP() {
             const n = assetData.length;
-            let bestWeights = null;
-            let minVariance = Infinity;
-
-            // Brute-force search (für Demonstrationszwecke - in Realität: Optimizer)
-            for (let iteration = 0; iteration< 10000; iteration++) {
-                let weights = Array(n).fill(0).map(() =>Math.random());
-                const sum = weights.reduce((a, b) =>a + b, 0);
-                weights = weights.map(w => (w / sum) * 100);
-
-                const metrics = calculatePortfolioMetrics(weights);
-                const variance = metrics.risk * metrics.risk;
-
-                if (variance< minVariance) {
-                    minVariance = variance;
-                    bestWeights = weights;
-                }
-            }
-
-            return {
-                weights: bestWeights,
-                metrics: calculatePortfolioMetrics(bestWeights)
-            };
+            const w = computeLongOnlyMVP(covarianceMatrixAnnual);
+            if (!w) return calculateMVPFallback();
+            const weights = w.map(x => x * 100);
+            return { weights: weights, metrics: calculatePortfolioMetrics(weights) };
+        }
+        function calculateMVPFallback() {
+            const n = assetData.length;
+            const weights = new Array(n).fill(100 / n);
+            return { weights: weights, metrics: calculatePortfolioMetrics(weights) };
         }
 
-        // Tangentialportfolio berechnen
+        function computeLongOnlyMVP(Sigma) {
+            const n = Sigma.length;
+            const active = new Array(n).fill(true);
+            for (let iter = 0; iter < 30; iter++) {
+                const activeIdx = [];
+                for (let i = 0; i < n; i++) if (active[i]) activeIdx.push(i);
+                if (activeIdx.length === 0) return null;
+                const k = activeIdx.length;
+                const sub = activeIdx.map(i => activeIdx.map(j => Sigma[i][j]));
+                // KKT: [Σ 1; 1ᵀ 0] [w; λ] = [0; 1]
+                const A = sub.map(row => [...row, 1]);
+                A.push([...new Array(k).fill(1), 0]);
+                const b = [...new Array(k).fill(0), 1];
+                const sol = gaussSolve(A, b);
+                if (!sol) return null;
+                const wSub = sol.slice(0, k);
+                const w = new Array(n).fill(0);
+                for (let i = 0; i < k; i++) w[activeIdx[i]] = wSub[i];
+                let minIdx = -1, minVal = -1e-9;
+                for (let i = 0; i < n; i++) if (active[i] && w[i] < minVal) { minVal = w[i]; minIdx = i; }
+                if (minIdx === -1) return w;
+                active[minIdx] = false;
+            }
+            return null;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Tangentialportfolio — analytisch (Long-Only)
+        // ════════════════════════════════════════════════════════════
         function calculateTangentialPortfolio() {
             const n = assetData.length;
-            let bestWeights = null;
-            let maxSharpe = -Infinity;
-
-            // Brute-force search
-            for (let iteration = 0; iteration< 10000; iteration++) {
-                let weights = Array(n).fill(0).map(() =>Math.random());
-                const sum = weights.reduce((a, b) =>a + b, 0);
-                weights = weights.map(w => (w / sum) * 100);
-
-                const metrics = calculatePortfolioMetrics(weights);
-
-                if (metrics.sharpe >maxSharpe && !isNaN(metrics.sharpe) && isFinite(metrics.sharpe)) {
-                    maxSharpe = metrics.sharpe;
-                    bestWeights = weights;
-                }
+            const rf = num(document.getElementById('riskFreeRate').value, 0) / 100;
+            const mu = assetData.map(a => a.expectedReturn / 100);
+            if (Math.max.apply(null, mu) <= rf) {
+                return { weights: null, metrics: null, error: 'Tangentialportfolio existiert nicht: alle Renditen ≤ risikofreiem Zins.' };
             }
-
-            return {
-                weights: bestWeights,
-                metrics: calculatePortfolioMetrics(bestWeights)
-            };
+            const excess = mu.map(m => m - rf);
+            const w = computeLongOnlyTP(covarianceMatrixAnnual, excess);
+            if (!w) return { weights: null, metrics: null, error: 'Tangentialportfolio konnte nicht berechnet werden (singuläre Matrix).' };
+            const weights = w.map(x => x * 100);
+            return { weights: weights, metrics: calculatePortfolioMetrics(weights) };
         }
 
-        // Zufällige Portfolios simulieren
-        function simulatePortfolios(numSimulations = 10000) {
+        function computeLongOnlyTP(Sigma, excess) {
+            const n = Sigma.length;
+            const active = new Array(n).fill(true);
+            for (let i = 0; i < n; i++) if (excess[i] <= 0) active[i] = false;
+            if (!active.some(a => a)) {
+                for (let i = 0; i < n; i++) active[i] = true;
+            }
+            for (let iter = 0; iter < 30; iter++) {
+                const activeIdx = [];
+                for (let i = 0; i < n; i++) if (active[i]) activeIdx.push(i);
+                if (activeIdx.length === 0) return null;
+                const sub = activeIdx.map(i => activeIdx.map(j => Sigma[i][j]));
+                const subInv = matInverse(sub);
+                if (!subInv) return null;
+                const subExcess = activeIdx.map(i => excess[i]);
+                const SigmaInvExcess = matVecMul(subInv, subExcess);
+                const denom = SigmaInvExcess.reduce((a, b) => a + b, 0);
+                if (Math.abs(denom) < 1e-12) return null;
+                const wSub = SigmaInvExcess.map(x => x / denom);
+                const w = new Array(n).fill(0);
+                for (let i = 0; i < activeIdx.length; i++) w[activeIdx[i]] = wSub[i];
+                let minIdx = -1, minVal = -1e-9;
+                for (let i = 0; i < n; i++) if (active[i] && w[i] < minVal) { minVal = w[i]; minIdx = i; }
+                if (minIdx === -1) return w;
+                active[minIdx] = false;
+            }
+            return null;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Effizienzrand — analytisch, NUR oberer Ast (μ ≥ μ_MVP)
+        // ════════════════════════════════════════════════════════════
+        function calculateEfficientFrontier(numPoints) {
+            if (numPoints === undefined) numPoints = 60;
+            const n = assetData.length;
+            const mvp = calculateMVP();
+            if (!mvp.weights) return [];
+            const mvpReturn = mvp.metrics.return;
+            const mu = assetData.map(a => a.expectedReturn / 100);
+            const maxReturn = Math.max.apply(null, mu);
+            const frontier = [];
+            frontier.push({ x: mvp.metrics.risk * 100, y: mvp.metrics.return * 100 });
+            if (maxReturn <= mvpReturn + 1e-8) {
+                return frontier;
+            }
+            for (let i = 1; i <= numPoints; i++) {
+                const t = i / numPoints;
+                const targetReturn = mvpReturn + t * (maxReturn - mvpReturn);
+                const w = computeLongOnlyMinRisk(covarianceMatrixAnnual, mu, targetReturn);
+                if (w) {
+                    const weights = w.map(x => x * 100);
+                    const m = calculatePortfolioMetrics(weights);
+                    if (Number.isFinite(m.risk) && Number.isFinite(m.return)) {
+                        frontier.push({ x: m.risk * 100, y: m.return * 100 });
+                    }
+                }
+            }
+            return frontier.sort((a, b) => a.y - b.y);
+        }
+
+        // Minimiere wᵀΣw u.B. 1ᵀw = 1, μᵀw = μ_target, w ≥ 0
+        function computeLongOnlyMinRisk(Sigma, mu, targetReturn) {
+            const n = Sigma.length;
+            const active = new Array(n).fill(true);
+            for (let iter = 0; iter < 40; iter++) {
+                const activeIdx = [];
+                for (let i = 0; i < n; i++) if (active[i]) activeIdx.push(i);
+                if (activeIdx.length < 2) return null;
+                const k = activeIdx.length;
+                const Sigma_aa = activeIdx.map(i => activeIdx.map(j => Sigma[i][j]));
+                const mu_a = activeIdx.map(i => mu[i]);
+                const A = [];
+                for (let i = 0; i < k; i++) {
+                    const row = [...Sigma_aa[i]];
+                    row.push(1);
+                    row.push(mu_a[i]);
+                    A.push(row);
+                }
+                A.push([...new Array(k).fill(1), 0, 0]);
+                A.push([...mu_a, 0, 0]);
+                const b = [...new Array(k).fill(0), 1, targetReturn];
+                const sol = gaussSolve(A, b);
+                if (!sol) return null;
+                const wSub = sol.slice(0, k);
+                const w = new Array(n).fill(0);
+                for (let i = 0; i < k; i++) w[activeIdx[i]] = wSub[i];
+                let minIdx = -1, minVal = -1e-9;
+                for (let i = 0; i < n; i++) if (active[i] && w[i] < minVal) { minVal = w[i]; minIdx = i; }
+                if (minIdx === -1) return w;
+                active[minIdx] = false;
+            }
+            return null;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // Monte-Carlo-Simulation (Dirichlet-Mix für breitere Streuung)
+        // ════════════════════════════════════════════════════════════
+        function simulatePortfolios(numSimulations) {
+            if (numSimulations === undefined) numSimulations = 5000;
             const n = assetData.length;
             const portfolios = [];
-
-            for (let i = 0; i< numSimulations; i++) {
-                let weights = Array(n).fill(0).map(() =>Math.random());
-                const sum = weights.reduce((a, b) =>a + b, 0);
-                weights = weights.map(w => (w / sum) * 100);
-
+            for (let i = 0; i < numSimulations; i++) {
+                const alpha = (i / numSimulations < 0.7) ? 0.5 : 1.0;
+                const w = dirichletSample(n, alpha);
+                const weights = w.map(x => x * 100);
                 const metrics = calculatePortfolioMetrics(weights);
-                portfolios.push({
-                    weights: weights,
-                    ...metrics
-                });
+                if (!Number.isFinite(metrics.risk) || !Number.isFinite(metrics.return)) continue;
+                portfolios.push({ weights: weights, return: metrics.return, risk: metrics.risk, sharpe: metrics.sharpe });
             }
-
             return portfolios;
         }
 
-        // Effizienzlinie berechnen
-        function calculateEfficientFrontier(numPoints = 100) {
-            const n = assetData.length;
-            const frontier = [];
-
-            // Finde min und max Return
-            const minReturn = Math.min(...assetData.map(a =>a.expectedReturn / 100));
-            const maxReturn = Math.max(...assetData.map(a =>a.expectedReturn / 100));
-
-            for (let i = 0; i< numPoints; i++) {
-                const targetReturn = minReturn + (maxReturn - minReturn) * i / (numPoints - 1);
-
-                // Finde Portfolio mit minimalem Risiko für diesen Return
-                let bestWeights = null;
-                let minRisk = Infinity;
-
-                for (let iter = 0; iter< 1000; iter++) {
-                    let weights = Array(n).fill(0).map(() =>Math.random());
-                    const sum = weights.reduce((a, b) =>a + b, 0);
-                    weights = weights.map(w => (w / sum) * 100);
-
-                    const metrics = calculatePortfolioMetrics(weights);
-
-                    if (Math.abs(metrics.return - targetReturn)< 0.01 && metrics.risk< minRisk) {
-                        minRisk = metrics.risk;
-                        bestWeights = weights;
-                    }
-                }
-
-                if (bestWeights) {
-                    const metrics = calculatePortfolioMetrics(bestWeights);
-                    frontier.push({
-                        x: metrics.risk * 100,
-                        y: metrics.return * 100
-                    });
-                }
-            }
-
-            return frontier.sort((a, b) =>a.x - b.x);
-        }
-
-        // Portfolios berechnen und Chart aktualisieren
+        // ════════════════════════════════════════════════════════════
+        // Haupt-Berechnung
+        // ════════════════════════════════════════════════════════════
         function calculatePortfolios() {
-            // Validierung
-            const weightSum = portfolioWeights.reduce((a, b) =>a + b, 0);
-            if (Math.abs(weightSum - 100) > 0.1) {
-                alert('Die Summe der Gewichte muss 100% ergeben!');
+            if (!isMatrixPSD) {
+                showWarning('Kovarianzmatrix ist nicht positiv definit. Bitte Korrelationen anpassen.');
                 return;
             }
+            const weightSum = portfolioWeights.reduce((a, b) => a + b, 0);
+            const weightsValid = Math.abs(weightSum - 100) < 0.1;
+            const numSim = assetData.length > 10 ? 3000 : 5000;
 
-            // Berechnungen
-            simulatedPortfolios = simulatePortfolios(10000);
+            simulatedPortfolios = simulatePortfolios(numSim);
             mvpData = calculateMVP();
             tangentialData = calculateTangentialPortfolio();
             const currentPortfolio = calculatePortfolioMetrics(portfolioWeights);
 
-            // Chart zeichnen
-            drawPortfolioChart(simulatedPortfolios, currentPortfolio, mvpData.metrics, tangentialData.metrics);
+            drawPortfolioChart(simulatedPortfolios, currentPortfolio, mvpData, tangentialData);
 
-            // Initial das aktuelle Portfolio anzeigen
-            showPortfolioDetails('Ihr Portfolio', portfolioWeights, currentPortfolio.risk, currentPortfolio.return);
+            if (weightsValid) {
+                showPortfolioDetails('Ihr Portfolio', portfolioWeights, currentPortfolio.risk, currentPortfolio.return);
+            } else {
+                document.getElementById('portfolioDetailsPanel').innerHTML = (
+                    '<div style="padding: 16px; background: #FFF4E5; border-left: 4px solid #D4A017; border-radius: 6px;">' +
+                        '<strong>Hinweis:</strong> Die Summe Ihrer Portfoliogewichte beträgt ' + weightSum.toFixed(2) + '% (sollte 100% sein).<br>' +
+                        'Effizienzlinie, MVP und Tangentialportfolio wurden trotzdem berechnet. Bewegen Sie die Maus über die farbigen Punkte für Details.' +
+                    '</div>'
+                );
+            }
         }
 
+        function showWarning(msg) {
+            document.getElementById('portfolioDetailsPanel').innerHTML = (
+                '<div style="padding: 16px; background: var(--th-rot-soft); border-left: 4px solid var(--th-rot); border-radius: 6px; color: var(--ink-soft);">' +
+                    '<strong>Achtung:</strong> ' + escapeHtml(msg) +
+                '</div>'
+            );
+        }
+
+        // ════════════════════════════════════════════════════════════
         // Chart zeichnen
-        function drawPortfolioChart(simulated, current, mvp, tangential) {
+        // ════════════════════════════════════════════════════════════
+        function drawPortfolioChart(simulated, current, mvpResult, tangentialResult) {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
+            if (portfolioChart) portfolioChart.destroy();
 
-            // Effizienzlinie berechnen
-            const efficientFrontier = calculateEfficientFrontier(50);
+            const efficientFrontier = calculateEfficientFrontier(60);
+            const assetPoints = assetData.map(a => ({ x: a.stdDev, y: a.expectedReturn, label: a.name }));
 
-            // Bestehenden Chart zerstören
-            if (portfolioChart) {
-                portfolioChart.destroy();
+            const allX = simulated.map(p => p.risk * 100).concat(efficientFrontier.map(p => p.x), assetPoints.map(p => p.x), [current.risk * 100]);
+            const allY = simulated.map(p => p.return * 100).concat(efficientFrontier.map(p => p.y), assetPoints.map(p => p.y), [current.return * 100]);
+            const maxX = Math.max.apply(null, allX);
+            const minY = Math.min.apply(null, allY);
+            const maxY = Math.max.apply(null, allY);
+            const yPad = (maxY - minY) * 0.1 || 1;
+
+            const n = assetData.length;
+            const simPointR = n > 10 ? 1.5 : (n > 5 ? 2 : 3);
+            const mainPointR = n > 10 ? 8 : 7;
+
+            const datasets = [
+                {
+                    label: 'Zufällige Portfolios',
+                    data: simulated.map(p => ({ x: p.risk * 100, y: p.return * 100, weights: p.weights })),
+                    backgroundColor: 'rgba(128, 128, 128, 0.18)',
+                    pointRadius: simPointR,
+                    pointHoverRadius: 5,
+                    order: 6
+                },
+                {
+                    label: 'Effizienzlinie',
+                    data: efficientFrontier,
+                    type: 'line',
+                    borderColor: '#B82585',
+                    borderWidth: 3,
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0,
+                    order: 5
+                },
+                {
+                    label: 'Einzelwertpapiere',
+                    data: assetPoints,
+                    backgroundColor: '#EA5B0C',
+                    borderColor: '#EA5B0C',
+                    pointStyle: 'triangle',
+                    pointRadius: 8,
+                    pointHoverRadius: 10,
+                    borderWidth: 2,
+                    order: 4
+                }
+            ];
+
+            if (mvpResult && mvpResult.metrics) {
+                datasets.push({
+                    label: 'Minimum-Varianz-Portfolio',
+                    data: [{ x: mvpResult.metrics.risk * 100, y: mvpResult.metrics.return * 100, weights: mvpResult.weights }],
+                    backgroundColor: '#4ECDC4',
+                    pointRadius: mainPointR,
+                    pointHoverRadius: mainPointR + 2,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    order: 3
+                });
             }
+            if (tangentialResult && tangentialResult.metrics) {
+                datasets.push({
+                    label: 'Tangentialportfolio',
+                    data: [{ x: tangentialResult.metrics.risk * 100, y: tangentialResult.metrics.return * 100, weights: tangentialResult.weights }],
+                    backgroundColor: '#FFD93D',
+                    pointRadius: mainPointR,
+                    pointHoverRadius: mainPointR + 2,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    order: 2
+                });
+            }
+            datasets.push({
+                label: 'Ihr Portfolio',
+                data: [{ x: current.risk * 100, y: current.return * 100, weights: portfolioWeights }],
+                backgroundColor: '#FF6B6B',
+                pointRadius: mainPointR + 1,
+                pointHoverRadius: mainPointR + 3,
+                pointStyle: 'circle',
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                order: 1
+            });
 
-            // Daten vorbereiten
-            const scatterData = simulated.map(p => ({
-                x: p.risk * 100,
-                y: p.return * 100,
-                weights: p.weights
-            }));
-
-            // WICHTIG: Reihenfolge so dass wichtige Punkte ZULETZT gezeichnet werden (= im Vordergrund)
             portfolioChart = new Chart(ctx, {
                 type: 'scatter',
-                data: {
-                    datasets: [
-                        // 1. Zuerst: Zufällige Portfolios (im Hintergrund)
-                        {
-                            label: 'Zufällige Portfolios',
-                            data: scatterData,
-                            backgroundColor: 'rgba(128, 128, 128, 0.2)',
-                            pointRadius: 2,
-                            pointHoverRadius: 5,
-                            order: 5
-                        },
-                        // 2. Dann: Effizienzlinie
-                        {
-                            label: 'Effizienzlinie',
-                            data: efficientFrontier,
-                            type: 'line',
-                            borderColor: '#B82585',
-                            borderWidth: 3,
-                            fill: false,
-                            pointRadius: 0,
-                            tension: 0.4,
-                            order: 4
-                        },
-                        // 3. Dann: MVP (im Vordergrund)
-                        {
-                            label: 'Minimum-Varianz-Portfolio',
-                            data: [{ x: mvp.risk * 100, y: mvp.return * 100, weights: mvpData.weights }],
-                            backgroundColor: '#4ECDC4',
-                            pointRadius: 7,
-                            pointHoverRadius: 9,
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            order: 2
-                        },
-                        // 4. Dann: Tangentialportfolio (im Vordergrund)
-                        {
-                            label: 'Tangentialportfolio',
-                            data: [{ x: tangential.risk * 100, y: tangential.return * 100, weights: tangentialData.weights }],
-                            backgroundColor: '#FFD93D',
-                            pointRadius: 7,
-                            pointHoverRadius: 9,
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            order: 1
-                        },
-                        // 5. Zuletzt: Ihr Portfolio (ganz im Vordergrund, größter Punkt)
-                        {
-                            label: 'Ihr Portfolio',
-                            data: [{ x: current.risk * 100, y: current.return * 100, weights: portfolioWeights }],
-                            backgroundColor: '#FF6B6B',
-                            pointRadius: 8,
-                            pointHoverRadius: 10,
-                            pointStyle: 'circle',
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            order: 0
-                        }
-                    ]
-                },
+                data: { datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             enabled: true,
                             mode: 'nearest',
                             intersect: true,
                             callbacks: {
-                                title: function(context) {
-                                    return context[0].dataset.label;
+                                title: function(ctx) {
+                                    const ds = ctx[0].dataset.label;
+                                    const point = ctx[0].raw;
+                                    return point && point.label ? (ds + ' — ' + point.label) : ds;
                                 },
-                                label: function(context) {
-                                    const risk = context.parsed.x.toFixed(2);
-                                    const ret = context.parsed.y.toFixed(2);
-                                    const rf = parseFloat(document.getElementById('riskFreeRate').value);
-                                    const sharpe = ((context.parsed.y - rf) / context.parsed.x).toFixed(3);
-                                    return [
-                                        `Risiko: ${risk}%`,
-                                        `Rendite: ${ret}%`,
-                                        `Sharpe-Ratio: ${sharpe}`
-                                    ];
+                                label: function(ctx) {
+                                    const risk = ctx.parsed.x;
+                                    const ret = ctx.parsed.y;
+                                    const rf = num(document.getElementById('riskFreeRate').value, 0);
+                                    const sharpe = risk > 0.01 ? ((ret - rf) / risk).toFixed(3) : 'n/a';
+                                    return ['Risiko: ' + risk.toFixed(2) + '%', 'Rendite: ' + ret.toFixed(2) + '%', 'Sharpe-Ratio: ' + sharpe];
                                 }
                             }
                         },
                         zoom: {
-                            zoom: {
-                                wheel: {
-                                    enabled: true,
-                                },
-                                pinch: {
-                                    enabled: true
-                                },
-                                mode: 'xy',
-                            },
-                            pan: {
-                                enabled: true,
-                                mode: 'xy'
-                            }
+                            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' },
+                            pan: { enabled: true, mode: 'xy' }
                         }
                     },
                     scales: {
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Risiko (Standardabweichung, annualisiert in %)',
-                                font: { size: 14, weight: 'bold' }
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toFixed(1) + '%';
-                                }
-                            }
+                            type: 'linear',
+                            min: 0,
+                            max: Math.ceil(maxX * 1.05),
+                            title: { display: true, text: 'Risiko (Standardabweichung, ann. in %)', font: { size: 14, weight: 'bold' } },
+                            ticks: { callback: function(v) { return v.toFixed(1) + '%'; } }
                         },
                         y: {
-                            title: {
-                                display: true,
-                                text: 'Erwartete Rendite (annualisiert in %)',
-                                font: { size: 14, weight: 'bold' }
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toFixed(1) + '%';
+                            type: 'linear',
+                            min: minY - yPad,
+                            max: maxY + yPad,
+                            title: { display: true, text: 'Erwartete Rendite (ann. in %)', font: { size: 14, weight: 'bold' } },
+                            ticks: { callback: function(v) { return v.toFixed(1) + '%'; } }
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const el = elements[0];
+                            const ds = portfolioChart.data.datasets[el.datasetIndex];
+                            const point = ds.data[el.index];
+                            if (point.weights) {
+                                showPortfolioDetails(ds.label, point.weights, point.x / 100, point.y / 100);
+                            } else if (point.label) {
+                                const idx = assetData.findIndex(a => a.name === point.label);
+                                if (idx >= 0) {
+                                    const w = new Array(assetData.length).fill(0);
+                                    w[idx] = 100;
+                                    showPortfolioDetails('Einzelwertpapier: ' + point.label, w, point.x / 100, point.y / 100);
                                 }
                             }
                         }
                     },
-                    onHover: (event, activeElements) => {
-                        if (activeElements.length > 0) {
-                            const element = activeElements[0];
-                            const datasetIndex = element.datasetIndex;
-                            const dataset = portfolioChart.data.datasets[datasetIndex];
-
-                            // Nur für die speziellen Portfolios (nicht random portfolios)
-                            if (datasetIndex >= 2 && dataset.data[0].weights) {
-                                const point = dataset.data[0];
-                                showPortfolioDetails(dataset.label, point.weights, point.x / 100, point.y / 100);
-                            }
-                        }
-                    },
-                    onClick: (event, elements) => {
-                        if (elements.length > 0) {
-                            const datasetIndex = elements[0].datasetIndex;
-                            const index = elements[0].index;
-                            const dataset = portfolioChart.data.datasets[datasetIndex];
-                            const point = dataset.data[index];
-
-                            if (point.weights) {
-                                showPortfolioDetails('Ausgewähltes Portfolio', point.weights, point.x / 100, point.y / 100);
-                            }
+                    onHover: function(event, elements) {
+                        if (event.native) {
+                            event.native.target.style.cursor = elements.length ? 'pointer' : 'default';
                         }
                     }
                 }
             });
+
+            if (tangentialResult && tangentialResult.error) {
+                const panel = document.getElementById('portfolioDetailsPanel');
+                if (panel) {
+                    panel.innerHTML += (
+                        '<div style="margin-top: 12px; padding: 12px; background: #FFF4E5; border-left: 3px solid #D4A017; border-radius: 4px; font-size: 12px; color: var(--ink-soft);">' +
+                            '<strong>Hinweis:</strong> ' + escapeHtml(tangentialResult.error) +
+                        '</div>'
+                    );
+                }
+            }
         }
 
-        // Zoom zurücksetzen
         function resetZoom() {
-            if (portfolioChart) {
-                portfolioChart.resetZoom();
-            }
+            if (portfolioChart) portfolioChart.resetZoom();
         }
 
-        // Portfolio-Details anzeigen
-        function showPortfolioDetails(portfolioName, weights, risk, expectedReturn) {
-            const rf = parseFloat(document.getElementById('riskFreeRate').value) / 100;
-            const sharpe = (expectedReturn - rf) / risk;
-
-            let html = `<div class="detail-section"><h3>${portfolioName}</h3><div class="metric-row"><span class="metric-label">Erwartete Rendite</span><span class="metric-value">${(expectedReturn * 100).toFixed(2)}%</span></div><div class="metric-row"><span class="metric-label">Risiko (Std.abw.)</span><span class="metric-value">${(risk * 100).toFixed(2)}%</span></div><div class="metric-row"><span class="metric-label">Sharpe-Ratio</span><span class="metric-value">${sharpe.toFixed(3)}</span></div></div><div class="detail-section"><h3>Portfolio-Zusammensetzung</h3><table class="weight-table">
-            `;
-
-            weights.forEach((weight, i) => {
-                html += `<tr><td class="asset-name">${assetData[i].name}</td><td class="weight-value">${weight.toFixed(2)}%</td></tr>
-                `;
+        // ════════════════════════════════════════════════════════════
+        // Portfolio-Details
+        // ════════════════════════════════════════════════════════════
+        function showPortfolioDetails(name, weights, risk, expectedReturn) {
+            const rf = num(document.getElementById('riskFreeRate').value, 0) / 100;
+            const sharpe = risk > 0.0001 ? (expectedReturn - rf) / risk : NaN;
+            let html = (
+                '<div class="detail-section">' +
+                    '<h3>' + escapeHtml(name) + '</h3>' +
+                    '<div class="metric-row"><span class="metric-label">Erwartete Rendite</span><span class="metric-value">' + (expectedReturn * 100).toFixed(2) + '%</span></div>' +
+                    '<div class="metric-row"><span class="metric-label">Risiko (Std.abw.)</span><span class="metric-value">' + (risk * 100).toFixed(2) + '%</span></div>' +
+                    '<div class="metric-row"><span class="metric-label">Sharpe-Ratio</span><span class="metric-value">' + (Number.isFinite(sharpe) ? sharpe.toFixed(3) : 'n/a') + '</span></div>' +
+                '</div>' +
+                '<div class="detail-section">' +
+                    '<h3>Portfolio-Zusammensetzung</h3>' +
+                    '<table class="weight-table">'
+            );
+            // Sortierung nach Gewicht (absteigend) für bessere Lesbarkeit bei großem n
+            const sortedIdx = weights.map((w, i) => ({ i, w })).sort((a, b) => b.w - a.w);
+            sortedIdx.forEach(({ i, w }) => {
+                html += '<tr><td class="asset-name">' + escapeHtml(assetData[i].name) + '</td><td class="weight-value">' + w.toFixed(2) + '%</td></tr>';
             });
+            html += '</table></div>';
 
-            html += `</table></div>
-            `;
-
-            // Wenn es nicht das eigene Portfolio ist, zeige Umschichtung
-            if (portfolioName !== 'Ihr Portfolio') {
-                html += `<div class="detail-section"><h3>Erforderliche Umschichtung</h3><table class="weight-table">
-                `;
-
+            if (name !== 'Ihr Portfolio' && !name.startsWith('Einzelwertpapier')) {
+                html += '<div class="detail-section"><h3>Erforderliche Umschichtung</h3><table class="weight-table">';
                 weights.forEach((targetWeight, i) => {
-                    const currentWeight = portfolioWeights[i];
+                    const currentWeight = portfolioWeights[i] || 0;
                     const diff = targetWeight - currentWeight;
-                    const absDiff = Math.abs(diff);
-
-                    let changeClass = 'change-neutral';
-                    let changeText = ' Beibehalten';
-
-                    if (diff > 0.5) {
-                        changeClass = 'change-positive';
-                        changeText = ` +${diff.toFixed(2)}%`;
-                    } else if (diff< -0.5) {
-                        changeClass = 'change-negative';
-                        changeText = ` ${diff.toFixed(2)}%`;
-                    }
-
-                    html += `<tr><td class="asset-name">${assetData[i].name}</td><td class="weight-value"><span class="change-indicator ${changeClass}">${changeText}</span></td></tr>
-                    `;
+                    let cls = 'change-neutral', txt = 'Beibehalten';
+                    if (diff > 0.5) { cls = 'change-positive'; txt = '+' + diff.toFixed(2) + '%'; }
+                    else if (diff < -0.5) { cls = 'change-negative'; txt = diff.toFixed(2) + '%'; }
+                    html += '<tr><td class="asset-name">' + escapeHtml(assetData[i].name) + '</td><td class="weight-value"><span class="change-indicator ' + cls + '">' + txt + '</span></td></tr>';
                 });
-
-                html += `</table><p style="margin-top: 10px; font-size: 0.9em; color: #666;">Von ${portfolioWeights.map((w, i) => `${assetData[i].name}: ${w.toFixed(1)}%`).join(', ')}</p></div>
-                `;
+                html += '</table></div>';
             }
-
             document.getElementById('portfolioDetailsPanel').innerHTML = html;
         }
 
-        // Portfolio auswählen (alte Funktion entfernt, durch showPortfolioDetails ersetzt)
         function selectPortfolio(weights, risk, expectedReturn) {
             showPortfolioDetails('Ausgewähltes Portfolio', weights, risk, expectedReturn);
         }
 
-        // Beispieldaten laden
+        // ════════════════════════════════════════════════════════════
+        // Beispieldaten (S&P500, Gold, Anleihen, Bitcoin aus Excel)
+        // ════════════════════════════════════════════════════════════
         function loadExampleData() {
-            // Exakte Werte aus Excel-Tabelle
             document.getElementById('numAssets').value = '4';
-
             assetData = [
-                { name: 'S&P500', expectedReturn: 12.75, stdDev: 18.28 },
-                { name: 'Gold (USD)', expectedReturn: 11.62, stdDev: 14.65 },
-                { name: 'Anleihen (AGG)', expectedReturn: -1.05, stdDev: 5.53 },
-                { name: 'Bitcoin (USD)', expectedReturn: 58.18, stdDev: 67.19 }
+                { name: 'S&P500',          expectedReturn: 12.75, stdDev: 18.28 },
+                { name: 'Gold (USD)',      expectedReturn: 11.62, stdDev: 14.65 },
+                { name: 'Anleihen (AGG)',  expectedReturn: -1.05, stdDev:  5.53 },
+                { name: 'Bitcoin (USD)',   expectedReturn: 58.18, stdDev: 67.19 }
             ];
-
             portfolioWeights = [25, 25, 25, 25];
-
-            // Korrelationen aus Excel (exakte Werte)
             correlationMatrix = [
                 [1.00, 0.07, 0.11, 0.24],
                 [0.07, 1.00, 0.34, 0.09],
                 [0.11, 0.34, 1.00, 0.11],
                 [0.24, 0.09, 0.11, 1.00]
             ];
-
             document.getElementById('riskFreeRate').value = '2.0';
-
-            // UI komplett neu aufbauen
-            const numAssets = 4;
-            const container = document.getElementById('assetInputs');
-            const weightContainer = document.getElementById('weightInputs');
-
-            // Asset-Daten sind schon gesetzt, also direkt UI generieren
-            container.innerHTML = assetData.map((asset, i) => `<div class="asset-card"><h3>Wertpapier ${i + 1}</h3><div class="form-group"><label>Name</label><input type="text" id="asset_name_${i}" value="${asset.name}"
-                               onchange="assetData[${i}].name = this.value; updateAllDisplays();"></div><div class="form-group"><label>Erwartete Rendite (%, ann.)</label><input type="number" id="asset_return_${i}" value="${asset.expectedReturn}" step="0.01"
-                               onchange="assetData[${i}].expectedReturn = parseFloat(this.value); updateCovarianceDisplay();"></div><div class="form-group"><label>Standardabweichung (%, ann.)</label><input type="number" id="asset_std_${i}" value="${asset.stdDev}" step="0.01" min="0.1"
-                               onchange="assetData[${i}].stdDev = parseFloat(this.value); updateCovarianceDisplay();"></div></div>
-            `).join('');
-
-            // Gewichte-UI aktualisieren
+            renderAssetCards();
             updateWeightInputs();
-
-            // Korrelations-UI aktualisieren
             updateCorrelationInputs();
-
-            // Kovarianzmatrix aktualisieren
             updateCovarianceDisplay();
-
-            alert('Beispieldaten aus Excel geladen!\n\nS&P500, Gold (USD), Anleihen (AGG), Bitcoin (USD)\nAlle Felder wurden mit den exakten Werten ausgefüllt.');
-        }</script></body></html>
+        }
+        </script></body></html>
