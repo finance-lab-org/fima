@@ -15,6 +15,7 @@ Sammlung interaktiver Lernwerkzeuge zur Vorlesung **Finanzmanagement und Kapital
 | [`03_02_portfolio-analyzer (n-Wertpapiere).html`](03_02_portfolio-analyzer%20%28n-Wertpapiere%29.html) | Portfoliotheorie: n-Wertpapierfall — MVP & Tangentialportfolio |
 | [`03_03_capm-uebung.html`](03_03_capm-uebung.html) | CAPM — Security Market Line, Beta, Jensen's Alpha, Treynor |
 | [`04_01_arbitrage-spiel.html`](04_01_arbitrage-spiel.html) | Put-Call-Parität — Arbitrage-Spiel |
+| [`probeklausur-online.html`](probeklausur-online.html) | Probeklausur (Selbstkontrolle) — Passwortzugang, 46-Minuten-Timer mit Auto-Abgabe, Auto-Bewertung & Musterlösung |
 
 Einstiegspunkt: [`index.html`](index.html)
 
