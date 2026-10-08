@@ -8,7 +8,12 @@ Selbsttests und interaktive Veranschaulichungen zur Vorlesung **Finanzmanagement
 
 ## Enthaltene Kapitel
 
-Noch kein Kapitel freigegeben. Die Kapitel erscheinen nach und nach.
+| Datei | Inhalt |
+|---|---|
+| [`kapitel-01/index.html`](kapitel-01/index.html) | Kapitel 1: Grundlagen, Kapitelseite |
+| [`kapitel-01/selbsttest.html`](kapitel-01/selbsttest.html) | Selbsttest, 60 Punkte |
+| [`kapitel-01/veranschaulichungen/index.html`](kapitel-01/veranschaulichungen/index.html) | Übersicht der Veranschaulichungen |
+| [`kapitel-01/veranschaulichungen/zeit-gegen-wertgewichtet.html`](kapitel-01/veranschaulichungen/zeit-gegen-wertgewichtet.html) | Veranschaulichung: Zeit- und wertgewichtete Rendite |
 
 Einstiegspunkt: [`index.html`](index.html)
 

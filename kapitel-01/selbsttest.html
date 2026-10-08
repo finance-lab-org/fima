@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selbsttest Kapitel 1: Grundlagen, Finanzmanagement und Kapitalmarkt (Master)</title>
+<style>
+/* Selbsttest FuI, Gestaltung nach _Vorlagen/Klausur_Referenz/Stilvorlage_alt.html.
+   Kein externes Laden: keine Web-Schriften, keine Bilder, keine Verweise nach aussen. */
+:root{
+ --th-rot:#C90C0F;--th-orange:#EA5B0C;--th-violett:#B82585;
+ --th-rot-soft:#FBE7E7;--th-orange-soft:#FFF3E9;--th-violett-soft:#F7ECF3;
+ --gruen:#2D6A3F;--gruen-soft:#EAF3EC;
+ --bg:#FAFAFA;--card:#FFFFFF;--ink:#1A1A1A;--ink-soft:#404040;--ink-muted:#737373;--ink-faint:#A3A3A3;
+ --rule:#E5E5E5;--rule-soft:#F0F0F0;
+ --shadow-sm:0 1px 2px rgba(0,0,0,0.04);--shadow-md:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
+ --serif:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+ --mono:ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+.container{max-width:1100px;margin:0 auto;padding:40px 32px 40px}
+
+/* Kopf */
+header.masthead{border-bottom:2px solid var(--th-rot);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--th-rot);margin-bottom:12px}
+h1.masthead-title{font-weight:700;font-size:clamp(26px,3.5vw,38px);letter-spacing:-.02em;margin-bottom:8px}
+.masthead-kapitel{font-size:17px;font-weight:600;color:var(--ink-soft);margin-bottom:14px}
+.masthead-meta{display:flex;flex-wrap:wrap;gap:8px 26px;font-family:var(--mono);font-size:12px;color:var(--ink-muted)}
+.masthead-meta strong{color:var(--ink);font-weight:600}
+
+/* Karten und Abschnitte */
+section{margin-bottom:40px;scroll-margin-top:20px}
+.section-head{border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:22px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.section-num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--th-rot);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.section-title{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.section-meta{font-family:var(--mono);font-size:12px;color:var(--ink-muted);margin-left:auto;white-space:nowrap}
+
+.hinweis{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--th-violett);border-radius:6px;padding:18px 22px;box-shadow:var(--shadow-sm)}
+.hinweis h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px}
+.hinweis dl{display:grid;grid-template-columns:auto 1fr;gap:9px 18px;font-size:14px}
+.hinweis dt{font-family:var(--mono);font-weight:600;color:var(--th-violett);white-space:nowrap}
+.hinweis dd{color:var(--ink-soft)}
+
+/* Fragen */
+.frage{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:22px}
+.frage-top{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.frage-nr{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--ink)}
+.frage-pts{font-family:var(--mono);font-size:12px;color:var(--ink-muted);white-space:nowrap}
+.frage-score{font-family:var(--mono);font-size:12px;font-weight:600;margin-left:auto;white-space:nowrap}
+.frage-body p{font-size:14.5px;color:var(--ink-soft);line-height:1.55;margin-bottom:8px}
+.frage-body p:last-child{margin-bottom:0;color:var(--ink);font-weight:500}
+
+/* KPRIM-Aussagen */
+.stmt{border-top:1px solid var(--rule-soft);padding:14px 0;display:grid;grid-template-columns:1fr auto;gap:10px 18px;align-items:start}
+.stmt:first-of-type{border-top:1px solid var(--rule);margin-top:14px}
+.stmt-text{font-size:14px;color:var(--ink);line-height:1.5}
+.lbl{font-family:var(--mono);color:var(--ink-faint);font-size:12px;margin-right:8px}
+.choice-wrap{display:flex;gap:8px;flex-shrink:0}
+.choice{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-soft);background:transparent;border:1px solid var(--rule);border-radius:6px;padding:7px 16px;cursor:pointer;transition:all .12s;min-width:78px}
+.choice:hover{border-color:var(--ink);color:var(--ink);background:var(--bg)}
+.choice.sel{border-color:var(--ink);border-width:1.5px;background:var(--bg);color:var(--ink);font-weight:600}
+
+/* Single-Choice-Optionen */
+.optionen{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.option{display:flex;align-items:flex-start;gap:4px;width:100%;text-align:left;font-family:inherit;font-size:14px;line-height:1.5;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;transition:all .12s}
+.option:hover{border-color:var(--ink);background:var(--bg)}
+.option.sel{border-color:var(--ink);border-width:1.5px;background:var(--bg);font-weight:600}
+.option .lbl{flex-shrink:0}
+
+/* Auswertung, erst nach Abgabe sichtbar */
+.stmt-result{grid-column:1/-1;font-size:13px;border-left:3px solid var(--rule);padding:10px 14px;border-radius:4px;background:var(--bg);margin-top:2px;display:none}
+.frage-result{font-size:13px;border-left:3px solid var(--rule);padding:10px 14px;border-radius:4px;background:var(--bg);margin-top:14px;display:none}
+body.submitted .stmt-result,body.submitted .frage-result{display:block}
+.stmt-result .verdict,.frage-result .verdict{font-weight:600;font-family:var(--mono);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+.stmt-result .meta,.frage-result .meta{color:var(--ink-muted);font-size:12px}
+.stmt-result .expl,.frage-result .expl{color:var(--ink-soft);margin-top:5px;line-height:1.45}
+.stmt-result.ok,.frage-result.ok{border-left-color:var(--gruen);background:var(--gruen-soft)}
+.stmt-result.ok .verdict,.frage-result.ok .verdict{color:var(--gruen)}
+.stmt-result.bad,.frage-result.bad{border-left-color:var(--th-rot);background:var(--th-rot-soft)}
+.stmt-result.bad .verdict,.frage-result.bad .verdict{color:var(--th-rot)}
+.frage-loesung{font-size:13px;color:var(--ink-soft);background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:12px 14px;margin-top:12px;white-space:pre-wrap;display:none}
+body.submitted .frage-loesung[data-has="1"]{display:block}
+
+/* Markierung der Schaltflaechen nach Abgabe */
+.choice.key-correct,.option.key-correct{border-color:var(--gruen);color:var(--gruen);background:var(--gruen-soft);font-weight:600}
+.choice.key-wrongpick,.option.key-wrongpick{border-color:var(--th-rot);color:var(--th-rot);background:var(--th-rot-soft);font-weight:600}
+body.submitted .choice,body.submitted .option{pointer-events:none;cursor:default}
+
+/* Ergebniskarten */
+#ergebnis{display:none}
+body.submitted #ergebnis{display:block}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px}
+.score-card{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--th-violett);border-radius:6px;padding:18px 20px;box-shadow:var(--shadow-sm)}
+.score-card.main{border-left-color:var(--th-rot)}
+.score-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:10px}
+.score-value{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--ink)}
+.score-value .unit{font-size:14px;color:var(--ink-muted);font-weight:500}
+.score-sub{font-size:12px;color:var(--ink-muted);margin-top:6px}
+.legend-line{font-size:13px;color:var(--ink-muted);margin-top:8px}
+#ergebnisPlatzhalter{font-size:14px;color:var(--ink-muted)}
+body.submitted #ergebnisPlatzhalter{display:none}
+
+/* Abgabeleiste */
+.submitbar{position:sticky;bottom:0;z-index:20;margin-top:30px;background:var(--card);border:1px solid var(--rule);border-top:2px solid var(--th-rot);border-radius:8px 8px 0 0;box-shadow:0 -2px 12px rgba(0,0,0,.05);padding:16px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.counter{font-family:var(--mono);font-size:13px;color:var(--ink-muted)}
+.counter strong{color:var(--ink)}
+.btn{padding:11px 20px;border:1px solid var(--rule);border-radius:6px;background:transparent;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--ink);color:var(--ink);background:var(--bg)}
+.btn-primary{border-color:var(--th-rot);color:var(--th-rot)}
+.btn-primary:hover{background:var(--th-rot-soft);border-color:var(--th-rot);color:var(--th-rot)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn-reset{margin-left:auto}
+
+footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-muted)}
+
+/* Schmale Bildschirme: einspaltig, Schaltflaechen nebeneinander ueber die volle Breite */
+@media(max-width:600px){
+ .container{padding:26px 16px 26px}
+ .section-meta{margin-left:0;white-space:normal}
+ .frage{padding:18px 16px}
+ .frage-score{margin-left:0}
+ .stmt{grid-template-columns:1fr}
+ .choice-wrap{width:100%}
+ .choice{flex:1 1 0;min-width:0;padding:9px 8px}
+ .score-grid{grid-template-columns:1fr}
+ .submitbar{padding:14px 16px;gap:10px}
+ .submitbar .btn{flex:1 1 140px}
+ .btn-reset{margin-left:0}
+ .counter{flex:1 1 100%}
+ .hinweis{padding:16px}
+ .hinweis dl{grid-template-columns:1fr;gap:2px 0}
+ .hinweis dd{margin-bottom:8px}
+}
+
+/* Rueckweg zur Kapitelseite (nur auf der Website) */
+.zurueck{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--th-rot);text-decoration:none;margin-bottom:20px;padding:4px 0}
+.zurueck:hover{text-decoration:underline}
+
+</style>
+</head>
+<body>
+<div class="container">
+ <nav aria-label="Rückweg"><a class="zurueck" href="index.html">Zur Kapitelseite</a></nav>
+ <header class="masthead">
+  <div class="eyebrow">Selbsttest zur Vorlesung</div>
+  <h1 class="masthead-title">Finanzmanagement und Kapitalmarkt (Master)</h1>
+  <p class="masthead-kapitel">Kapitel 1: Grundlagen</p>
+  <div class="masthead-meta">
+   <span>Punkte gesamt: <strong>60</strong></span>
+  </div>
+ </header>
+
+ <section id="hinweise">
+  <div class="hinweis">
+   <h2>So wird gewertet</h2>
+   <dl>
+    <dt>KPRIM</dt>
+    <dd>Vier Aussagen, jede unabhängig als richtig oder falsch. Alle vier korrekt beurteilt gibt die vollen Punkte, drei korrekt die halben Punkte, darunter null Punkte.</dd>
+    <dt>Single Choice</dt>
+    <dd>Genau eine der vier Antworten ist richtig. Die richtige Antwort gibt die vollen Punkte, jede andere null Punkte.</dd>
+    <dt>Offen gelassen</dt>
+    <dd>Nicht beantwortete Aussagen und Fragen zählen als falsch. Vor der Abgabe werden sie gezählt und genannt.</dd>
+    <dt>Ablauf</dt>
+    <dd>Sie arbeiten in Ihrem eigenen Tempo, ohne Zeitbegrenzung, und können den Test beliebig oft wiederholen. Die Auflösung mit Begründungen erscheint erst nach der Abgabe.</dd>
+   </dl>
+  </div>
+ </section>
+
+ <section id="auswertung">
+  <div class="section-head">
+   <div class="section-num">Auswertung</div>
+   <div class="section-title">Ihr Ergebnis</div>
+  </div>
+  <div id="ergebnis"></div>
+  <p id="ergebnisPlatzhalter">Das Ergebnis erscheint hier nach der Abgabe.</p>
+ </section>
+
+ <main id="test"></main>
+
+ <div class="submitbar">
+  <div class="counter"><strong id="answered">0</strong> von <strong id="answeredTotal">0</strong> beantwortet</div>
+  <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitTest()">Abgeben</button>
+  <button type="button" class="btn btn-reset" id="resetBtn" onclick="resetTest()" style="display:none">Zurücksetzen</button>
+ </div>
+
+ <footer>Finanzmanagement und Kapitalmarkt (Master), TH Köln, Prof. Dr. Marc Mehlhorn. Selbsttest zur Vorlesung.</footer>
+
+</div>
+<script>
+const DATA = {"aufgaben": [{"nummer": 1, "titel": "Renditen, Verknüpfung und stetige Verzinsung", "fragen": [{"nummer": 1, "typ": "Kprim", "punkte": 3, "text": "Ein Analyst prüft Renditeberichte. Die folgenden Fälle sind voneinander unabhängig. Es gibt keine Ausschüttungen, Gebühren, Steuern oder externen Zahlungen. Rechnen Sie ungerundet; Renditewerte und Abstände in Prozentpunkten sind auf zwei Nachkommastellen, Renditen als Prozentwerte, zu runden. Geldbeträge sind auf zwei Nachkommastellen zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn eine Position am Periodenende 290 EUR wert ist und in dieser Periode eine diskrete Rendite von 16,00 % erzielt hat, dann betrug der Gewinn 40,00 EUR.", "isCorrect": true, "erklaerung": "Der Anfangswert beträgt 290/1,16 = 250 EUR und der Gewinn 290-250 = 40 EUR. Denkfehler beim Urteil FALSCH: Die Rendite auf den Endwert anwenden; 290*0,16 ergäbe 46,40 EUR."}, {"text": "Wenn eine Position mit einem Anfangswert von 400 EUR in einer Periode eine Log-Rendite von 20,00 % erzielt, dann beträgt der Gewinn 80,00 EUR.", "isCorrect": false, "erklaerung": "Der Gewinn beträgt 400*(exp(0,20)-1), gerundet 88,56 EUR. Denkfehler: Die Log-Rendite wie eine diskrete Rendite mit dem Anfangswert multiplizieren; 400*0,20 ergibt 80,00 EUR."}, {"text": "Wenn eine diskrete Rendite -36,00 % beträgt, dann liefert ln(0,36) die zugehörige Log-Rendite.", "isCorrect": false, "erklaerung": "Der verbleibende Wertfaktor beträgt 1-0,36 = 0,64. ln(0,64) ergibt -44,63 %, während ln(0,36) -102,17 % ergäbe. Denkfehler: Verlustanteil statt verbleibenden Wertfaktors logarithmieren."}, {"text": "Wenn ein Kurs von 375 EUR auf 300 EUR fällt, dann ist die Log-Rendite um mehr als 2 Prozentpunkte stärker negativ als die diskrete Rendite.", "isCorrect": true, "erklaerung": "300/375-1 = -20,00 % und ln(0,8) ergibt -22,31 %. Der Abstand beträgt gerundet 2,31 Prozentpunkte und liegt über 2 Prozentpunkten. Denkfehler beim Urteil FALSCH: Diskrete und stetige Rendite gleichsetzen. Der größere Betrag der Log-Rendite bedeutet keinen zusätzlichen Vermögensverlust."}]}, {"nummer": 2, "typ": "Kprim", "punkte": 3, "text": "Vier voneinander unabhängige Berichte betreffen jeweils zwei gleich lange, aufeinanderfolgende Perioden. Die Kurse sind positiv; Ausschüttungen, Gebühren, Steuern und externe Zahlungen entfallen. Rechnen Sie ungerundet; Renditewerte sind auf zwei Nachkommastellen des Prozentwerts zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn die diskreten Periodenrenditen +30,00 % und -30,00 % betragen, dann beträgt die stetige Gesamtrendite -9,00 %.", "isCorrect": false, "erklaerung": "Der Wertfaktor beträgt 1,30*0,70 = 0,91. Die stetige Gesamtrendite ist ln(0,91), gerundet -9,43 %. Denkfehler: Die diskrete Gesamtrendite 0,91-1 = -9,00 % als stetige Gesamtrendite ausweisen."}, {"text": "Wenn die Log-Renditen +7,00 % und -2,00 % betragen, dann beträgt die diskrete Gesamtrendite 5,13 %.", "isCorrect": true, "erklaerung": "Die stetige Gesamtrendite beträgt 0,07-0,02 = 0,05. Die Rückrechnung exp(0,05)-1 ergibt 5,13 %. Die Summe von 5,00 % darf nicht unmittelbar als diskrete Rendite berichtet werden."}, {"text": "Wenn der Kurs von 84 EUR auf 126 EUR und anschließend wieder auf 84 EUR verläuft, dann ist die Summe der beiden diskreten Periodenrenditen null.", "isCorrect": false, "erklaerung": "Die Periodenrenditen sind 126/84-1 = 50,00 % und 84/126-1, gerundet -33,33 %. Ihre mit ungerundeten Werten berechnete Summe beträgt 16,67 %. Denkfehler: Rückkehr zum Anfangskurs mit einer Summe diskreter Renditen von null gleichsetzen; null ergibt sich aus dem Produkt der Wertfaktoren abzüglich 1."}, {"text": "Wenn die diskreten Renditen +12,00 % und -8,00 % bei gleichem Anfangskurs in umgekehrter Reihenfolge auftreten, dann ändert sich der Endwert.", "isCorrect": false, "erklaerung": "Beide Reihenfolgen ergeben den Wertfaktor 1,12*0,92 = 0,92*1,12 = 1,0304 und eine Gesamtrendite von 3,04 %. Denkfehler: Den veränderten Zwischenwert mit einem veränderten Endwert verwechseln."}]}, {"nummer": 3, "typ": "Kprim", "punkte": 3, "text": "Eine Analystin prüft Durchschnittsrenditen in vier unabhängigen Anlagen ohne Ausschüttungen, Gebühren, Steuern oder externe Zahlungen. Alle Perioden innerhalb eines Falls sind gleich lang. Mit diskreter Durchschnittsrendite ist die konstante diskrete Periodenrendite gemeint, die denselben Endwert erzeugt. Rechnen Sie ungerundet; Renditewerte sind auf zwei Nachkommastellen des Prozentwerts zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn 625 EUR über zwei Perioden auf 729 EUR wachsen, dann erklärt eine diskrete Durchschnittsrendite von 8,00 % je Periode den Endwert.", "isCorrect": true, "erklaerung": "WURZEL(729/625)-1 = 8,00 %. Die Gegenprobe 625*1,08^2 = 729 EUR reproduziert den Endwert. Maßgeblich ist das geometrische Mittel der Wertfaktoren."}, {"text": "Wenn drei Log-Renditen +9,00 %, -3,00 % und +6,00 % betragen, dann beträgt die diskrete Durchschnittsrendite 4,08 % je Periode.", "isCorrect": true, "erklaerung": "Die stetige Durchschnittsrendite beträgt (0,09-0,03+0,06)/3 = 0,04. Die diskrete Durchschnittsrendite ist exp(0,04)-1, gerundet 4,08 %. Gegenprobe mit ungerundeten Werten: (exp(0,04))^3 = exp(0,12), also derselbe Wertfaktor wie bei der Summe der drei Log-Renditen. Denkfehler beim Urteil FALSCH: Die stetige Durchschnittsrendite von 4,00 % für die diskrete halten."}, {"text": "Wenn auf eine diskrete Rendite von +60,00 % eine von -45,00 % folgt, dann ist das arithmetische Mittel positiv, obwohl die Anlage insgesamt einen Verlust erzielt.", "isCorrect": true, "erklaerung": "Das arithmetische Mittel beträgt (60,00 %-45,00 %)/2 = 7,50 %. Der tatsächliche Wertfaktor ist 1,60*0,55 = 0,88, also beträgt der Verlust 12,00 %. Die diskrete Durchschnittsrendite ist WURZEL(0,88)-1, gerundet -6,19 %. Der positive arithmetische Mittelwert ist kein Nachweis eines Vermögenszuwachses."}, {"text": "Wenn die diskrete Gesamtrendite über drei Perioden 33,10 % beträgt, dann beträgt die diskrete Durchschnittsrendite 11,03 % je Periode.", "isCorrect": false, "erklaerung": "1,331^(1/3)-1 = 10,00 %; die Gegenprobe lautet 1,10^3 = 1,331. Denkfehler: Die Gesamtrendite durch die Periodenzahl teilen; 33,10 %/3 ergibt zwar 11,03 %, reproduziert aber nicht den Endwert."}]}, {"nummer": 4, "typ": "Kprim", "punkte": 3, "text": "Ein Analyst beurteilt vier unabhängige Fälle zu Renditeverteilungen und Verlustgrenzen. Positive Anfangs- und Endkurse, keine Ausschüttungen, Gebühren, Steuern oder externen Zahlungen werden vorausgesetzt. Rechnen Sie ungerundet. Geldbeträge und Renditewerte sind auf zwei Nachkommastellen, Renditen als Prozentwerte, zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn eine Log-Rendite von -24,00 % eintritt, dann reicht in der Folgeperiode eine diskrete Rendite von +24,00 %, um den Anfangswert wieder zu erreichen.", "isCorrect": false, "erklaerung": "Zur Rückkehr ist der inverse Wertfaktor exp(0,24) erforderlich. Die benötigte diskrete Rendite beträgt exp(0,24)-1, gerundet 27,12 %. Denkfehler: Die Symmetrie der Log-Renditen auf diskrete Renditen übertragen."}, {"text": "Wenn eine Position mit einem Anfangswert von 1.000 EUR in zwei aufeinanderfolgenden Perioden jeweils eine Log-Rendite von -80,00 % erzielt, dann beträgt ihr Endwert 40,00 EUR.", "isCorrect": false, "erklaerung": "Die Log-Renditen addieren sich zu -1,60. Der Endwert ist 1.000*exp(-1,60), gerundet 201,90 EUR; die diskrete Gesamtrendite beträgt gerundet -79,81 %. Denkfehler: Log-Renditen wie diskrete Renditen verknüpfen; 1.000*(1-0,80)^2 ergibt 40,00 EUR. Eine Summe der Log-Renditen unter -100 % ist zulässig."}, {"text": "Wenn ein als lognormalverteilt modellierter Wertfaktor den Wert 0,72 annimmt, dann beträgt die zugehörige Log-Rendite -32,85 %.", "isCorrect": true, "erklaerung": "ln(0,72) ergibt gerundet -32,85 %. Die diskrete Rendite beträgt 0,72-1 = -28,00 %. Denkfehler beim Urteil FALSCH: Die diskrete Rendite von -28,00 % als Log-Rendite ansehen."}, {"text": "Wenn ein Kurs von 480 EUR auf 4,80 EUR fällt, dann beträgt die diskrete Rendite -99,00 % und die Log-Rendite -460,52 %.", "isCorrect": true, "erklaerung": "Der Wertfaktor beträgt 4,80/480 = 0,01. Diskret ergibt sich 0,01-1 = -99,00 %, stetig ln(0,01), gerundet -460,52 %. Denkfehler beim Urteil FALSCH: Eine Log-Rendite unter -100 % für unmöglich halten. Die Log-Rendite hat keine endliche Untergrenze."}]}, {"nummer": 5, "typ": "Kprim", "punkte": 3, "text": "Beurteilt werden vier unabhängige risikolose Anlagen ohne Zwischenzahlungen, Gebühren oder Steuern. r_f bezeichnet jeweils den konstanten stetigen Jahreszins; T wird in Jahren gemessen. Rechnen Sie ungerundet. Geldbeträge und Renditewerte sind auf zwei Nachkommastellen, Renditen als Prozentwerte, zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn 5.000 EUR für zwei Jahre zum stetigen Jahreszins r_f = ln(1,07) angelegt werden, dann beträgt der Endwert 5.724,50 EUR.", "isCorrect": true, "erklaerung": "5.000*exp(2*ln(1,07)) = 5.000*1,07^2 = 5.724,50 EUR. Der zugehörige diskrete Jahreszins beträgt 7,00 %; die beiden Zinsangaben erzeugen denselben Endwert."}, {"text": "Wenn in drei Jahren 8.400 EUR sicher zufließen und r_f = 4,00 % beträgt, dann lautet der heutige Barwert 8.400/(1+0,04)^3.", "isCorrect": false, "erklaerung": "Der richtige Barwert ist 8.400*exp(-0,04*3), gerundet 7.450,13 EUR. Der angegebene Term ergibt gerundet 7.467,57 EUR. Denkfehler: Den stetigen Jahreszins wie einen diskreten Jahreszins zum Abzinsen verwenden."}, {"text": "Wenn in 1,5 Jahren 3.600 EUR sicher zufließen und r_f = -2,00 % beträgt, dann liegt der heutige Barwert über 3.600 EUR.", "isCorrect": true, "erklaerung": "3.600*exp(-(-0,02)*1,5) ergibt 3.709,64 EUR. Bei negativem stetigem Zins ist exp(0,03) größer als 1, sodass der Barwert die spätere Zahlung übersteigt."}, {"text": "Wenn r_f = 3,00 % beträgt und die Anlage zwei Jahre läuft, dann beträgt die diskrete Rendite über die gesamte Laufzeit 6,00 %.", "isCorrect": false, "erklaerung": "Die diskrete Gesamtrendite beträgt exp(0,03*2)-1, gerundet 6,18 %. Denkfehler: Die stetige Gesamtrendite r_f*T = 0,06 = 6,00 % unmittelbar als diskrete Rendite ausweisen."}]}]}, {"nummer": 2, "titel": "Renditeberichte und Anlegerzahlungen", "fragen": [{"nummer": 1, "typ": "Single-Choice", "punkte": 3, "text": "Ein Wertpapier fällt in der ersten Periode von 450 EUR auf 324 EUR und steigt in der zweiten Periode um 25,00 %. Ein Analyst möchte in genau einer dritten Periode wieder den Anfangskurs von 450 EUR erreichen. Ausschüttungen, Gebühren, Steuern und externe Zahlungen entfallen.\n\nWelche diskrete Rendite ist in der dritten Periode erforderlich? Rechnen Sie ungerundet und runden Sie den Prozentwert auf zwei Nachkommastellen.", "optionen": [{"text": "3,00 %", "isCorrect": false, "erklaerung": "Die erste Periodenrendite beträgt 324/450-1 = -28,00 %. Denkfehler: Diskrete Renditen addieren und aus -28,00 %+25,00 %+3,00 % = 0 auf die Rückkehr zum Anfangskurs schließen. Erforderlich sind 450/(324*1,25)-1, gerundet 11,11 %."}, {"text": "13,89 %", "isCorrect": false, "erklaerung": "450/324-1 ergibt gerundet 38,89 %; davon 25 Prozentpunkte abzuziehen ergibt mit ungerundeten Werten 13,89 %. Denkfehler: Den Ausgleichsbedarf durch Subtraktion einer diskreten Periodenrendite fortschreiben, obwohl sich die Bezugsgröße geändert hat. Richtig sind 11,11 %."}, {"text": "11,11 %", "isCorrect": true, "erklaerung": "Nach der zweiten Periode beträgt der Kurs 324*1,25 = 405 EUR. Die erforderliche Rendite ist 450/405-1, gerundet 11,11 %. Gegenprobe mit dem ungerundeten Wert: 405*(450/405) = 450 EUR."}, {"text": "10,54 %", "isCorrect": false, "erklaerung": "ln(450/405) ergibt gerundet 10,54 %. Denkfehler: Die richtige Log-Rendite als diskrete Rendite ausweisen. Diskret sind 450/405-1, gerundet 11,11 %, erforderlich."}]}, {"nummer": 2, "typ": "Single-Choice", "punkte": 4, "text": "Ein Wertpapier durchläuft drei gleich lange Perioden. Die Kurse betragen in t=0, t=1, t=2 und t=3 nacheinander 500 EUR, 640 EUR, 560 EUR und 588 EUR. Ausschüttungen, Gebühren, Steuern und externe Zahlungen entfallen. Ein Bericht soll eine konstante diskrete Rendite je Periode nennen, die denselben Endwert erzeugt.\n\nWelche Durchschnittsrendite muss im Bericht stehen? Rechnen Sie ungerundet und runden Sie den Prozentwert auf zwei Nachkommastellen.", "optionen": [{"text": "5,55 %", "isCorrect": true, "erklaerung": "Die Wertfaktoren sind 640/500 = 1,28, 560/640 = 0,875 und 588/560 = 1,05. Ihr Produkt ist 1,176. Die gesuchte Rendite ist 1,176^(1/3)-1, gerundet 5,55 %. Die Gegenprobe verwendet den ungerundeten Wert: 500*(1,176^(1/3))^3 = 588 EUR."}, {"text": "6,83 %", "isCorrect": false, "erklaerung": "(28,00 %-12,50 %+5,00 %)/3 ergibt 6,83 %. Denkfehler: Die diskreten Periodenrenditen arithmetisch mitteln. Das geometrische Mittel der Wertfaktoren abzüglich 1 ergibt 5,55 %."}, {"text": "5,87 %", "isCorrect": false, "erklaerung": "Die diskrete Gesamtrendite beträgt 588/500-1 = 17,60 %; 17,60 %/3 ergibt 5,87 %. Denkfehler: Die Gesamtrendite linear auf die Perioden verteilen. Richtig ist 1,176^(1/3)-1, gerundet 5,55 %."}, {"text": "5,40 %", "isCorrect": false, "erklaerung": "ln(588/500)/3 ergibt 5,40 %. Denkfehler: Die korrekt berechnete stetige Durchschnittsrendite als diskrete ausweisen. Die Rückrechnung exp(ln(588/500)/3)-1 ergibt 5,55 %."}]}, {"nummer": 3, "typ": "Single-Choice", "punkte": 4, "text": "Ein sicherer Anspruch auf 9.600 EUR in 2,5 Jahren kostet heute 8.000 EUR. Es gibt keine Zwischenzahlungen, Gebühren oder Steuern.\n\nWelcher konstante stetige Jahreszins r_f ist in diesem Preis enthalten? Rechnen Sie ungerundet und runden Sie den Prozentwert auf zwei Nachkommastellen.", "optionen": [{"text": "7,57 %", "isCorrect": false, "erklaerung": "Der Wertfaktor beträgt 9.600/8.000 = 1,20. 1,20^(1/2,5)-1 ergibt gerundet 7,57 %. Denkfehler: Den äquivalenten diskreten Jahreszins statt des stetigen Jahreszinses angeben. Der stetige Jahreszins beträgt gerundet 7,29 %."}, {"text": "8,00 %", "isCorrect": false, "erklaerung": "Die diskrete Gesamtrendite beträgt 9.600/8.000-1 = 20,00 %. 20,00 %/2,5 = 8,00 %. Denkfehler: Die diskrete Gesamtrendite linear auf die Laufzeit verteilen und das Ergebnis als stetigen Jahreszins ausweisen. Richtig sind 7,29 %."}, {"text": "7,70 %", "isCorrect": false, "erklaerung": "Die linear verteilte diskrete Gesamtrendite ergibt 20,00 %/2,5 = 8,00 %; ln(1,08) ergibt gerundet 7,70 %. Denkfehler: Erst die diskrete Gesamtrendite linear auf Jahre verteilen und danach logarithmieren. Richtig ist ln(1,20)/2,5, gerundet 7,29 %."}, {"text": "7,29 %", "isCorrect": true, "erklaerung": "Aus 9.600 = 8.000*exp(r_f*2,5) folgt r_f = ln(9.600/8.000)/2,5 = ln(1,20)/2,5, gerundet 7,29 %. Gegenprobe mit dem ungerundeten Zinssatz: 8.000*exp((ln(1,20)/2,5)*2,5) = 9.600 EUR."}]}, {"nummer": 4, "typ": "Single-Choice", "punkte": 4, "text": "Ein Anleger investiert in t=0 insgesamt 16.000 EUR in einen DAX-ETF. In der ersten Periode beträgt die diskrete Rendite -12,50 %. In t=1, nach der ersten und vor der zweiten Periodenrendite, zahlt er weitere 8.000 EUR ein. Die zweite Periodenrendite beträgt +28,00 %. In t=2 wird das gesamte Depot ausgezahlt. Die Perioden sind gleich lang; weitere Zahlungen, Gebühren und Steuern entfallen.\n\nWelche wertgewichtete Rendite je Periode beschreibt das persönliche Anlageergebnis? Gesucht ist der interne Zinsfuß mit 1+r_MW > 0. Rechnen Sie ungerundet und runden Sie den Prozentwert auf zwei Nachkommastellen.", "optionen": [{"text": "5,83 %", "isCorrect": false, "erklaerung": "WURZEL(0,875*1,28)-1 ergibt 5,83 %. Denkfehler: Die zeitgewichtete Strategierendite anstelle der wertgewichteten Anlegerrendite verwenden. Die zusätzliche Einzahlung vor der stärkeren Periode hebt die Anlegerrendite hier auf 10,00 %."}, {"text": "10,00 %", "isCorrect": true, "erklaerung": "Vor der Einzahlung stehen 16.000*0,875 = 14.000 EUR im Depot. Der Endwert beträgt (14.000+8.000)*1,28 = 28.160 EUR. Aus Anlegersicht gilt -16.000-8.000/(1+r_MW)+28.160/(1+r_MW)^2 = 0. Einsetzen von r_MW = 0,10 ergibt null. Mit x = 1+r_MW lautet die Gleichung 16.000*x^2+8.000*x-28.160 = 0; ihre einzige positive Lösung ist x = 1,10."}, {"text": "17,33 %", "isCorrect": false, "erklaerung": "28.160/(16.000+8.000)-1 ergibt 17,33 %. Denkfehler: Den Endwert durch die Summe der Einzahlungen teilen und den unterschiedlichen Anlagezeitpunkt ignorieren. Der interne Zinsfuß beträgt 10,00 % je Periode."}, {"text": "8,32 %", "isCorrect": false, "erklaerung": "WURZEL(28.160/24.000)-1 ergibt 8,32 %. Denkfehler: Beide Einzahlungen so behandeln, als wären sie bereits in t=0 investiert worden. Die 8.000 EUR sind nur eine Periode angelegt; richtig sind 10,00 % je Periode."}]}]}, {"nummer": 3, "titel": "Portfoliorendite und Grundlagen der Risikomessung", "fragen": [{"nummer": 1, "typ": "Kprim", "punkte": 3, "text": "Eine Analystin prüft vier voneinander unabhängige Portfolios aus jeweils zwei Wertpapieren. Die genannten Stückzahlen und Kurse gelten zu Periodenbeginn; weitere Positionen gibt es nicht. Erwartete Renditen sind diskret und beziehen sich auf dieselbe Periode. Rechnen Sie ungerundet; Prozentwerte sind auf zwei Nachkommastellen zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn ein Portfolio nur aus A mit einer erwarteten Rendite von 4,00 % und B mit einer erwarteten Rendite von 14,00 % besteht und die erwartete Portfoliorendite 10,00 % beträgt, dann beträgt das Marktwertgewicht von A 60,00 %.", "isCorrect": false, "erklaerung": "Aus w_A*0,04+(1-w_A)*0,14 = 0,10 folgt w_A = (0,14-0,10)/(0,14-0,04) = 40,00 %. Denkfehler: Den Anteil (0,10-0,04)/(0,14-0,04) = 60,00 % dem Wertpapier A statt B zuordnen."}, {"text": "Wenn 18.000 EUR in A mit erwarteter Rendite -4,00 % und 42.000 EUR in B mit erwarteter Rendite +11,00 % investiert sind, dann beträgt die erwartete Portfoliorendite trotz der negativen Rendite von A insgesamt +6,50 %.", "isCorrect": true, "erklaerung": "Die Gewichte sind 18.000/60.000 = 0,30 und 42.000/60.000 = 0,70. mu_P = 0,30*(-0,04)+0,70*0,11 = 0,065 = 6,50 %. Die größere Position mit positiver erwarteter Rendite überwiegt."}, {"text": "Wenn die Marktwertgewichte 35,00 % für A und 65,00 % für B sowie die erwarteten Renditen 6,00 % und 14,00 % betragen, dann ergibt die Verknüpfung 1,06*1,14-1 die erwartete Portfoliorendite.", "isCorrect": false, "erklaerung": "mu_P = 0,35*0,06+0,65*0,14 = 11,20 %. Der angegebene Term ergibt 20,84 %. Denkfehler: Gleichzeitig gehaltene Positionen wie aufeinanderfolgende Perioden verknüpfen und die Marktwertgewichte ignorieren."}, {"text": "Wenn die Marktwerte zunächst 3.000 EUR für A und 9.000 EUR für B betragen und vor Periodenbeginn bei unveränderten Kursen nur die Stückzahl von A verdoppelt wird, dann beträgt das neue Marktwertgewicht von A 40,00 %.", "isCorrect": true, "erklaerung": "A hat nach dem Zukauf den Marktwert 6.000 EUR, B weiterhin 9.000 EUR. Das neue Gewicht beträgt 6.000/(6.000+9.000) = 40,00 %. Der Zukauf verändert sowohl den Zähler als auch den gesamten Portfoliowert im Nenner."}]}, {"nummer": 2, "typ": "Kprim", "punkte": 3, "text": "Vier voneinander unabhängige Anlegerfälle betreffen jeweils zwei gleich lange Perioden. Zwischenzahlungen in t=1 erfolgen nach der ersten und vor der zweiten Periodenrendite. Der verbleibende Depotwert wird in t=2 vollständig ausgezahlt; entnommene Beträge werden außerhalb des Depots nicht wiederangelegt. Weitere Zahlungen, Gebühren und Steuern entfallen. Rechnen Sie ungerundet; Renditewerte sind auf zwei Nachkommastellen des Prozentwerts zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn in t=0 zunächst 9.000 EUR und in t=1 weitere 3.180 EUR investiert werden und die Strategie in beiden Perioden +6,00 % erzielt, dann beträgt auch die wertgewichtete Rendite 6,00 % je Periode.", "isCorrect": true, "erklaerung": "Der Endwert ist (9.000*1,06+3.180)*1,06 = 13.483,20 EUR. Die Gleichung für den internen Zinsfuß lautet K_0(r_MW) = -9.000-3.180/(1+r_MW)+13.483,20/(1+r_MW)^2 = 0. Einsetzen von r_MW = 0,06 ergibt null und bestätigt 6,00 %. Denkfehler beim Urteil FALSCH: Eine Zwischenzahlung müsse die wertgewichtete Rendite verändern; bei identischen Periodenrenditen entsteht hier kein Unterschied zur zeitgewichteten Rendite."}, {"text": "Wenn 12.000 EUR angelegt werden, die Strategie zuerst -4,00 % und danach +17,00 % erzielt und in t=1 weitere 11.520 EUR eingezahlt werden, dann beträgt die zeitgewichtete Rendite 5,98 % je Periode.", "isCorrect": true, "erklaerung": "WURZEL(0,96*1,17)-1 ergibt gerundet 5,98 % je Periode; die Einzahlung beeinflusst die zeitgewichtete Rendite nicht. Der Endwert beträgt (12.000*0,96+11.520)*1,17 = 26.956,80 EUR. Denkfehler beim Urteil FALSCH: Den Endwert durch die Summe der Einzahlungen von 23.520 EUR teilen und daraus eine Durchschnittsrendite berechnen; WURZEL(26.956,80/23.520)-1 ergibt gerundet 7,06 %."}, {"text": "Wenn 18.000 EUR angelegt werden, die Periodenrenditen +14,00 % und -6,00 % betragen und in t=1 eine Entnahme von 2.520 EUR erfolgt, dann lautet die Gleichung für den internen Zinsfuß K_0(r_MW) = -18.000+2.520/(1+r_MW)+16.768,80/(1+r_MW)^2 = 0.", "isCorrect": false, "erklaerung": "Der richtige Endwert ist (18.000*1,14-2.520)*0,94 = 16.920 EUR. Richtig lautet die Gleichung für den internen Zinsfuß K_0(r_MW) = -18.000+2.520/(1+r_MW)+16.920/(1+r_MW)^2 = 0. Denkfehler: Die Entnahme erst nach der zweiten Periodenrendite abziehen; 18.000*1,14*0,94-2.520 ergibt 16.768,80 EUR. Das positive Vorzeichen der Entnahme aus Anlegersicht ist richtig."}, {"text": "Wenn ohne Zwischenzahlung aus 14.000 EUR nach zwei Perioden 18.144 EUR werden, dann betragen zeit- und wertgewichtete Rendite jeweils 29,60 % je Periode.", "isCorrect": false, "erklaerung": "18.144/14.000-1 = 29,60 % ist die Gesamtrendite. Beide Renditen je Periode sind WURZEL(18.144/14.000)-1, gerundet 13,84 %. Denkfehler: Die Übereinstimmung beider Renditemaße ohne Zwischenzahlung mit einer Übereinstimmung von Gesamt- und Periodenrendite verwechseln."}]}, {"nummer": 3, "typ": "Kprim", "punkte": 3, "text": "Ein Analyst prüft vier voneinander unabhängige Aussagen zur Schwankung diskreter Renditen. Wo Szenariowahrscheinlichkeiten genannt sind, bilden sie jeweils die vollständige Verteilung und sind bei der Rechnung zu verwenden. Varianzen beziehen sich auf Dezimalrenditen. Rechnen Sie ungerundet; angezeigte Volatilitäten sind auf zwei Nachkommastellen des Prozentwerts zu runden.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn die Szenariorenditen -12,00 %, 3,00 % und 18,00 % mit Wahrscheinlichkeiten 20,00 %, 60,00 % und 20,00 % auftreten, dann beträgt die Volatilität 6,00 %.", "isCorrect": false, "erklaerung": "mu = 3,00 % und sigma^2 = 0,20*(-0,15)^2+0,60*0^2+0,20*0,15^2 = 0,009. sigma = WURZEL(0,009), gerundet 9,49 %. Denkfehler: Die gewichteten Beträge der Abweichungen statt der quadrierten Abweichungen verwenden; 0,20*0,15+0,60*0+0,20*0,15 = 0,06 = 6,00 % ist keine Volatilität."}, {"text": "Wenn die Renditen -19,00 %, 1,00 % und 21,00 % mit Wahrscheinlichkeiten 10,00 %, 80,00 % und 10,00 % auftreten, dann ist die Varianz kleiner als bei drei gleich wahrscheinlichen Szenarien mit denselben Renditen.", "isCorrect": true, "erklaerung": "Beide Verteilungen haben mu = 1,00 %. Mit den angegebenen Wahrscheinlichkeiten ist die Varianz 0,10*0,20^2+0,80*0^2+0,10*0,20^2 = 0,008. Bei gleichen Wahrscheinlichkeiten ergibt sich (0,20^2+0+0,20^2)/3 = 0,08/3, also ein größerer Wert. Die stärkere Gewichtung des mittleren Szenarios senkt die Schwankung."}, {"text": "Wenn die Renditen -9,00 %, 3,00 % und 15,00 % bei Wahrscheinlichkeiten 20,00 %, 60,00 % und 20,00 % jeweils um 7 Prozentpunkte steigen, dann steigt die erwartete Rendite, während die Volatilität unverändert bleibt.", "isCorrect": true, "erklaerung": "Die erwartete Rendite steigt von 3,00 % auf 10,00 %. Die neuen Renditen sind -2,00 %, 10,00 % und 22,00 %; ihre Abweichungen vom neuen Erwartungswert bleiben -0,12, 0 und 0,12. Die Varianz bleibt 0,00576 und die Volatilität bleibt gerundet 7,59 %. Eine gemeinsame Verschiebung ist keine Zunahme der Schwankung."}, {"text": "Wenn bei unveränderten Szenariowahrscheinlichkeiten sämtliche Abweichungen vom Erwartungswert verdreifacht werden und die ursprüngliche Volatilität 7,00 % beträgt, dann beträgt die neue Varianz 0,0441.", "isCorrect": true, "erklaerung": "Die ursprüngliche Varianz beträgt 0,07^2 = 0,0049. Verdreifachte Abweichungen verneunfachen ihre Quadrate, also ist die neue Varianz 9*0,0049 = 0,0441. Die neue Volatilität beträgt 21,00 %."}]}, {"nummer": 4, "typ": "Kprim", "punkte": 3, "text": "Vier unabhängige Prüfungen betreffen Kovarianz und linearen Gleichlauf diskreter Renditen. Außer bei der ausdrücklich genannten Änderung der Zahlendarstellung werden Renditen als Dezimalzahlen eingesetzt. Wahrscheinlichkeiten und Volatilitäten sind exakt vorgegeben. Eine genannte Änderung gilt jeweils für sämtliche Szenarien des betreffenden Falls.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn ein Szenario die Wahrscheinlichkeit 0,40 besitzt und die Renditen von A und B dort um 0,03 beziehungsweise 0,08 unter ihren jeweiligen Erwartungswerten liegen, dann trägt dieses Szenario +0,00096 zur Kovarianz bei.", "isCorrect": true, "erklaerung": "Der gewichtete Beitrag lautet 0,40*(-0,03)*(-0,08) = +0,00096. Zwei negative Abweichungen ergeben ein positives Produkt; maßgeblich sind Abweichungen vom jeweiligen Erwartungswert."}, {"text": "Wenn ein erstes Wertpapierpaar die Kovarianz 0,0036 und Volatilitäten von 12,00 % und 24,00 % aufweist, ein zweites Paar dagegen 0,0018 sowie 3,00 % und 8,00 %, dann hat das erste Paar wegen seiner größeren Kovarianz die höhere Korrelation.", "isCorrect": false, "erklaerung": "Für das erste Paar ist rho_AB = 0,0036/(0,12*0,24) = 0,125; für das zweite 0,0018/(0,03*0,08) = 0,75. Denkfehler: Nicht normierte Kovarianzen direkt als Stärke des linearen Zusammenhangs vergleichen. Das zweite Paar hat die höhere Korrelation."}, {"text": "Wenn zu jeder Szenariorendite von A genau 11 Prozentpunkte addiert werden und die Renditen von B sowie die Wahrscheinlichkeiten unverändert bleiben, dann bleibt die Kovarianz unverändert.", "isCorrect": true, "erklaerung": "Auch mu_A steigt um 0,11. In jedem Abweichungsprodukt bleibt deshalb (r_A,s+0,11)-(mu_A+0,11) = r_A,s-mu_A. Die gewichtete Summe dieser Produkte ändert sich nicht."}, {"text": "Wenn bei einer Kovarianz von 0,00072 beide Renditereihen vollständig von Dezimalzahlen auf Prozentzahlen umgestellt werden, also jede Zahl mit 100 multipliziert wird, dann beträgt die neu berechnete Kovarianz 7,2.", "isCorrect": true, "erklaerung": "Jede Abweichung wird mit 100 multipliziert. Ein Abweichungsprodukt und seine gewichtete Summe werden deshalb mit 100^2 multipliziert: 0,00072*10.000 = 7,2. Das zeigt die Abhängigkeit der Kovarianz von der verwendeten Einheit."}]}, {"nummer": 5, "typ": "Kprim", "punkte": 3, "text": "Ein Analyst prüft vier voneinander unabhängige Datensätze. Renditen sind diskret und werden als Dezimalzahlen eingesetzt. Bei historischen Beobachtungen sind Mittelwerte arithmetisch und Varianzen mit n-1 im Nenner zu berechnen; bei Szenarien gelten die genannten Wahrscheinlichkeiten. Rechnen Sie ungerundet und runden Sie Korrelationen auf vier Nachkommastellen.\n\nBeurteilen Sie die folgenden Aussagen.", "optionen": [{"text": "Wenn A in drei Szenarien mit Wahrscheinlichkeiten 20,00 %, 60,00 % und 20,00 % die Renditen 1,00 %, 4,00 % und 7,00 % und B in denselben Szenarien die Renditen -4,00 %, 5,00 % und 14,00 % erzielt, dann beträgt die Korrelation nur 1/3, weil B dreimal so stark schwankt wie A.", "isCorrect": false, "erklaerung": "mu_A = 4,00 % und mu_B = 5,00 %. Die Abweichungen von B sind in jedem Szenario das Dreifache der Abweichungen von A. sigma_A^2 = 0,00036, sigma_B^2 = 0,00324 und sigma_AB = 0,00108. Das Produkt sigma_A*sigma_B = WURZEL(0,00036*0,00324) = 0,00108 ergibt rho_AB = 0,00108/0,00108 = 1. Denkfehler: Das Verhältnis der Volatilitäten von 1/3 als Korrelation verwenden."}, {"text": "Wenn A in jedem Szenario 4,50 % erzielt und B eine positive Volatilität von 13,00 % aufweist, dann folgt aus der Kovarianz von null eine Korrelation von null.", "isCorrect": false, "erklaerung": "A hat die Volatilität null. Der Quotient sigma_AB/(sigma_A*sigma_B) lautet 0/(0*0,13) und ist nicht definiert. Denkfehler: Aus Kovarianz null auf Korrelation null schließen, ohne die positiven Volatilitäten als Voraussetzung zu prüfen."}, {"text": "Wenn vier historische Beobachtungen -4,00 %, 2,00 %, 8,00 % und 14,00 % lauten, dann beträgt die Stichprobenvarianz 0,006.", "isCorrect": true, "erklaerung": "Der Mittelwert ist 5,00 %. Die Summe der quadrierten Abweichungen beträgt (-0,09)^2+(-0,03)^2+0,03^2+0,09^2 = 0,018. Mit n-1 = 3 ergibt sich 0,018/3 = 0,006."}, {"text": "Wenn die drei Renditepaare (A; B) gleich (-3,00 %; 12,00 %), (3,00 %; 0,00 %) und (9,00 %; 12,00 %) mit Wahrscheinlichkeiten 20,00 %, 50,00 % und 30,00 % auftreten, dann ist die Korrelation null, weil B an beiden äußeren Punkten denselben Wert annimmt.", "isCorrect": false, "erklaerung": "mu_A = 3,60 % und mu_B = 6,00 %. Die Kovarianz ist 0,20*(-0,066)*0,06+0,50*(-0,006)*(-0,06)+0,30*0,054*0,06 = 0,00036. sigma_A = WURZEL(0,001764) = 4,20 % und sigma_B = WURZEL(0,0036) = 6,00 %. rho_AB = 0,00036/(0,042*0,06) = 1/7, gerundet 0,1429. Denkfehler: Aus der symmetrischen Anordnung der Renditepaare auf Korrelation null schließen, obwohl die ungleichen Wahrscheinlichkeiten diese Symmetrie aufheben."}]}]}, {"nummer": 4, "titel": "Marktwertgewichte, Szenarien und Stichproben", "fragen": [{"nummer": 1, "typ": "Single-Choice", "punkte": 3, "text": "Ein Portfolio enthält zu Periodenbeginn ausschließlich 80 Stück von A zu je 90 EUR und 180 Stück von B zu je 60 EUR. Die erwarteten diskreten Renditen für dieselbe Periode betragen 7,00 % für A und 17,00 % für B.\n\nWelche erwartete Portfoliorendite ergibt sich für dieses Portfolio? Rechnen Sie ungerundet und runden Sie den Prozentwert auf zwei Nachkommastellen.", "optionen": [{"text": "11,00 %", "isCorrect": false, "erklaerung": "0,60*0,07+0,40*0,17 = 11,00 %. Denkfehler: Die beiden Marktwertgewichte vertauschen. A hat das Gewicht 40,00 % und B das Gewicht 60,00 %; richtig sind 13,00 %."}, {"text": "12,00 %", "isCorrect": false, "erklaerung": "(7,00 %+17,00 %)/2 = 12,00 %. Denkfehler: Beide Renditen gleich gewichten, obwohl die Marktwerte verschieden sind. Richtig sind Gewichte von 40,00 % und 60,00 % und eine Portfoliorendite von 13,00 %."}, {"text": "13,92 %", "isCorrect": false, "erklaerung": "(80/260)*0,07+(180/260)*0,17 ergibt 13,92 %. Denkfehler: Nach Stückzahlen gewichten und die unterschiedlichen Kurse ignorieren. Mit Marktwertgewichten beträgt die erwartete Rendite 13,00 %."}, {"text": "13,00 %", "isCorrect": true, "erklaerung": "Die Marktwerte sind 80*90 = 7.200 EUR und 180*60 = 10.800 EUR; das Portfolio ist 18.000 EUR wert. mu_P = 0,40*0,07+0,60*0,17 = 13,00 %."}]}, {"nummer": 2, "typ": "Single-Choice", "punkte": 4, "text": "Für ein Wertpapier sind genau drei Szenarien vorgegeben: Mit Wahrscheinlichkeit 20,00 % beträgt die diskrete Rendite -16,00 %, mit 60,00 % beträgt sie 4,00 %, mit 20,00 % beträgt sie 24,00 %.\n\nWelche Volatilität hat das Wertpapier? Setzen Sie Renditen als Dezimalzahlen ein, rechnen Sie ungerundet und runden Sie die Volatilität auf zwei Nachkommastellen des Prozentwerts.", "optionen": [{"text": "12,65 %", "isCorrect": true, "erklaerung": "mu = 0,20*(-0,16)+0,60*0,04+0,20*0,24 = 0,04. Die Varianz ist 0,20*(-0,20)^2+0,60*0^2+0,20*0,20^2 = 0,016. sigma = WURZEL(0,016), gerundet 12,65 %."}, {"text": "16,33 %", "isCorrect": false, "erklaerung": "WURZEL(((-0,20)^2+0^2+0,20^2)/3) ergibt 16,33 %. Denkfehler: Die Szenarien gleich gewichten. Mit den vorgegebenen Wahrscheinlichkeiten ergibt sich 12,65 %."}, {"text": "13,27 %", "isCorrect": false, "erklaerung": "WURZEL(0,20*(-0,16)^2+0,60*0,04^2+0,20*0,24^2) = WURZEL(0,0176) ergibt gerundet 13,27 %. Denkfehler: Die Renditen statt ihrer Abweichungen vom Erwartungswert quadrieren. Nach Abzug des Erwartungswerts von 4,00 % ergibt sich die richtige Volatilität von 12,65 %."}, {"text": "20,00 %", "isCorrect": false, "erklaerung": "WURZEL(((-0,20)^2+0^2+0,20^2)/2) = 20,00 %. Denkfehler: Die drei Szenarien wie eine historische Stichprobe mit Nenner n-1 = 2 behandeln. Die vorgegebenen Wahrscheinlichkeiten führen zu 12,65 %."}]}, {"nummer": 3, "typ": "Single-Choice", "punkte": 4, "text": "Drei vollständige Szenarien beschreiben die diskreten Renditen von A und B:\nSzenario 1: Wahrscheinlichkeit 20,00 %, Rendite A -4,00 %, Rendite B 18,00 %.\nSzenario 2: Wahrscheinlichkeit 50,00 %, Rendite A 6,00 %, Rendite B 8,00 %.\nSzenario 3: Wahrscheinlichkeit 30,00 %, Rendite A 16,00 %, Rendite B -2,00 %.\n\nWelche Kovarianz ist für diese Szenarien richtig? Setzen Sie Renditen als Dezimalzahlen ein, rechnen Sie ungerundet und runden Sie auf vier Nachkommastellen.", "optionen": [{"text": "0,0000", "isCorrect": false, "erklaerung": "Die gewichtete Summe der unbereinigten Renditeprodukte ist 0,20*(-0,04)*0,18+0,50*0,06*0,08+0,30*0,16*(-0,02) = 0. Denkfehler: Renditen statt ihrer Abweichungen von den Erwartungswerten multiplizieren. Die richtige Kovarianz beträgt -0,0049."}, {"text": "0,0049", "isCorrect": false, "erklaerung": "mu_A*mu_B = 0,07*0,07 = 0,0049. Denkfehler: Das Produkt der erwarteten Renditen als Kovarianz verwenden. Die Kovarianz gewichtet gemeinsame Abweichungen und beträgt hier -0,0049."}, {"text": "-0,0049", "isCorrect": true, "erklaerung": "mu_A = 0,20*(-0,04)+0,50*0,06+0,30*0,16 = 0,07. mu_B = 0,20*0,18+0,50*0,08+0,30*(-0,02) = 0,07. Die Kovarianz beträgt 0,20*(-0,11)*0,11+0,50*(-0,01)*0,01+0,30*0,09*(-0,09) = -0,0049. Die Abweichungen sind gegenläufig, obwohl beide erwarteten Renditen positiv sind."}, {"text": "-0,0100", "isCorrect": false, "erklaerung": "Bei irrtümlicher Behandlung als drei gleich gewichtete historische Beobachtungen wären die Mittelwerte 6,00 % und 8,00 %. Die Stichprobenrechnung ergäbe ((-0,10)*0,10+0+0,10*(-0,10))/2 = -0,0100. Denkfehler: Die Szenariowahrscheinlichkeiten durch Stichprobenregeln ersetzen. Richtig ist -0,0049."}]}, {"nummer": 4, "typ": "Single-Choice", "punkte": 4, "text": "Vier gleich gewichtete historische Beobachtungen aus gleich langen Perioden liefern folgende diskrete Renditepaare:\nt=1: A -9,00 %, B -18,00 %.\nt=2: A -3,00 %, B 6,00 %.\nt=3: A 3,00 %, B -6,00 %.\nt=4: A 9,00 %, B 18,00 %.\n\nWelche Korrelation ergibt sich, wenn die Mittelwerte arithmetisch und beide Varianzen sowie die Kovarianz mit dem Nenner n-1 berechnet werden? Setzen Sie Renditen als Dezimalzahlen ein, rechnen Sie ungerundet und runden Sie auf vier Nachkommastellen.", "optionen": [{"text": "0,6000", "isCorrect": false, "erklaerung": "Die gemischte Rechnung lautet (0,0288/4)/WURZEL((0,018/3)*(0,072/3)) = 0,6000. Denkfehler: Die Kovarianz mit dem Nenner n berechnen, beide Varianzen aber mit n-1. Mit n-1 bei allen drei Größen ergibt sich 0,8000."}, {"text": "0,8000", "isCorrect": true, "erklaerung": "Beide Mittelwerte sind null. Die Summen der quadrierten Abweichungen betragen für A 0,018 und für B 0,072; die Summe der Abweichungsprodukte beträgt 0,0288. Die Stichprobenvarianzen sind sigma_A^2 = 0,018/3 = 0,006 und sigma_B^2 = 0,072/3 = 0,024. Die Kovarianz ist sigma_AB = 0,0288/3 = 0,0096. rho_AB = 0,0096/WURZEL(0,006*0,024) = 0,8000."}, {"text": "0,0096", "isCorrect": false, "erklaerung": "0,0288/3 = 0,0096 ist die korrekt berechnete Stichprobenkovarianz. Denkfehler: Die Normierung durch beide Volatilitäten weglassen und Kovarianz als Korrelation ausweisen. Die Korrelation beträgt 0,8000."}, {"text": "0,4000", "isCorrect": false, "erklaerung": "0,0096/0,024 = 0,4000. Denkfehler: Die Kovarianz nur durch die Varianz von B statt durch das Produkt beider Volatilitäten teilen. Der richtige Nenner ist WURZEL(0,006*0,024) = 0,012; die Korrelation beträgt 0,8000."}]}]}]};
+// Bewertungslogik des Selbsttests. Keine DOM-Zugriffe. Läuft im Browser und in Node.
+// Zustand: state[key] mit key = aufgabenIndex + '-' + frageIndex.
+//   Kprim: Array aus 4 Werten 'WAHR' | 'FALSCH' | null.   Single-Choice: Optionsindex 0..3 oder null.
+function gradeKprim(frage, antworten) {
+  const a = Array.isArray(antworten) ? antworten : [null, null, null, null];
+  const perOption = frage.optionen.map((o, i) => (o.isCorrect ? 'WAHR' : 'FALSCH') === a[i]);
+  const correctCount = perOption.filter(Boolean).length;
+  const points = correctCount === 4 ? frage.punkte : correctCount === 3 ? frage.punkte / 2 : 0;
+  return { correctCount, points, perOption };
+}
+function gradeSC(frage, index) {
+  const isCorrect = index !== null && index !== undefined && frage.optionen[index] && frage.optionen[index].isCorrect === true;
+  return { isCorrect, points: isCorrect ? frage.punkte : 0 };
+}
+function gradeAll(data, state) {
+  let total = 0, max = 0; const perAufgabe = [], perQuestion = [];
+  data.aufgaben.forEach((auf, ai) => {
+    let ap = 0, am = 0;
+    auf.fragen.forEach((f, fi) => {
+      const key = ai + '-' + fi;
+      const r = f.typ === 'Kprim' ? gradeKprim(f, state[key]) : gradeSC(f, state[key]);
+      ap += r.points; am += f.punkte; perQuestion.push({ key, ...r, max: f.punkte });
+    });
+    total += ap; max += am; perAufgabe.push({ nummer: auf.nummer, titel: auf.titel, points: ap, max: am });
+  });
+  return { total, max, perAufgabe, perQuestion };
+}
+function countUnanswered(data, state) {
+  let n = 0;
+  data.aufgaben.forEach((auf, ai) => auf.fragen.forEach((f, fi) => {
+    const v = state[ai + '-' + fi];
+    if (f.typ === 'Kprim') { const a = Array.isArray(v) ? v : []; for (let i = 0; i < 4; i++) if (!a[i]) n++; }
+    else if (v === null || v === undefined) n++;
+  }));
+  return n;
+}
+if (typeof module !== 'undefined' && module.exports) module.exports = { gradeKprim, gradeSC, gradeAll, countUnanswered };
+
+// Oberflaeche des Selbsttests. Rechnet nichts selbst: jede Bewertung kommt aus scoring.js
+// (gradeKprim, gradeSC, gradeAll, countUnanswered). Die Daten stehen in DATA.
+// Zustand: state[aufgabenIndex + '-' + frageIndex], siehe scoring.js.
+
+let state = {};
+let submitted = false;
+
+const GESAMT_OFFEN = countUnanswered(DATA, {});
+
+/* Alle Daten werden ueber esc() eingefuegt. */
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* Zahl mit Dezimalkomma, hoechstens zwei Nachkommastellen. */
+function fmt(x) {
+  return (Math.round(x * 100) / 100).toString().replace('.', ',');
+}
+
+/* Text vor einem angehaengten ', richtig ist: ...': ein Schlusspunkt entfaellt, damit Punkt
+   und Komma nicht aufeinanderfolgen. Abkuerzungen (p. a., z. B., usw.) und
+   Auslassungspunkte behalten ihren Punkt. */
+const ABKUERZUNG_AM_ENDE = /(?:^|[\s(])(?:\p{L}\.\s?\p{L}|usw|bzw|etc|ca|ggf|vgl|inkl|zzgl|bspw|Mio|Mrd|Tsd|Nr)\.$/u;
+function ohneSchlusspunkt(text) {
+  const t = String(text === null || text === undefined ? '' : text);
+  const k = t.replace(/\s+$/, '');
+  if (!k.endsWith('.') || k.endsWith('..') || ABKUERZUNG_AM_ENDE.test(k)) return t;
+  return k.slice(0, -1);
+}
+
+/* Buchstabe a) bis d) zu einem Optionsindex. */
+function marke(oi) {
+  return String.fromCharCode(97 + oi) + ')';
+}
+
+/* Zeilenumbrueche im Fragetext werden zu Absaetzen. */
+function absaetze(text) {
+  const teile = String(text === null || text === undefined ? '' : text)
+    .split(/\n+/).filter(function (t) { return t.trim() !== ''; });
+  if (teile.length === 0) return '';
+  return teile.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('');
+}
+
+/* Loesungstext fuer die Anzeige: Zeilen, die mit "Quelle:" beginnen, entfallen (Vorgabe des
+   Dozenten: kein Folienbezug auf der Seite; die Quelle steht nur im Dozentenexemplar).
+   build_selbsttest.py entfernt sie schon beim Einbetten. Kein Datum in diesem Kommentar,
+   weil er im Quelltext der Seite steht. */
+const QUELLENZEILE = /^\s*quelle\s*:/i;
+function ohneQuellenzeilen(text) {
+  return String(text === null || text === undefined ? '' : text)
+    .split('\n')
+    .filter(function (z) { return !QUELLENZEILE.test(z); })
+    .join('\n')
+    .replace(/\s+$/, '');
+}
+
+function alleErklaerungen(frage) {
+  return frage.optionen.every(function (o) {
+    return o.erklaerung && String(o.erklaerung).trim() !== '';
+  });
+}
+
+function typName(typ) {
+  return typ === 'Kprim'
+    ? 'KPRIM, vier Aussagen je Frage'
+    : 'Single Choice, eine richtige Antwort je Frage';
+}
+
+function render() {
+  let html = '';
+  DATA.aufgaben.forEach(function (auf, ai) {
+    const fragen = auf.fragen || [];
+    const typ = fragen.length ? fragen[0].typ : '';
+    const punkte = fragen.reduce(function (s, f) { return s + f.punkte; }, 0);
+    html += '<section class="aufgabe" id="aufgabe-' + ai + '">'
+      + '<div class="section-head">'
+      + '<div class="section-num">Aufgabe ' + esc(auf.nummer) + '</div>'
+      + '<div class="section-title">' + esc(auf.titel) + '</div>'
+      + '<div class="section-meta">' + esc(typName(typ)) + ', ' + fmt(punkte) + ' Punkte</div>'
+      + '</div>';
+    fragen.forEach(function (f, fi) { html += frageHtml(auf, ai, f, fi); });
+    html += '</section>';
+  });
+  document.getElementById('test').innerHTML = html;
+}
+
+function frageHtml(auf, ai, f, fi) {
+  let h = '<article class="frage" id="frage-' + ai + '-' + fi + '">'
+    + '<div class="frage-top">'
+    + '<span class="frage-nr">Frage ' + esc(auf.nummer) + '.' + esc(f.nummer) + '</span>'
+    + '<span class="frage-pts">' + fmt(f.punkte) + ' Punkte</span>'
+    + '<span class="frage-score" id="fs-' + ai + '-' + fi + '"></span>'
+    + '</div>'
+    + '<div class="frage-body">' + absaetze(f.text) + '</div>';
+
+  if (f.typ === 'Kprim') {
+    f.optionen.forEach(function (o, oi) {
+      h += '<div class="stmt" id="stmt-' + ai + '-' + fi + '-' + oi + '">'
+        + '<div class="stmt-text"><span class="lbl">' + marke(oi) + '</span>' + esc(o.text) + '</div>'
+        + '<div class="choice-wrap">'
+        + '<button type="button" class="choice" data-val="WAHR" onclick="pickKprim(' + ai + ',' + fi + ',' + oi + ',&quot;WAHR&quot;,this)">Richtig</button>'
+        + '<button type="button" class="choice" data-val="FALSCH" onclick="pickKprim(' + ai + ',' + fi + ',' + oi + ',&quot;FALSCH&quot;,this)">Falsch</button>'
+        + '</div>'
+        + '<div class="stmt-result" id="res-' + ai + '-' + fi + '-' + oi + '"></div>'
+        + '</div>';
+    });
+  } else {
+    h += '<div class="optionen">';
+    f.optionen.forEach(function (o, oi) {
+      h += '<button type="button" class="option" id="opt-' + ai + '-' + fi + '-' + oi + '"'
+        + ' onclick="pickSC(' + ai + ',' + fi + ',' + oi + ',this)">'
+        + '<span class="lbl">' + marke(oi) + '</span>'
+        + '<span class="option-text">' + esc(o.text) + '</span></button>';
+    });
+    h += '</div><div class="frage-result" id="res-' + ai + '-' + fi + '"></div>';
+  }
+
+  h += '<div class="frage-loesung" id="loes-' + ai + '-' + fi + '" data-has="0"></div>'
+    + '</article>';
+  return h;
+}
+
+function pickKprim(ai, fi, oi, val, btn) {
+  if (submitted) return;
+  const key = ai + '-' + fi;
+  if (!Array.isArray(state[key])) state[key] = [null, null, null, null];
+  state[key][oi] = val;
+  const wrap = btn.parentElement;
+  wrap.querySelectorAll('.choice').forEach(function (c) { c.classList.remove('sel'); });
+  btn.classList.add('sel');
+  updateCounter();
+}
+
+function pickSC(ai, fi, oi, btn) {
+  if (submitted) return;
+  state[ai + '-' + fi] = oi;
+  const wrap = btn.parentElement;
+  wrap.querySelectorAll('.option').forEach(function (c) { c.classList.remove('sel'); });
+  btn.classList.add('sel');
+  updateCounter();
+}
+
+function updateCounter() {
+  const offen = countUnanswered(DATA, state);
+  document.getElementById('answered').textContent = GESAMT_OFFEN - offen;
+  document.getElementById('answeredTotal').textContent = GESAMT_OFFEN;
+}
+
+function submitTest() {
+  if (submitted) return;
+  const offen = countUnanswered(DATA, state);
+  if (offen > 0) {
+    const frage = 'Es sind noch ' + offen + ' Aussagen und Fragen unbeantwortet. '
+      + 'Sie zählen als falsch. Jetzt trotzdem abgeben?';
+    if (!window.confirm(frage)) return;
+  } else if (!window.confirm('Jetzt abgeben? Danach sind keine Änderungen mehr möglich.')) {
+    return;
+  }
+  submitted = true;
+  document.body.classList.add('submitted');
+  showResults(gradeAll(DATA, state));
+  const abgeben = document.getElementById('submitBtn');
+  abgeben.disabled = true;
+  abgeben.textContent = 'Abgegeben';
+  document.getElementById('resetBtn').style.display = '';
+  document.getElementById('ergebnis').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showResults(result) {
+  DATA.aufgaben.forEach(function (auf, ai) {
+    (auf.fragen || []).forEach(function (f, fi) {
+      const key = ai + '-' + fi;
+      const r = f.typ === 'Kprim' ? gradeKprim(f, state[key]) : gradeSC(f, state[key]);
+      if (f.typ === 'Kprim') zeigeKprim(f, ai, fi, r);
+      else zeigeSC(f, ai, fi, r, state[key]);
+
+      const score = document.getElementById('fs-' + ai + '-' + fi);
+      if (f.typ === 'Kprim') {
+        score.textContent = r.correctCount + ' von 4 korrekt, ' + fmt(r.points) + ' von ' + fmt(f.punkte) + ' Punkten';
+        score.style.color = r.correctCount === 4 ? 'var(--gruen)' : (r.correctCount === 3 ? 'var(--th-orange)' : 'var(--th-rot)');
+      } else {
+        score.textContent = fmt(r.points) + ' von ' + fmt(f.punkte) + ' Punkten';
+        score.style.color = r.isCorrect ? 'var(--gruen)' : 'var(--th-rot)';
+      }
+
+      const loesung = alleErklaerungen(f) ? '' : ohneQuellenzeilen(f.loesung);
+      if (loesung) {
+        const box = document.getElementById('loes-' + ai + '-' + fi);
+        box.textContent = loesung;
+        box.setAttribute('data-has', '1');
+      }
+    });
+  });
+  zeigeUebersicht(result);
+}
+
+function zeigeKprim(f, ai, fi, r) {
+  const gegeben = Array.isArray(state[ai + '-' + fi]) ? state[ai + '-' + fi] : [];
+  f.optionen.forEach(function (o, oi) {
+    const richtigText = o.isCorrect ? 'Richtig' : 'Falsch';
+    const wahl = gegeben[oi] || null;
+    const wahlText = wahl === 'WAHR' ? 'Richtig' : (wahl === 'FALSCH' ? 'Falsch' : 'nicht beantwortet');
+    const ok = r.perOption[oi];
+    const box = document.getElementById('res-' + ai + '-' + fi + '-' + oi);
+    box.className = 'stmt-result ' + (ok ? 'ok' : 'bad');
+    box.innerHTML = '<span class="verdict">' + (ok ? 'Korrekt' : 'Falsch') + '</span> '
+      + '<span class="meta">Ihre Antwort: ' + esc(wahlText)
+      + (ok ? '' : ', richtig ist: ' + esc(richtigText)) + '</span>'
+      + (o.erklaerung ? '<div class="expl">' + esc(o.erklaerung) + '</div>' : '');
+    const wrap = document.getElementById('stmt-' + ai + '-' + fi + '-' + oi).querySelector('.choice-wrap');
+    wrap.querySelectorAll('.choice').forEach(function (c) {
+      if (c.dataset.val === (o.isCorrect ? 'WAHR' : 'FALSCH')) c.classList.add('key-correct');
+      if (!ok && wahl && c.dataset.val === wahl) c.classList.add('key-wrongpick');
+    });
+  });
+}
+
+function zeigeSC(f, ai, fi, r, gewaehlt) {
+  const richtigIdx = f.optionen.findIndex(function (o) { return o.isCorrect === true; });
+  const hatWahl = gewaehlt !== null && gewaehlt !== undefined && f.optionen[gewaehlt];
+  const wahlText = hatWahl
+    ? marke(gewaehlt) + ' ' + f.optionen[gewaehlt].text
+    : 'nicht beantwortet';
+  let expl = '';
+  if (hatWahl && !r.isCorrect && f.optionen[gewaehlt].erklaerung) {
+    expl += '<div class="expl">Ihre Wahl ' + marke(gewaehlt) + ' ' + esc(f.optionen[gewaehlt].erklaerung) + '</div>';
+  }
+  if (richtigIdx >= 0 && f.optionen[richtigIdx].erklaerung) {
+    expl += '<div class="expl">Richtig ' + marke(richtigIdx) + ' ' + esc(f.optionen[richtigIdx].erklaerung) + '</div>';
+  }
+  const box = document.getElementById('res-' + ai + '-' + fi);
+  box.className = 'frage-result ' + (r.isCorrect ? 'ok' : 'bad');
+  box.innerHTML = '<span class="verdict">' + (r.isCorrect ? 'Korrekt' : 'Falsch') + '</span> '
+    + '<span class="meta">Ihre Antwort: ' + esc(r.isCorrect ? wahlText : ohneSchlusspunkt(wahlText))
+    + (r.isCorrect ? '' : ', richtig ist: ' + esc(marke(richtigIdx) + ' ' + (richtigIdx >= 0 ? f.optionen[richtigIdx].text : ''))) + '</span>'
+    + expl;
+  f.optionen.forEach(function (o, oi) {
+    const btn = document.getElementById('opt-' + ai + '-' + fi + '-' + oi);
+    if (o.isCorrect) btn.classList.add('key-correct');
+    if (!r.isCorrect && hatWahl && oi === gewaehlt) btn.classList.add('key-wrongpick');
+  });
+}
+
+function zeigeUebersicht(result) {
+  const prozent = result.max > 0 ? Math.round(result.total / result.max * 1000) / 10 : 0;
+  let html = '<div class="score-grid">'
+    + '<div class="score-card main"><div class="score-title">Erreichte Punkte</div>'
+    + '<div class="score-value">' + fmt(result.total) + ' <span class="unit">von ' + fmt(result.max) + '</span></div>'
+    + '<div class="score-sub">' + fmt(prozent) + ' Prozent der Maximalpunktzahl</div></div>';
+  result.perAufgabe.forEach(function (a) {
+    html += '<div class="score-card"><div class="score-title">Aufgabe ' + esc(a.nummer) + '</div>'
+      + '<div class="score-value">' + fmt(a.points) + ' <span class="unit">von ' + fmt(a.max) + '</span></div>'
+      + '<div class="score-sub">' + esc(a.titel) + '</div></div>';
+  });
+  html += '</div><p class="legend-line">Die Auswertung je Aussage und je Frage steht unten bei den Aufgaben.</p>';
+  document.getElementById('ergebnis').innerHTML = html;
+}
+
+function resetTest() {
+  if (!window.confirm('Selbsttest zurücksetzen und neu beginnen? Ihre Antworten gehen verloren.')) return;
+  state = {};
+  submitted = false;
+  document.body.classList.remove('submitted');
+  document.getElementById('ergebnis').innerHTML = '';
+  const abgeben = document.getElementById('submitBtn');
+  abgeben.disabled = false;
+  abgeben.textContent = 'Abgeben';
+  document.getElementById('resetBtn').style.display = 'none';
+  render();
+  updateCounter();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+updateCounter();
+
+</script>
+</body>
+</html>
