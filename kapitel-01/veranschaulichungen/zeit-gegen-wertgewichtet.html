@@ -6,8 +6,7 @@
 <title>Zeit- und wertgewichtete Rendite · Finanzmanagement und Kapitalmarkt</title>
 <style>
 /* Grundgestaltung aller erzeugten Seiten ausser dem Selbsttest: Startseite, Kapitelseiten,
-   Uebersichten, Impressum und Veranschaulichungen. Farben, Schrift, Kopf und Abschnittskopf
-   wie in selbsttest/style.css, Kacheln nach _Vorlagen/Website_Vorlage/index.html.
+   Uebersichten, Impressum und Veranschaulichungen. Einheitliche Farben, Schrift, Kopf, Abschnittskopf und Kacheln.
    Nur Systemschriften, keine Web-Schriften, keine Bilder, kein Laden von aussen. */
 :root{
  --th-rot:#C90C0F;--th-orange:#EA5B0C;--th-violett:#B82585;
@@ -82,10 +81,9 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
  .tile{padding:20px}
 }
 
-/* Gestaltung einer Veranschaulichung. Baut auf seite/basis.css auf (Farben, Schrift, Kopf).
-   Bausteine aus lib.js: .regler, .diagramm, .auftrag; fuer app.html: .erklaerung, .werkbank,
-   .steuerung, .anzeige, .werte, .formel. Bedienbar ab 375 Pixel Breite ohne seitliches
-   Scrollen: Raster und Flex-Kinder mit min-width:0, Grafiken mit max-width:100%. */
+/* Gestaltung einer Veranschaulichung mit Reglern, Diagrammen und Auftraegen.
+   Bedienbar ab 375 Pixel Breite ohne seitliches Scrollen: Raster und Flex-Kinder
+   mit min-width:0, Grafiken mit max-width:100%. */
 
 /* Erklaertext */
 .erklaerung{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--th-violett);border-radius:6px;padding:16px 20px;box-shadow:var(--shadow-sm);margin-bottom:24px;color:var(--ink-soft);font-size:14.5px}
@@ -128,7 +126,7 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
 .wert-sub{font-size:12px;color:var(--ink-muted);margin-top:4px}
 
 /* Diagramme */
-.diagramm{min-width:0;margin:0;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:16px 18px 12px;box-shadow:var(--shadow-sm)}
+.diagramm{position:relative;min-width:0;margin:0;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:16px 18px 12px;box-shadow:var(--shadow-sm)}
 .diagramm-titel{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:8px}
 .diagramm svg{display:block;width:100%;max-width:100%;height:auto}
 .diagramm text{font-family:var(--serif)}
@@ -142,11 +140,15 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
 .diagramm .hilfslinie{stroke-width:1;stroke-dasharray:4 4;opacity:.7}
 .diagramm .marke{stroke:var(--card);stroke-width:2}
 .diagramm .marke-text{fill:var(--ink);font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
-/* Deckender Hintergrund hinter Markentexten (use mit Filter aus lib.js), immer in der Kartenfarbe */
+/* Deckender Hintergrund hinter Markentexten (use mit Filter), immer in der Kartenfarbe */
 .diagramm .marke-grund{flood-color:var(--card);flood-opacity:1}
 .diagramm .marke-hintergrund{pointer-events:none}
 .diagramm .fuehrungslinie{stroke:var(--ink-faint);stroke-width:1}
 .diagramm .balken{stroke:none}
+/* Balkentexte (balkenInfo): Balken mit Fokus umrandet, Wertfeld ueber dem Balken in der figure */
+.diagramm rect.balken:focus{outline:none;stroke:var(--ink);stroke-width:2px;vector-effect:non-scaling-stroke}
+.balken-info{position:absolute;z-index:2;pointer-events:none;max-width:calc(100% - 8px);background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--th-violett);border-radius:4px;box-shadow:var(--shadow-sm);padding:4px 8px;font-size:12.5px;line-height:1.4;color:var(--ink)}
+.balken-info[hidden]{display:none}
 .legende{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-soft);margin-top:8px}
 .legende:empty{display:none}
 .legende-eintrag{display:inline-flex;align-items:center}
@@ -212,7 +214,7 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
  <main id="app">
 <!-- Zeit- und wertgewichtete Rendite. Aufbau: Einleitung, Formeln, Erkunden (Eingaben, Ergebnisse,
      Diagramm, Depotwerte, Lesehilfe), Auftraege, Zum Mitnehmen. Regler, Diagramm und Auftraege
-     fuellt app.js in die leeren Elemente mit id. -->
+     fuellt die Anwendung in die leeren Elemente mit id. -->
 <style>
 /* Ergaenzungen in den Farben des Rahmens: Ueberschriften in Erklaerkaesten, Symbole in
    Beschriftungen, Hinweis beim Zahlungsregler, Tabelle (schmal als beschriftete Datensaetze),
@@ -317,13 +319,10 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
  <footer>TH Köln · Finanzmanagement und Kapitalmarkt (Master) · Prof. Dr. Marc Mehlhorn · Veranschaulichung zur Vorlesung · <a href="../../impressum.html">Impressum</a></footer>
 </div>
 <script>
-// Bibliothek FUI fuer die interaktiven Veranschaulichungen der Lehrpipeline (Kuerzel FUI historisch).
+// Gemeinsame Funktionen fuer interaktive Veranschaulichungen.
+// Keine Abhaengigkeiten, kein Laden von aussen, keine Speicherung.
 //
-// Wird vom Generator build_veranschaulichung.py in jede Anwendung eingebettet und ist in
-// Node als Modul ladbar (Tests in lib.test.mjs). Keine Abhaengigkeiten, ES2019, kein
-// Laden von aussen, keine Speicherung.
-//
-// Reine Funktionen (in Node getestet):
+// Reine Funktionen:
 //   zahl, eur, prozent      deutsches Zahlenformat mit Tausenderpunkt und Dezimalkomma
 //   mitEinheit              Zahlentext und Einheit mit geschuetztem Leerzeichen verbinden
 //   parseZahl               Zahleneingabe lesen ("1.234,56", "1234.56", "10.000 EUR", "5 %")
@@ -389,7 +388,7 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
 //       Als Absicherung liegt hinter jedem Markentext eine deckende Flaeche in der Kartenfarbe:
 //       ein use-Element (use.marke-hintergrund), das den Text wiederholt, mit einem SVG-Filter,
 //       der nur eine Flaeche zeichnet (feFlood, Klasse marke-grund, flood-color var(--card)
-//       aus style.css). Der Filterbereich haengt am Rahmen des Texts (objectBoundingBox) und
+//       aus den Gestaltungsregeln). Der Filterbereich haengt am Rahmen des Texts (objectBoundingBox) und
 //       reicht GRUND_RAND_X Einheiten nach links und rechts und GRUND_RAND_Y nach oben und
 //       unten darueber hinaus (grundBereich), gemessen mit getBBox. Die Schrift steht als Stil
 //       am Text (font-weight 600), damit die Kopie im use-Element genau so breit ist wie der
@@ -407,8 +406,23 @@ footer a:hover{color:var(--th-rot);text-decoration:underline}
 //       der Schrift verkleinert (titelZeilen); der Rand waechst um die zweite Zeile.
 //
 //   balkenDiagramm(ziel, {titel, kategorien, reihen: [{name, werte, farbe}],
-//                  y: {min, max, label, format, ticks}, gestapelt = false})
-//       Gruppierte oder gestapelte Balken. Rueckgabe {update({reihen, y, kategorien})}.
+//                  y: {min, max, label, format, ticks}, gestapelt = false, legende, wertFormat})
+//       Gruppierte oder gestapelte Balken. Rueckgabe {update({reihen, y, kategorien, legende,
+//       wertFormat})}.
+//       legende: ohne Angabe eine Legende ab zwei Reihen oder bei gestapelten Balken (wie bisher),
+//       mit true auch bei einer Reihe, mit false nie; Eintraege nur fuer Reihen mit name.
+//       (linienDiagramm zeigt die Legende immer, auch bei einer Reihe mit name.)
+//       Balkentext "Reihe, Kategorie: Wert" (ohne name der Reihe "Kategorie: Wert"). wertFormat
+//       ist das Format des Werts darin: eine Funktion (v, i, j) => Text mit dem Wert, dem Index der
+//       Reihe und dem Index der Kategorie, oder 'zahl', 'prozent', 'eur' (zwei Nachkommastellen);
+//       ohne Angabe gilt wie bisher das Format der y-Achse, das oft weniger Stellen zeigt.
+//       Der Balkentext ist ohne Maus erreichbar: Jeder Balken ist fokussierbar (tabindex 0, role
+//       img) und traegt den Text als aria-label (kein title mehr); bei Tastaturfokus, Beruehrung und
+//       Maus zeigt ein Wertfeld (div.balken-info in der figure, ausserhalb des SVG, aria-hidden) den
+//       Text ueber dem Balken (balkenInfo; Ereignisse an der figure, nicht am svg). Das SVG hat
+//       role group statt img, weil ein Bildschirmleser die Kinder eines Bildes nicht erreicht.
+//       Attribute, Legende und Ereignisse gehoeren zum Zeichnen und ueberstehen update und
+//       Groessenaenderung; Anwendungen ergaenzen nichts am SVG.
 //
 //   auftrag(ziel, {nr, frage, ziel: zahl, toleranz, einheit = '', hinweis = '',
 //                  richtig, falsch, wert})
@@ -806,7 +820,7 @@ const FUI = (() => {
   }
 
   // Filter fuer den deckenden Hintergrund eines Markentexts: nur die Flaeche in der
-  // Kartenfarbe (Klasse marke-grund, flood-color in style.css) ueber dem Filterbereich.
+  // Kartenfarbe (Klasse marke-grund, flood-color) ueber dem Filterbereich.
   function grundFilter(id, bereich) {
     return '<filter id="' + esc(id) + '" x="' + bereich.x + '" y="' + bereich.y + '" width="' + bereich.width
       + '" height="' + bereich.height + '" color-interpolation-filters="sRGB">'
@@ -852,7 +866,7 @@ const FUI = (() => {
   // .diagramm .marke-text erreichen die Kopie nicht.
   const MARKE_SCHRIFT = 'font-weight:600';
 
-  // Strichbreiten in Bildschirmpixeln wie in style.css (.reihe, .hilfslinie). Mit
+  // Strichbreiten in Bildschirmpixeln entsprechend den Gestaltungsregeln (.reihe, .hilfslinie). Mit
   // vector-effect="non-scaling-stroke" bleibt der Strich bei jeder Breite gleich breit; in
   // viewBox-Einheiten ist er also um so breiter, je schmaler das Diagramm erscheint.
   const STRICH_REIHE = 2.5, STRICH_HILFSLINIE = 1;
@@ -1365,7 +1379,7 @@ const FUI = (() => {
   }
 
   // Masse eines Markentexts in der Schrift der Seite: kurz ein unsichtbares Messelement ins
-  // SVG setzen. Ohne Darstellung (Node, verborgenes Diagramm) gilt eine Schaetzung.
+  // SVG setzen. Ohne Darstellung (verborgenes Diagramm) gilt eine Schaetzung.
   function textMasse(svg, inhalt, fs) {
     const schaetzung = { breite: String(inhalt).length * fs * 0.58, auf: fs * 0.95, ab: fs * 0.25, x0: 0 };
     if (!svg || typeof svg.appendChild !== 'function' || typeof svg.removeChild !== 'function') return schaetzung;
@@ -1431,20 +1445,82 @@ const FUI = (() => {
     return zeilen.length ? zeilen : [''];
   }
 
-  // Gemeinsamer Rahmen beider Diagrammarten: figure mit Titel, SVG und Legende.
-  function rahmen(ziel, titel) {
+  // Gemeinsamer Rahmen beider Diagrammarten: figure mit Titel, SVG und Legende. Mit balken
+  // (balkenDiagramm) dazu das Wertfeld der Balkentexte, und das SVG ist eine Gruppe statt eines
+  // Bildes, damit ein Bildschirmleser die fokussierbaren Balken erreicht.
+  function rahmen(ziel, titel, balken) {
     const figur = document.createElement('figure');
     figur.className = 'diagramm';
     figur.innerHTML = (titel ? '<figcaption class="diagramm-titel">' + esc(titel) + '</figcaption>' : '')
       + '<svg viewBox="0 0 ' + BREITE + ' ' + HOEHE
-      + '" width="100%" role="img" aria-label="' + esc(titel || 'Diagramm') + '"></svg>'
-      + '<div class="legende"></div>';
+      + '" width="100%" role="' + (balken ? 'group' : 'img') + '" aria-label="' + esc(titel || 'Diagramm') + '"></svg>'
+      + '<div class="legende"></div>'
+      + (balken ? '<div class="balken-info" aria-hidden="true" hidden></div>' : '');
     knoten(ziel).appendChild(figur);
     return {
       figur: figur,
       svg: figur.querySelector('svg'),
       legende: figur.querySelector('.legende'),
+      info: balken ? figur.querySelector('.balken-info') : null,
     };
+  }
+
+  // Wertfeld der Balkentexte bei Tastaturfokus, Beruehrung und Maus. Die Balken tragen tabindex,
+  // role und aria-label im Markup (balkenDiagramm); das Feld (teile.info) steht in der figure
+  // ausserhalb des SVG, damit das SVG keine weiteren Texte enthaelt, und ist aria-hidden, weil
+  // ein Bildschirmleser den Text schon aus dem aria-label liest. Die Ereignisse haengen einmal an
+  // der figure, die beim Neuzeichnen bleibt, und erreichen sie von den Balken aus durch Aufsteigen;
+  // nicht am svg, weil Chrome ein SVG-Element mit focusin- oder focusout-Listener selbst
+  // fokussierbar macht (ein zusaetzlicher Tabulatorhalt vor den Balken). Fokus zeigt den Text, bis der
+  // Balken den Fokus verliert; die Maus zeigt ihn, solange sie ueber dem Balken steht, danach
+  // wieder den Text des Balkens mit Fokus; eine Beruehrung zeigt ihn und gibt dem Balken den
+  // Fokus, so bleibt er nach dem Loslassen stehen. Das Feld steht mittig INFO_ABSTAND Pixel ueber
+  // dem Balken, ohne Platz darueber unter seinem oberen Rand, und mindestens INFO_RAND Pixel
+  // innerhalb der figure. Rueckgabe {verberge()} fuer das Neuzeichnen.
+  const INFO_ABSTAND = 6, INFO_RAND = 4;
+  function balkenInfo(teile) {
+    const figur = teile.figur, info = teile.info;
+    let fokus = null;
+    function verberge() {
+      fokus = null;
+      info.hidden = true;
+      info.textContent = '';
+    }
+    function zeige(r) {
+      const inhalt = r.getAttribute('aria-label') || '';
+      info.textContent = inhalt;
+      info.hidden = !inhalt;
+      if (!inhalt) return;
+      const f = figur.getBoundingClientRect(), b = r.getBoundingClientRect();
+      const x0 = f.left + (figur.clientLeft || 0), y0 = f.top + (figur.clientTop || 0);
+      const breite = info.offsetWidth, hoehe = info.offsetHeight;
+      const links = Math.max(INFO_RAND, Math.min((figur.clientWidth || 0) - breite - INFO_RAND,
+        b.left - x0 + b.width / 2 - breite / 2));
+      let oben = b.top - y0 - hoehe - INFO_ABSTAND;
+      if (oben < INFO_RAND) oben = b.top - y0 + INFO_ABSTAND;
+      info.style.left = Math.round(links) + 'px';
+      info.style.top = Math.round(oben) + 'px';
+    }
+    const balkenVon = (e) => (e && e.target && typeof e.target.closest === 'function' ? e.target.closest('rect.balken') : null);
+    figur.addEventListener('focusin', (e) => { const r = balkenVon(e); if (r) { fokus = r; zeige(r); } });
+    figur.addEventListener('focusout', verberge);
+    figur.addEventListener('pointerover', (e) => { const r = balkenVon(e); if (r) zeige(r); });
+    figur.addEventListener('pointerdown', (e) => { const r = balkenVon(e); if (r && typeof r.focus === 'function') r.focus(); });
+    figur.addEventListener('pointerout', (e) => {
+      if (!balkenVon(e) || e.pointerType !== 'mouse') return;
+      if (fokus) zeige(fokus); else verberge();
+    });
+    return { verberge: verberge };
+  }
+
+  // Format des Werts im Balkentext: eigene Funktion (v, i, j), Kurzform mit zwei
+  // Nachkommastellen oder ohne Angabe das Format der y-Achse fy.
+  function wertFormatierer(f, fy) {
+    if (typeof f === 'function') return f;
+    if (f === 'prozent') return (v) => prozent(v);
+    if (f === 'eur') return (v) => eur(v);
+    if (f === 'zahl') return (v) => zahl(v);
+    return (v) => fy(v);
   }
 
   function legendeHtml(reihen, alsFlaeche) {
@@ -1722,7 +1798,8 @@ const FUI = (() => {
 
   function balkenDiagramm(ziel, optionen) {
     const cfg = Object.assign({ kategorien: [], reihen: [], y: {}, gestapelt: false }, optionen || {});
-    const teile = rahmen(ziel, cfg.titel);
+    const teile = rahmen(ziel, cfg.titel, true);
+    const info = balkenInfo(teile);
     let schriftAlt = 0;
 
     function zeichne() {
@@ -1746,6 +1823,7 @@ const FUI = (() => {
       const yb = bereich(ya, werte, true, eng ? 4 : 5);
       const yt = Array.isArray(ya.ticks) ? ya.ticks : ticks(yb.min, yb.max, eng ? 4 : 5);
       const fy = formatierer(ya, yt);
+      const fw = wertFormatierer(cfg.wertFormat, fy);
 
       // Kategorienbeschriftung: erst die Raender schaetzen, dann umbrechen. Braucht der
       // Achsentitel danach mehr Rand, wird mit dem schmaleren Band noch einmal umbrochen.
@@ -1790,10 +1868,11 @@ const FUI = (() => {
           const ya1 = Math.max(r.oben, Math.min(unten, sy(a)));
           const yb1 = Math.max(r.oben, Math.min(unten, sy(b)));
           const oben = Math.min(ya1, yb1), hoehe = Math.abs(ya1 - yb1);
+          const balkenText = (reihe.name ? reihe.name + ', ' : '') + c + ': ' + fw(v, i, j);
           h += '<rect class="balken" x="' + koordinate(x + (cfg.gestapelt ? 0 : balken * 0.06)) + '" y="'
             + koordinate(oben) + '" width="' + koordinate(cfg.gestapelt ? gruppe : balken * 0.88)
-            + '" height="' + koordinate(hoehe) + '" style="fill:' + esc(farbe(reihe.farbe, i)) + '"><title>'
-            + esc((reihe.name ? reihe.name + ', ' : '') + c + ': ' + fy(v)) + '</title></rect>';
+            + '" height="' + koordinate(hoehe) + '" style="fill:' + esc(farbe(reihe.farbe, i))
+            + '" tabindex="0" role="img" aria-label="' + esc(balkenText) + '"/>';
         });
         const mitte = x0 + (j + 0.5) * bandBreite;
         zeilen[j].forEach((z, zi) => {
@@ -1803,7 +1882,9 @@ const FUI = (() => {
       if (yb.min < 0 && yb.max > 0) h += linie(r.links, null0, BREITE - r.rechts, null0, 'nulllinie');
 
       teile.svg.innerHTML = h;
-      teile.legende.innerHTML = cfg.reihen.length > 1 || cfg.gestapelt ? legendeHtml(cfg.reihen, true) : '';
+      info.verberge();
+      const legende = cfg.legende === true || (cfg.legende !== false && (cfg.reihen.length > 1 || cfg.gestapelt));
+      teile.legende.innerHTML = legende ? legendeHtml(cfg.reihen, true) : '';
     }
 
     zeichne();
@@ -1817,6 +1898,8 @@ const FUI = (() => {
         if (n.reihen) cfg.reihen = n.reihen;
         if (n.kategorien) cfg.kategorien = n.kategorien;
         if (n.y) cfg.y = Object.assign({}, cfg.y, n.y);
+        if (n.legende !== undefined) cfg.legende = n.legende;
+        if (n.wertFormat !== undefined) cfg.wertFormat = n.wertFormat;
         zeichne();
       },
     };
